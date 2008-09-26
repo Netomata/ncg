@@ -1,5 +1,12 @@
-: id	active	type	netmask		name		description
-# ----	------	----	-------		----		-----------
+@ c_id = !vlans!(id=%id)!id			# => vlans[%][:id]
+@ c_activ = !vlans!(id=%id)!active		# => vlans[%][:active]
+@ c_type = !vlans!(id=%id)!type			# => vlans[%][:type]
+@ c_netmask = !vlans!(id=%id)!netmask		# => vlans[%][:netmask]
+@ c_name = !vlans!(id=%id)!name			# => vlans[%][:name]
+@ c_description = !vlans!(id=%id)!description	# => vlans[%][:description]
+#
+% c_id	c_activ	c_type	c_netmask	c_name		c_description
+# ----	-------	------	---------	------		-------------
 2	yes	switch	255.255.255.0	ISP-FW		ISP-to-Firewall
 3	yes	switch	255.255.255.0	FW-LB		Firewall-to-LoadBal
 4	yes	admin	255.255.255.0	LB-Rtr		LoadBal-to-Router

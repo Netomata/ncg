@@ -1,20 +1,30 @@
 # name: interface name
 # type: type of interface
-# label1: what's connected to this interface on switch-1
+# target1: name of device that's connected to this interface on switch-1
 # active1: whether interface is active on switch-1 (default "no", not active)
-# label2: what's connected to this interface on switch-2
+# target2: name of device that's connected to this interface on switch-2
 # active2: whether interface is active on switch-2 (default "no", not active)
 #
 # Note that fields in each row are tab-separated; number of fields must
 # match (i.e., each row must have the right number of fields), even if the
 # columns don't line up perfectly (because some names are longer than 8
-# characters, for instance).  The field separator is /\t+/ (i.e., one or more
-# adjacent tabs), so every field must have _something_ in it (even a "-" or
-# "none" or something, if it doesn't apply.
+# characters, for instance).  Multiple adjacent tabs are treated the same
+# as a single tab (i.e., the field separator is /\t+/), so every field must
+# have _something_ in it, even if it's just "-" or "none" or some such.
 #
 # Note that next non-comment begins with ':', and defines the field names
 #
-: name	type	label1		active1	label2		active2
+@ name = !devices[hostname="switch-1"]!interfaces[name=%name]!name
+@ type = !devices[hostname="switch-1"]!interfaces[name=%name]!type
+@ target1 = !devices[hostname="switch-1"]!interfaces[name=%name]!target
+@ active1 = !devices[hostname="switch-1"]!interfaces[name=%name]!active
+@@
+@ name = !devices[hostname="switch-2"]!interfaces[name=%name]!name
+@ type = !devices[hostname="switch-2"]!interfaces[name=%name]!type
+@ target2 = !devices[hostname="switch-2"]!interfaces[name=%name]!target
+@ active2 = !devices[hostname="switch-2"]!interfaces[name=%name]!active
+#
+: name	type	target1		active1	target2		active2
 # ----	----	------		-------	------		-------
 Gig1/1	host	host-1		yes	host-1		yes
 Gig1/2	host	host-2		yes	host-2		yes

@@ -12,7 +12,8 @@ templates!devices!+ {
 	netmask	= OPTIONAL
 	description = OPTIONAL
 	active	= false
-	ncgtemplate	= //templates/configs/devices/routers/cisco/interfaces/host.ncg
+#	ncg_template	= //templates/configs/devices/routers/cisco/interfaces/host.ncg
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/host.ncg
     }
 }
 devices!+ {
@@ -20,6 +21,9 @@ devices!+ {
     type	= router
     make	= cisco
     model	= 4948-10G
+    ncg_template	= //templates/configs/devices/routers/cisco/switch.ncg
+#   ncg_output		= configs/<name>
+    ncg_output		= configs/switch-1.config
     interfaces!+ {
     	name	= GigabitEthernet1/1
 	type	= host
@@ -48,4 +52,4 @@ devices!+ {
 }
 
 # !x!(a=b)!z => expect 1 result
-# !x![a=b]!z => expect multiple results
+# !x![a=b]!z => expect 1 or more results

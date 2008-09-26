@@ -24,6 +24,49 @@ class Netomata
 	    super()
 	end
 
+	# return true if keys/values of this element match
+	# an expression of the form:
+	# 	(key=value[,key2=value2 ...])
+	def elementmatch?(m)
+	    # strip parentheses and split into parts
+	    m.gsub(/[()]/,"").split(/,/).each { |mp|
+		k,v = mp.split(/=/)
+		if (k.nil? or v.nil?) then
+		    raise ArgumentError, "invalid syntax for elementmatch term"
+		end
+		if (! self.has_key?(k)) then
+		    return false;
+		else
+		    if (self[k].to_s != v.to_s) then
+			return false;
+		    end
+		end
+	    }
+	    return true;
+	end
+
+	# return array of subelements that match expression
+	def subelementmatches(m)
+	    ra = Array.new
+	    self.each { |k,v|
+		if v.elementmatch?(m) then
+		    ra << v
+		end
+	    }
+	    return ra
+	end
+
+	# return single match of subelements that match expression, or
+	# raise an error if more than 1
+	def subelementmatch1(m)
+	    ra = self.subelementmatches(m)
+	    case ra.length
+		when 0 then return nil
+		when 1 then return ra[0]
+		else raise RuntimeError, "matched more than 1 subelement"
+	    end
+	end
+
 	def [](k)
 	    puts "[](\"#{k}\")" if $debug
 	    # strip/skip leading "!", and split into left and right keys
@@ -31,6 +74,9 @@ class Netomata
 	    l,r = k.gsub(/^!+/,"").split("!",2)
 	    if r.nil? then
 		# if r is nil, then there was no "!" in the key
+		if (l.match(/^\(.*\)$/)) then
+		    # l contains a "(...)" selector
+		end
 		super(l)
 	    else
 		super(l)[r]
@@ -100,6 +146,6 @@ class Netomata
     end
 end
 
-fa = Netomata::Element.new
-fa.import(open("vlans.new"), "!vlans")
-pp(fa)
+#fa = Netomata::Element.new
+#fa.import(open("vlans.new"), "!vlans")
+#pp(fa)

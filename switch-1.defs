@@ -1,0 +1,4 @@
+<%
+    hostname = "switch-1"
+    role = "primary"
+%>

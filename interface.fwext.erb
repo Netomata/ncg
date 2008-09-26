@@ -1,0 +1,18 @@
+interface <%= interface[:name] %>
+ description Firewall-External <%=
+   case hostname
+     when "switch-1" then interface[:label1]
+     when "switch-2" then interface[:label2]
+     else raise("Unknown hostname \"#{hostname}\"")
+   end
+ %>
+ switchport access vlan 2
+ switchport mode access
+ <%= 
+   case hostname
+     when "switch-1" then if interface[:active1] == "yes" then "no shutdown" else "shutdown" end
+     when "switch-2" then if interface[:active2] == "yes" then "no shutdown" else "shutdown" end
+     else raise("Unknown hostname \"#{hostname}\"")
+   end
+ %>
+!

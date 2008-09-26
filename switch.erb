@@ -1,0 +1,58 @@
+<%
+    raise "hostname undefined" if (! defined? hostname)
+%>
+
+no service pad
+service timestamps debug datetime
+service timestamps log datetime
+service password-encryption
+service compress-config
+!
+hostname <%= hostname %>
+!
+boot-start-marker
+boot system flash bootflash:cat4500-entservicesk9-mz.122-40.SG.bin
+boot-end-marker
+!
+enable secret 5 $1$1BW4$gGvqlOneOo7NyZJofhNg1.
+!
+username access password 7 021511490E4A1A2F5E4F0712
+aaa new-model
+clock timezone PST -8
+clock summer-time PDT recurring 
+ip subnet-zero
+ip domain-name mgmt.edgenuity.net
+!
+ip ssh time-out 60
+ip ssh source-interface Vlan16
+ip ssh version 2
+vtp mode transparent
+no cluster run
+!
+!
+!
+power redundancy-mode redundant
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority <%=
+    case role
+        when "primary" then 24576
+	when "secondary" then 28672
+	else raise("Unknown role \"#{role}\"")
+    end %>
+!
+!
+ip access-list extended MATCH_ANY
+  permit ip any any
+!
+vlan internal allocation policy ascending
+!
+<% vlans.each { |vlan| %>
+vlan <%= vlan[:id] %>
+ name <%= vlan[:name] %>
+<% } %>
+!
+<% interfaces.each { |interface| %>

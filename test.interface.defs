@@ -1,0 +1,8 @@
+<%
+interface = Hash.new
+interface[:name] = "test-name"
+interface[:label1] = "test-label1"
+interface[:label2] = "test-label2"
+interface[:active1] = "yes"
+interface[:active2] = "no"
+%>

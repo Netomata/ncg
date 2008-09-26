@@ -1,0 +1,22 @@
+@ id = !vlans[id=%id]!id			# => vlans[%][:id]
+@ active = !vlans[id=%id]!active		# => vlans[%][:active]
+@ type = !vlans[id=%id]!type			# => vlans[%][:type]
+@ netmask = !vlans[id=%id]!netmask		# => vlans[%][:netmask]
+@ name = !vlans[id=%id]!name			# => vlans[%][:name]
+@ description = !vlans[id=%id]!description	# => vlans[%][:description]
+#
+% id	active	type	netmask		name		description
+# ----	------	----	-------		----		-----------
+2	yes	switch	255.255.255.0	ISP-FW		ISP-to-Firewall
+3	yes	switch	255.255.255.0	FW-LB		Firewall-to-LoadBal
+4	yes	admin	255.255.255.0	LB-Rtr		LoadBal-to-Router
+16	yes	admin	255.255.240.0	Management	Management
+32	yes	admin	255.255.240.0	Bulk		Bulk
+48	yes	admin	255.255.240.0	IPMI		IPMI
+81	yes	env	255.255.255.0	Production	Production
+82	yes	env	255.255.255.0	Pre-Prod	Pre-Prod
+83	yes	env	255.255.255.0	Demo		Demo
+84	yes	env	255.255.255.0	Dev		Dev
+85	yes	env	255.255.255.0	QA		QA
+86	yes	env	255.255.255.0	Test		Test
+128	yes	switch	255.255.255.0	Corporate	Corporate

@@ -27,12 +27,12 @@ class Netomata
 	# return true if keys/values of this element match
 	# an expression of the form:
 	# 	(key=value[,key2=value2 ...])
-	def elementmatch?(m)
+	def element_match?(m)
 	    # strip parentheses and split into parts
 	    m.gsub(/[()]/,"").split(/,/).each { |mp|
 		k,v = mp.split(/=/)
 		if (k.nil? or v.nil?) then
-		    raise ArgumentError, "invalid syntax for elementmatch term"
+		    raise ArgumentError, "invalid syntax for element_match term"
 		end
 		if (! self.has_key?(k)) then
 		    return false;
@@ -46,10 +46,10 @@ class Netomata
 	end
 
 	# return array of subelements that match expression
-	def subelementmatches(m)
+	def subelement_matches(m)
 	    ra = Array.new
 	    self.each { |k,v|
-		if v.elementmatch?(m) then
+		if v.element_match?(m) then
 		    ra << v
 		end
 	    }
@@ -58,8 +58,8 @@ class Netomata
 
 	# return single match of subelements that match expression, or
 	# raise an error if more than 1
-	def subelementmatch1(m)
-	    ra = self.subelementmatches(m)
+	def subelement_match_one(m)
+	    ra = self.subelement_matches(m)
 	    case ra.length
 		when 0 then return nil
 		when 1 then return ra[0]
@@ -75,11 +75,24 @@ class Netomata
 	    if r.nil? then
 		# if r is nil, then there was no "!" in the key
 		if (l.match(/^\(.*\)$/)) then
-		    # l contains a "(...)" selector
+		    # l contains a "(...)" selector; dereference
+		    return self.subelement_match_one(l)
+		else
+		    return super(l)
 		end
-		super(l)
 	    else
-		super(l)[r]
+		if (l.match(/^\(.*\)$/)) then
+		    # l contains a "(...)" selector; dereference
+		    # if dereferencing l returns nil, then we're done
+		    result = self.subelement_match_one(l)
+		    if result.nil? then
+			return nil
+		    else
+			return self.subelement_match_one(l)[r]
+		    end
+		else
+		    return super(l)[r]
+		end
 	    end
 	end
 
@@ -96,6 +109,11 @@ class Netomata
 		if self[l].nil? then
 		    # if intermediate node doesn't exist, create it
 		    puts "self[\"#{l}\"] doesn't exist" if $debug
+		    if (l.match(/^\(.*\)$/)) then
+			# l is a match statement, but isn't matching anything
+			raise ArgumentError,
+			    "no elements found with key \"#{l}\""
+		    end
 		    self[l] = Netomata::Element.new
 		end
 		if (self[l].class != Netomata::Element) then
@@ -146,6 +164,12 @@ class Netomata
     end
 end
 
-#fa = Netomata::Element.new
-#fa.import(open("vlans.new"), "!vlans")
-#pp(fa)
+fa = Netomata::Element.new
+fa.import(open("vlans"), "!vlans")
+pp(fa)
+pp(fa["!vlans"])
+pp(fa["!vlans!(c_name=IPMI)"])
+pp(fa["!vlans!(c_name=IPMI)!c_id"])
+pp(fa["!vlans!(c_id=48)!c_name"])
+pp(fa["!vlans!(c_activ=maybe)!c_name"])
+pp(fa["!vlans!(c_activ=yes)!c_name"])

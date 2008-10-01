@@ -1,4 +1,4 @@
-@ c_id = !vlans!(id=%id)!id			# => vlans[%][:id]
++ c_id = !vlans!(+)!id			# => vlans[%][:id]
 @ c_activ = !vlans!(id=%id)!active		# => vlans[%][:active]
 @ c_type = !vlans!(id=%id)!type			# => vlans[%][:type]
 @ c_netmask = !vlans!(id=%id)!netmask		# => vlans[%][:netmask]

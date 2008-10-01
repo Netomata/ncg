@@ -20,6 +20,10 @@ class Netomata::Node < Dictionary
     # an expression of the form:
     # 	(key=value[,key2=value2 ...])
     def node_match?(m)
+	if m.match(/^\(\+\)$/) then
+	    # match target is "(+)", which is magic for a new node
+	    return false
+	end
 	# strip parentheses and split into parts
 	m.gsub(/[()]/,"").split(/,/).each { |mp|
 	    k,v = mp.split(/=/)
@@ -101,6 +105,18 @@ class Netomata::Node < Dictionary
 	    if self[l].nil? then
 		# if intermediate node doesn't exist, create it
 		puts "self[\"#{l}\"] doesn't exist" if $debug
+		if (l.match(/^\(\+\)$/)) then
+		    # l is an "increment and create new" statement
+		    mk = self.keys.max
+		    if (mk.nil?) then
+			nk = "1"
+		    else
+			nk = mk.succ
+		    end
+		    self[nk] = Netomata::Node.new
+		    self[nk][r] = v
+		    return v
+		end
 		if (l.match(/^\(.*\)$/)) then
 		    # l is a match statement, but isn't matching anything
 		    raise ArgumentError,
@@ -155,12 +171,12 @@ class Netomata::Node < Dictionary
     end
 end
 
-fa = Netomata::Node.new
-fa.import(open("vlans"), "!vlans")
-pp(fa)
-pp(fa["!vlans"])
-pp(fa["!vlans!(c_name=IPMI)"])
-pp(fa["!vlans!(c_name=IPMI)!c_id"])
-pp(fa["!vlans!(c_id=48)!c_name"])
-pp(fa["!vlans!(c_activ=maybe)!c_name"])
-pp(fa["!vlans!(c_activ=yes)!c_name"])
+# fa = Netomata::Node.new
+# fa.import(open("vlans"), "!vlans")
+# pp(fa)
+# pp(fa["!vlans"])
+# pp(fa["!vlans!(c_name=IPMI)"])
+# pp(fa["!vlans!(c_name=IPMI)!c_id"])
+# pp(fa["!vlans!(c_id=48)!c_name"])
+# pp(fa["!vlans!(c_activ=maybe)!c_name"])
+# pp(fa["!vlans!(c_activ=yes)!c_name"])

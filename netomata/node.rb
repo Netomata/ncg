@@ -99,12 +99,26 @@ class Netomata::Node < Dictionary
 	l,r = k.gsub(/^!+/,"").split("!",2)
 	if r.nil? then
 	    # if r is nil, then there was no "!" in the key
-	    super(l,v)
+	    # TODO: refactor this and similar code below
+	    if (l.match(/^\(\+\)$/)) then
+		# l is an "increment and create new" statement
+		mk = self.keys.max
+		if (mk.nil?) then
+		    nk = "1"
+		else
+		    nk = mk.succ
+		end
+		self[nk] = v
+		return v
+	    else
+		super(l,v)
+	    end
 	else
 	    puts "self[\"#{l}\"] => #{self[l]}" if $debug
 	    if self[l].nil? then
 		# if intermediate node doesn't exist, create it
 		puts "self[\"#{l}\"] doesn't exist" if $debug
+		# TODO: refactor this and similar code above
 		if (l.match(/^\(\+\)$/)) then
 		    # l is an "increment and create new" statement
 		    mk = self.keys.max

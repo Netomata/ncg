@@ -57,7 +57,7 @@ class Netomata::Node < Dictionary
 	end
     end
 
-    def import(io,basekey) 
+    def import_table(io,basekey) 
 	actions = Array.new
 	fields = Dictionary.new
 	# FIXME add file/line info to error messages
@@ -198,7 +198,7 @@ class Netomata::Node < Dictionary
 end
 
 # fa = Netomata::Node.new
-# fa.import(open("vlans"), "!vlans")
+# fa.import_table(open("vlans"), "!vlans")
 # pp(fa)
 # pp(fa["!vlans"])
 # pp(fa["!vlans!(c_name=IPMI)"])

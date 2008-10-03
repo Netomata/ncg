@@ -78,7 +78,7 @@ class NodeTest < Test::Unit::TestCase
 	assert_equal "v_n1a4", @node["!n1!(>)"]
     end
 
-    def test_import
+    def test_import_table
 	input = StringIO.new <<EOF
 # name: interface name
 # type: type of interface
@@ -676,7 +676,7 @@ EOF
 	n = Netomata::Node.new
 	n["!xyzzy!devices!(+)!hostname"] = "switch-1"
 	n["!xyzzy!devices!(+)!hostname"] = "switch-2"
-	n.import(input, "!xyzzy")
+	n.import_table(input, "!xyzzy")
 	output = PP::pp(n, StringIO.new)
 	assert_equal expected, output.string
     end

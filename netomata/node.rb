@@ -18,7 +18,6 @@ class Netomata::Node < Dictionary
 
     def [](k)
 	puts "[](\"#{k}\")" if $debug
-	debugger if $debug
 	# strip/skip leading "!", and split into left and right keys
 	# TODO: figure out what to _really_ do about keys beginning with "!"
 	l,r = k.gsub(/^!+/,"").split("!",2)
@@ -32,6 +31,7 @@ class Netomata::Node < Dictionary
 
     def []=(k,v)
 	puts "[]=(\"#{k}\", \"#{v}\")" if $debug
+	#debugger if $debug
 	# strip/skip leading "!", and split into left and right keys
 	# TODO: figure out what to _really_ do about keys beginning with "!"
 	l,r = k.gsub(/^!+/,"").split("!",2)
@@ -57,6 +57,49 @@ class Netomata::Node < Dictionary
 	end
     end
 
+    def import_file(io,basekey)
+	# FIXME add file/line info to error messages
+	parent = [basekey]
+	io.each_line { |l|
+	    l.chomp!			# eliminate trailing newline
+	    l.gsub!(/#.*$/, "")		# eliminate trailing comments
+	    l.gsub!(/\s*$/, "")		# eliminate trailing whitespace
+	    l.gsub!(/^\s*/, "")		# eliminate leading whitespace
+	    case l
+	    when /^$/ then
+		# blank line
+		next	# skip blank lines
+	    when /^(\S*)\s*(<\s*(\S*))?\s*\{$/
+		# templates!devices!(+) {
+		# !devices!(+) < templates!devices!(type=router,make=cisco) {
+		k = $1
+		s = $3
+		if (k.include?("(+)")) then
+		    # if key ends in "(+)", then make empty node
+		    self[parent.last + "!" + k] = Netomata::Node.new
+		    # and change key to match newly-created node
+		    k.sub!("(+)","(>)")
+		end
+		if ! s.nil? then
+		    # copy subnodes from s
+		    self[parent.last + "!" + k].update(self[basekey + "!" + s])
+		end
+		parent.push(parent.last + "!" + k)
+	    when /^([^=\s]*)\s*=\s*(.*)$/
+		# make        = cisco
+		self[parent.last + "!" + $1] = $2
+	    when /^\}$/
+		# }
+		parent.pop
+		if parent.length == 0 then
+		    raise "Unmatched '}'"
+		end
+	    else
+		raise "Unrecognized line '#{l}'"
+	    end
+	}
+    end
+
     def import_table(io,basekey) 
 	actions = Array.new
 	fields = Dictionary.new
@@ -68,9 +111,6 @@ class Netomata::Node < Dictionary
 	    when /^$/ then
 		# blank line
 		next	# skip blank lines
-	    when /^\+/ then
-		# new-record line
-		next	# FIXME skip for now
 	    when /^@/ then
 		# per-row action line
 		if m = l.match(/@\s*([^\s=]*)\s*=\s*(.*)$/) then

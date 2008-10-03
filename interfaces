@@ -14,16 +14,17 @@
 #
 # Note that next non-comment begins with ':', and defines the field names
 #
-+ name = !devices!(hostname=switch-1)!interfaces!(+)!name
+@ name = !devices!(hostname=switch-1)!interfaces!(+)!name
 @ type = !devices!(hostname=switch-1)!interfaces!(name=%name)!type
 @ target1 = !devices!(hostname=switch-1)!interfaces!(name=%name)!target
 @ active1 = !devices!(hostname=switch-1)!interfaces!(name=%name)!active
-+ name = !devices!(hostname=switch-2)!interfaces!(+)!name
+#
+@ name = !devices!(hostname=switch-2)!interfaces!(+)!name
 @ type = !devices!(hostname=switch-2)!interfaces!(name=%name)!type
 @ target2 = !devices!(hostname=switch-2)!interfaces!(name=%name)!target
 @ active2 = !devices!(hostname=switch-2)!interfaces!(name=%name)!active
 #
-: name	type	target1		active1	target2		active2
+% name	type	target1		active1	target2		active2
 # ----	----	------		-------	------		-------
 Gig1/1	host	host-1		yes	host-1		yes
 Gig1/2	host	host-2		yes	host-2		yes

@@ -12,6 +12,9 @@ end
 
 class Netomata::Node < Dictionary
 
+    attr_accessor :import_actions
+    attr_accessor :import_fields
+
     def initialize
 	super()
     end
@@ -57,39 +60,56 @@ class Netomata::Node < Dictionary
     end
 
     def import(io,basekey) 
+	@import_actions = Array.new
+	@import_fields = Dictionary.new
+	# FIXME add file/line info to error messages
 	io.each_line { |l|
 	    l.chomp!			# eliminate trailing newline
 	    l.gsub!(/\s*#.*/, "")	# eliminate trailing comments
 	    case l
 	    when /^$/ then
+		# blank line
 		next	# skip blank lines
-	    when /^#/ then
-		next	# skip comments
+	    when /^\+/ then
+		# new-record line
+		next	# FIXME skip for now
 	    when /^@/ then
-		next	# skip variable specs (for now) FIXME
+		# per-row action line
+		if m = l.match(/@\s*([^\s=]*)\s*=\s*(.*)$/) then
+		    @import_actions << m[1,2]
+		else
+		    raise "Malformed action line"
+		end
 	    when /^%/ then
+		# field-names line
 		# strip leading marker and whitespace
 		l.gsub!(/^%\s*/,"")
-		@fields = l.split(/\t+/)
+		# break into fields at tab boundaries
+		l.split(/\t+/).each { |f|
+		    if @import_fields.has_key?(f) then
+			raise "Fields must be uniquely named"
+		    end
+		    @import_fields[f] = @import_fields.length
+		}
 	    else
-		if (@fields.nil?) then
-		    raise "Fields must be defined before first data line"
+		# must be a data line
+		if (@import_fields.nil?) then
+		    raise "Fields must be named (via line beginning with '%') before first data line"
 		end
 		d = l.split(/\t+/)
-		if (d.length != @fields.length) then
-		    raise "Wrong number of fields in line; expected #{@fields.length}, got #{d.length}"
+		if (d.length != @import_fields.length) then
+		    raise "Wrong number of fields in line; expected #{@import_fields.length}, got #{d.length}"
 		end
-		@fields.each { |f|
-		    v = d.shift
-		    # if the string value is really an integer
-		    # (determined by converting it to an integer
-		    # and then back to a string, and comparing that
-		    # to the original string), then push the value
-		    # as an integer; otherwise, push it as a string
-		    if (v.to_i.to_s == v) then
-			v = v.to_i
+		#debugger
+		@import_actions.each { |f,a|
+		    k = basekey + "!" + a
+		    if (m = k.match(/(\([^)]*=)%([^)]*)(\))/)) then
+			if ! @import_fields.has_key?(m[2]) then
+			    raise "Unknown column name '#{m[2]}'"
+			end
+			k = m.pre_match + m[1] + d[@import_fields[m[2]]] + m[3] + m.post_match
 		    end
-		    self[basekey + "!" + io.lineno.to_s + "!" + f] = v
+		    self[k] = d[@import_fields[f]]
 		}
 	    end
 	}
@@ -115,16 +135,16 @@ class Netomata::Node < Dictionary
 	    when "+"
 	    	r = self.keys.max
 		if (r.nil?) then
-		    return "1"
+		    return "0000001"
 		else
 		    return r.succ
 		end
 	    when /.*=.*/
 		r = selector_criteria_to_keys(s)
-		if (r.class == Array) then
-		    raise ArgumentError,
-		    	"selector \"#{s}\" matches multiple subnodes"
-		end
+		# if (r.class == Array) then
+		#     raise ArgumentError,
+		#     	"selector \"#{s}\" matches multiple subnodes"
+		# end
 		return r
 	    else
 		raise ArgumentError, "Unknown selector \"#{s}\""

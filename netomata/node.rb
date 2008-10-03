@@ -12,15 +12,13 @@ end
 
 class Netomata::Node < Dictionary
 
-    attr_accessor :import_actions
-    attr_accessor :import_fields
-
     def initialize
 	super()
     end
 
     def [](k)
 	puts "[](\"#{k}\")" if $debug
+	debugger if $debug
 	# strip/skip leading "!", and split into left and right keys
 	# TODO: figure out what to _really_ do about keys beginning with "!"
 	l,r = k.gsub(/^!+/,"").split("!",2)
@@ -60,8 +58,8 @@ class Netomata::Node < Dictionary
     end
 
     def import(io,basekey) 
-	@import_actions = Array.new
-	@import_fields = Dictionary.new
+	actions = Array.new
+	fields = Dictionary.new
 	# FIXME add file/line info to error messages
 	io.each_line { |l|
 	    l.chomp!			# eliminate trailing newline
@@ -76,7 +74,7 @@ class Netomata::Node < Dictionary
 	    when /^@/ then
 		# per-row action line
 		if m = l.match(/@\s*([^\s=]*)\s*=\s*(.*)$/) then
-		    @import_actions << m[1,2]
+		    actions << m[1,2]
 		else
 		    raise "Malformed action line"
 		end
@@ -86,30 +84,30 @@ class Netomata::Node < Dictionary
 		l.gsub!(/^%\s*/,"")
 		# break into fields at tab boundaries
 		l.split(/\t+/).each { |f|
-		    if @import_fields.has_key?(f) then
+		    if fields.has_key?(f) then
 			raise "Fields must be uniquely named"
 		    end
-		    @import_fields[f] = @import_fields.length
+		    fields[f] = fields.length
 		}
 	    else
 		# must be a data line
-		if (@import_fields.nil?) then
+		if (fields.nil?) then
 		    raise "Fields must be named (via line beginning with '%') before first data line"
 		end
 		d = l.split(/\t+/)
-		if (d.length != @import_fields.length) then
-		    raise "Wrong number of fields in line; expected #{@import_fields.length}, got #{d.length}"
+		if (d.length != fields.length) then
+		    raise "Wrong number of fields in line; expected #{fields.length}, got #{d.length}"
 		end
 		#debugger
-		@import_actions.each { |f,a|
+		actions.each { |f,a|
 		    k = basekey + "!" + a
 		    if (m = k.match(/(\([^)]*=)%([^)]*)(\))/)) then
-			if ! @import_fields.has_key?(m[2]) then
+			if ! fields.has_key?(m[2]) then
 			    raise "Unknown column name '#{m[2]}'"
 			end
-			k = m.pre_match + m[1] + d[@import_fields[m[2]]] + m[3] + m.post_match
+			k = m.pre_match + m[1] + d[fields[m[2]]] + m[3] + m.post_match
 		    end
-		    self[k] = d[@import_fields[f]]
+		    self[k] = d[fields[f]]
 		}
 	    end
 	}
@@ -141,10 +139,10 @@ class Netomata::Node < Dictionary
 		end
 	    when /.*=.*/
 		r = selector_criteria_to_keys(s)
-		# if (r.class == Array) then
-		#     raise ArgumentError,
-		#     	"selector \"#{s}\" matches multiple subnodes"
-		# end
+		if (r.class == Array) then
+		    raise ArgumentError,
+		    	"selector \"#{s}\" matches multiple subnodes"
+		end
 		return r
 	    else
 		raise ArgumentError, "Unknown selector \"#{s}\""

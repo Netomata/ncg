@@ -1,0 +1,56 @@
+templates!devices!(+) {
+    make	= cisco
+    type	= router
+    name	= REQUIRED
+    model	= OPTIONAL
+    ncgtemplate	= //templates/configs/devices/routers/cisco.ncg
+    ncgtarget	= true	# generate a config from this point in tree
+    interfaces!(+) {
+	type	= host
+	name	= REQUIRED
+	ipaddr	= OPTIONAL
+	netmask	= OPTIONAL
+	description = OPTIONAL
+	active	= false
+#	ncg_template	= //templates/configs/devices/routers/cisco/interfaces/host.ncg
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/host.ncg
+    }
+}
+devices!(+) {
+    name	= switch-1
+    type	= router
+    make	= cisco
+    model	= 4948-10G
+#   ncg_template	= //templates/configs/devices/routers/cisco/switch.ncg
+    ncg_template	= templates/configs/devices/routers/cisco/switch.ncg
+#   ncg_output		= configs/<name>
+    ncg_output		= configs/switch-1.config
+    interfaces!(+) {
+    	name	= GigabitEthernet1/1
+	type	= host
+	ipaddr	= 10.5.16.1
+	netmask	= 255.255.240.0
+	description	= host-1
+	active	= true
+    }
+    interfaces!(+) < !templates!devices!(make=cisco,type=router)!interfaces!(type=host) {
+    	name	= GigabitEthernet1/2
+	type	= host
+	ipaddr	= 10.5.16.2
+	netmask	= 255.255.240.0
+	description	= host-2
+	active	= true
+    }
+#     interfaces!(+) {
+#     	+ !templates!devices!(make="cisco", type="router")!interfaces!(type="host")
+#     	name	= GigabitEthernet1/3
+# 	type	= host
+# 	ipaddr	= 10.5.16.3
+# 	netmask	= 255.255.240.0
+# 	description	= host-3
+# 	active	= true
+#     }
+# }
+
+# !x!(a=b)!z => expect 1 result
+# !x![a=b]!z => expect 1 or more results

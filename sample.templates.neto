@@ -1,0 +1,64 @@
+templates!devices!(+) {
+    make	= cisco
+    type	= router
+    name	= REQUIRED
+    model	= OPTIONAL
+    ncg_template = templates/configs/devices/routers/cisco.ncg
+    ncg_target	= true	# generate a config from this point in tree
+    interfaces!(+) {
+	name	= REQUIRED
+	type	= host
+	description = OPTIONAL
+	active	= no
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/host.ncg
+    }
+    interfaces!(+) {
+	name	= REQUIRED
+	type	= ipmi
+	description = OPTIONAL
+	active	= no
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/ipmi.ncg
+    }
+    interfaces!(+) {
+	name	= REQUIRED
+	type	= fwvlan
+	description = OPTIONAL
+	active	= no
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/fwvlan.ncg
+    }
+    interfaces!(+) {
+	name	= REQUIRED
+	type	= fwext
+	description = OPTIONAL
+	active	= no
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/fwext.ncg
+    }
+    interfaces!(+) {
+	name	= REQUIRED
+	type	= loadbal
+	description = OPTIONAL
+	active	= no
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/loadbal.ncg
+    }
+    interfaces!(+) {
+	name	= REQUIRED
+	type	= mgmt
+	description = OPTIONAL
+	active	= no
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/mgmt.ncg
+    }
+    interfaces!(+) {
+	name	= REQUIRED
+	type	= trunk
+	description = OPTIONAL
+	active	= no
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/trunk.ncg
+    }
+    interfaces!(+) {
+	name	= REQUIRED
+	type	= unused
+	description = OPTIONAL
+	active	= no
+	ncg_template	= templates/configs/devices/routers/cisco/interfaces/unused.ncg
+    }
+}

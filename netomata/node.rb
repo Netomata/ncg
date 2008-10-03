@@ -31,7 +31,6 @@ class Netomata::Node < Dictionary
 
     def []=(k,v)
 	puts "[]=(\"#{k}\", \"#{v}\")" if $debug
-	#debugger if $debug
 	# strip/skip leading "!", and split into left and right keys
 	# TODO: figure out what to _really_ do about keys beginning with "!"
 	l,r = k.gsub(/^!+/,"").split("!",2)
@@ -94,6 +93,12 @@ class Netomata::Node < Dictionary
 		if parent.length == 0 then
 		    raise "Unmatched '}'"
 		end
+	    when /^\.include\s+(\S+)$/
+		# .include sample.templates.neto
+		self.import_file(open($1), basekey)
+	    when /^\.table\s+(\S+)$/
+		# .table interfaces
+		self.import_table(open($1), basekey)
 	    else
 		raise "Unrecognized line '#{l}'"
 	    end
@@ -101,6 +106,18 @@ class Netomata::Node < Dictionary
     end
 
     def import_table(io,basekey) 
+
+	def vsub(a,fields,d,basekey)
+	    k = basekey + "!" + a
+	    if (m = k.match(/(\([^)]*=)%([^)]*)(\))/)) then
+		if ! fields.has_key?(m[2]) then
+		    raise "Unknown column name '#{m[2]}'"
+		end
+		k = m.pre_match + m[1] + d[fields[m[2]]] + m[3] + m.post_match
+	    end
+	    k
+	end
+
 	actions = Array.new
 	fields = Dictionary.new
 	# FIXME add file/line info to error messages
@@ -111,12 +128,21 @@ class Netomata::Node < Dictionary
 	    when /^$/ then
 		# blank line
 		next	# skip blank lines
+	    when /^\+/ then
+		# new-record line
+		# + !devices!(hostname=switch-1)!interfaces!(+)
+		# + !devices!(hostname=switch-1)!interfaces!(+) < !templates!devices!(make=cisco,type=router)!interfaces!(type=%type)
+		if m = l.match(/^\+\s*([^\s<]*)\s*(<\s*(\S*))?$/) then
+		    actions << ['+', m[1], m[3]]
+		else
+		    raise "Malformed '+' line"
+		end
 	    when /^@/ then
 		# per-row action line
-		if m = l.match(/@\s*([^\s=]*)\s*=\s*(.*)$/) then
-		    actions << m[1,2]
+		if m = l.match(/^@\s*([^\s=]*)\s*=\s*(.*)$/) then
+		    actions << ['@', m[1], m[2]]
 		else
-		    raise "Malformed action line"
+		    raise "Malformed '@' line"
 		end
 	    when /^%/ then
 		# field-names line
@@ -138,16 +164,22 @@ class Netomata::Node < Dictionary
 		if (d.length != fields.length) then
 		    raise "Wrong number of fields in line; expected #{fields.length}, got #{d.length}"
 		end
-		#debugger
-		actions.each { |f,a|
-		    k = basekey + "!" + a
-		    if (m = k.match(/(\([^)]*=)%([^)]*)(\))/)) then
-			if ! fields.has_key?(m[2]) then
-			    raise "Unknown column name '#{m[2]}'"
+		actions.each { |t,f,a|
+		    case t
+		    when '@'
+			k = vsub(a,fields,d,basekey)
+			self[k] = d[fields[f]]
+		    when '+'
+			fk = vsub(f,fields,d,basekey)
+			ak = vsub(a,fields,d,basekey)
+			if ! self.has_key?(fk) then
+			    self[fk] = self[ak].dup
+			else 
+			    self[fk].update(self[ak])
 			end
-			k = m.pre_match + m[1] + d[fields[m[2]]] + m[3] + m.post_match
+		    else
+			raise "Unknown action '#{t}'"
 		    end
-		    self[k] = d[fields[f]]
 		}
 	    end
 	}

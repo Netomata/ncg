@@ -16,84 +16,6 @@ class Netomata::Node < Dictionary
 	super()
     end
 
-    # Convert a "()" key selector to the appropriate key
-    # 	(+): returns new key, successor to current max key
-    # 	(>): returns current max key
-    # 	(<): returns current min key
-    # 	(subkey=value,[subkey2=value ...]): returns key of first subnode
-    # 		whose subkey(s) match list of subkey/value criteria
-    def selector_to_key(s)
-
-	m = s.match(/^\((.*)\)$/)
-	if m.nil? then
-	    # s isn't a "( ... )" key selector, so just return s
-	    return s
-	else
-	    case m[1]
-	    when ">"
-		return self.keys.max
-	    when "<"
-		return self.keys.min
-	    when "+"
-	    	r = self.keys.max
-		if (r.nil?) then
-		    return "1"
-		else
-		    return r.succ
-		end
-	    when /.*=.*/
-		r = selector_criteria_to_keys(s)
-		if (r.class == Array) then
-		    raise ArgumentError,
-		    	"selector \"#{s}\" matches multiple subnodes"
-		end
-		return r
-	    else
-		raise ArgumentError, "Unknown selector \"#{s}\""
-	    end
-	end
-    end
-
-    # Convert a "(subkey=value,[subkey2=value2 ...])" key selector criteria
-    # to the array of the keys of the subnodes whose subkey(s) match the list
-    # of subkey/value criteria
-    def selector_criteria_to_keys(s)
-	# construct an array of [key, value] pairs to check subnodes against
-	ca = Array.new
-	s.gsub(/[()]/,"").split(/,/).each { |mp|
-	    k,v = mp.split(/=/)
-	    if (k.nil? or v.nil?) then
-		raise ArgumentError, "invalid syntax for node_match term"
-	    end
-	    ca << [k,v]
-	}
-	# start with an empty array of results
-	ra = Array.new
-	self.keys.each { |k|
-	    if self[k].node_match_array?(ca) then
-		ra << k
-	    end
-	}
-	case ra.length
-	    when 0 then return nil
-	    when 1 then return ra[0]
-	    else return ra
-	end
-    end
-
-    # check to see whether current node matches an array of [key,value] pairs
-    def node_match_array?(ca)
-	ca.each { |k,v|
-	    if ( ! self.has_key?(k)) then
-		return false
-	    end
-	    if (self[k] != v) then
-		return false
-	    end
-	}
-	return true
-    end
-
     def [](k)
 	puts "[](\"#{k}\")" if $debug
 	# strip/skip leading "!", and split into left and right keys
@@ -114,49 +36,23 @@ class Netomata::Node < Dictionary
 	l,r = k.gsub(/^!+/,"").split("!",2)
 	if r.nil? then
 	    # if r is nil, then there was no "!" in the key
-	    # TODO: refactor this and similar code below
-	    if (l.match(/^\(\+\)$/)) then
-		# l is an "increment and create new" statement
-		mk = self.keys.max
-		if (mk.nil?) then
-		    nk = "1"
-		else
-		    nk = mk.succ
-		end
-		self[nk] = v
-		return v
-	    else
-		super(l,v)
-	    end
+	    return super(selector_to_key(l),v)
 	else
-	    puts "self[\"#{l}\"] => #{self[l]}" if $debug
-	    if self[l].nil? then
-		# if intermediate node doesn't exist, create it
-		puts "self[\"#{l}\"] doesn't exist" if $debug
-		# TODO: refactor this and similar code above
-		if (l.match(/^\(\+\)$/)) then
-		    # l is an "increment and create new" statement
-		    mk = self.keys.max
-		    if (mk.nil?) then
-			nk = "1"
-		    else
-			nk = mk.succ
-		    end
-		    self[nk] = Netomata::Node.new
-		    self[nk][r] = v
-		    return v
-		end
-		if (l.match(/^\(.*\)$/)) then
-		    # l is a match statement, but isn't matching anything
-		    raise ArgumentError,
-			"no nodes found with key \"#{l}\""
-		end
-		self[l] = Netomata::Node.new
+	    nk = selector_to_key(l)
+	    if nk.nil? then
+		# selector_to_key didn't return anything, so must have
+		# been a criteria selector which didn't match anything;
+		# nothing we can do about it but raise an error
+		raise ArgumentError, "criteria #{l} doesn't match any subnodes"
 	    end
-	    if (self[l].class != Netomata::Node) then
+	    if self[nk].nil? then
+		# path references a node that doesn't exist yet, so create it
+		self[nk] = Netomata::Node.new
+	    end
+	    if self[nk].class != Netomata::Node then
 		raise ArgumentError, "key \"#{l}\" already defined, but value is not of type Netomata::Node"
 	    end
-	    self[l][r]=v
+	    return self[nk][r] = v
 	end
     end
 
@@ -197,6 +93,89 @@ class Netomata::Node < Dictionary
 		}
 	    end
 	}
+    end
+    
+    # Convert a "()" key selector to the appropriate key
+    # 	(+): returns new key, successor to current max key
+    # 	(>): returns current max key
+    # 	(<): returns current min key
+    # 	(subkey=value,[subkey2=value ...]): returns key of first subnode
+    # 		whose subkey(s) match list of subkey/value criteria
+    def selector_to_key(s)
+	m = s.match(/^\((.*)\)$/)
+	if m.nil? then
+	    # s isn't a "( ... )" key selector, so just return s
+	    return s
+	else
+	    case m[1]
+	    when ">"
+		return self.keys.max
+	    when "<"
+		return self.keys.min
+	    when "+"
+	    	r = self.keys.max
+		if (r.nil?) then
+		    return "1"
+		else
+		    return r.succ
+		end
+	    when /.*=.*/
+		r = selector_criteria_to_keys(s)
+		if (r.class == Array) then
+		    raise ArgumentError,
+		    	"selector \"#{s}\" matches multiple subnodes"
+		end
+		return r
+	    else
+		raise ArgumentError, "Unknown selector \"#{s}\""
+	    end
+	end
+    end
+
+    ###################################################################
+    #### Protected Methods
+    ###################################################################
+
+    protected
+
+    # Convert a "(subkey=value,[subkey2=value2 ...])" key selector criteria
+    # to the array of the keys of the subnodes whose subkey(s) match the list
+    # of subkey/value criteria
+    def selector_criteria_to_keys(s)
+	# construct an array of [key, value] pairs to check subnodes against
+	ca = Array.new
+	s.gsub(/[()]/,"").split(/,/).each { |mp|
+	    k,v = mp.split(/=/)
+	    if (k.nil? or v.nil?) then
+		raise ArgumentError, "invalid syntax for node_match term"
+	    end
+	    ca << [k,v]
+	}
+	# start with an empty array of results
+	ra = Array.new
+	self.keys.each { |k|
+	    if self[k].node_match_array?(ca) then
+		ra << k
+	    end
+	}
+	case ra.length
+	    when 0 then return nil
+	    when 1 then return ra[0]
+	    else return ra
+	end
+    end
+
+    # check to see whether current node matches an array of [key,value] pairs
+    def node_match_array?(ca)
+	ca.each { |k,v|
+	    if ( ! self.has_key?(k)) then
+		return false
+	    end
+	    if (self[k] != v) then
+		return false
+	    end
+	}
+	return true
     end
 end
 

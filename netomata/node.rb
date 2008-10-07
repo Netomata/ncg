@@ -56,6 +56,44 @@ class Netomata::Node < Dictionary
 	end
     end
 
+    def keys_r(prefix="")
+	ra = []
+	self.each { |k,v|
+	    ra << k.dup.insert(0,prefix + "!")
+	    if v.respond_to?(:keys_r) then
+		ra.concat(v.keys_r(prefix + "!" + k))
+	    end
+	}
+	ra
+    end
+
+    def each_r(prefix="", &block)
+	self.each { |k,v|
+	    yield(prefix,k,v)
+	    if v.respond_to?(:each_r) then
+		v.each_r(prefix + "!" + k, &block)
+	    end
+	}
+	self
+    end
+
+    def select_r(prefix="", &block)
+	ra = []
+	each { |k,v| 
+	    ra << [(prefix + "!" + k), v] if yield prefix,k,v
+	    if v.respond_to?(:select_r) then
+		ra.concat(v.select_r(prefix + "!" + k, &block))
+	    end
+	}
+	ra
+    end
+
+    def has_key_r(key)
+	select_r { |p,k,v|
+	    v.class == Netomata::Node && v.has_key?(key)
+	}.collect { |a| a.first }
+    end
+
     def import_file(io,basekey)
 	# FIXME add file/line info to error messages
 	parent = [basekey]

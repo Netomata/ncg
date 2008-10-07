@@ -1,7 +1,8 @@
 require 'netomata'
 require 'ruby-debug'
 
-fa = Netomata::Node.new
-fa.import_file(open("sample.neto"), "!xyzzy")
+net = Netomata::Node.new
+net.import_file(open("sample.neto"), "!net")
+# $debug = true
 debugger
-pp fa
+pp net.keys_r

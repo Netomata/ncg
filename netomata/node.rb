@@ -88,13 +88,13 @@ class Netomata::Node < Dictionary
 	ra
     end
 
-    def has_key_r(key)
+    def keys_having_key(key)
 	select_r { |p,k,v|
 	    v.class == Netomata::Node && v.has_key?(key)
 	}.collect { |a| a.first }
     end
 
-    def import_file(io,basekey)
+    def import_file(io,basekey="")
 	# FIXME add file/line info to error messages
 	parent = [basekey]
 	io.each_line { |l|

@@ -5,6 +5,7 @@ templates!devices!(+) {
     model	= OPTIONAL
     ncg_template = templates/configs/devices/routers/cisco.ncg
     ncg_target	= true	# generate a config from this point in tree
+    ######## Interfaces
     interfaces!(+) {
 	name	= REQUIRED
 	type	= host
@@ -60,5 +61,27 @@ templates!devices!(+) {
 	description = OPTIONAL
 	active	= no
 	ncg_template	= templates/configs/devices/routers/cisco/interfaces/unused.ncg
+    }
+    ######## VLANs
+    vlans!(+) {
+    	name	= REQUIRED
+	type	= admin
+	description = OPTIONAL
+	active	= no
+	ncg_template = templates/configs/devices/routers/cisco/vlans/admin.ncg
+    }
+    vlans!(+) {
+    	name	= REQUIRED
+	type	= env
+	description = OPTIONAL
+	active	= no
+	ncg_template = templates/configs/devices/routers/cisco/vlans/env.ncg
+    }
+    vlans!(+) {
+    	name	= REQUIRED
+	type	= switch
+	description = OPTIONAL
+	active	= no
+	ncg_template = templates/configs/devices/routers/cisco/vlans/switch.ncg
     }
 }

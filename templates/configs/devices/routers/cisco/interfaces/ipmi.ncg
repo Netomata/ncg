@@ -1,0 +1,16 @@
+<%
+    raise "interface key 'name' undefined" if (! interface.has_key?("name"))
+    raise "interface key 'target' undefined" if (! interface.has_key?("target"))
+    raise "interface key 'active' undefined" if (! interface.has_key?("active"))
+%> interface <%= interface["name"] %>
+ description IPMI <%= interface["target"] %>
+ switchport access vlan 48
+ switchport mode access
+ <%=
+    if interface["active"] == "yes" then
+ 	"no shutdown"
+    else
+    	"shutdown"
+    end
+ %>
+!

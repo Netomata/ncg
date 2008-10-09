@@ -1,0 +1,19 @@
+<%
+    raise "interface key 'name' undefined" if (! interface.has_key?("name"))
+    raise "interface key 'target' undefined" if (! interface.has_key?("target"))
+    raise "interface key 'active' undefined" if (! interface.has_key?("active"))
+%> interface <%= interface["name"] %>
+ description Host <%= interface["target"] %>
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ <%= 
+    if interface["active"] == "yes" then
+        "no shutdown"
+    else
+        "shutdown"
+    end
+ %>
+!

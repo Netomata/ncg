@@ -1,0 +1,711 @@
+no service pad
+service timestamps debug datetime
+service timestamps log datetime
+service password-encryption
+service compress-config
+!
+hostname switch-1
+!
+boot-start-marker
+boot system flash bootflash:cat4500-entservicesk9-mz.122-40.SG.bin
+boot-end-marker
+!
+enable secret 5 $1$1BW4$gGvqlOneOo7NyZJofhNg1.
+!
+username access password 7 021511490E4A1A2F5E4F0712
+aaa new-model
+clock timezone PST -8
+clock summer-time PDT recurring 
+ip subnet-zero
+ip domain-name mgmt.edgenuity.net
+!
+ip ssh time-out 60
+ip ssh source-interface Vlan16
+ip ssh version 2
+vtp mode transparent
+no cluster run
+!
+!
+!
+power redundancy-mode redundant
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority 24576 
+!
+!
+ip access-list extended MATCH_ANY
+  permit ip any any
+!
+vlan internal allocation policy ascending
+!
+vlan 2
+ name ISP-FW
+!
+vlan 3
+ name FW-LB
+!
+vlan 4
+ name LB-Rtr
+!
+vlan 16
+ name Management
+!
+vlan 32
+ name Bulk
+!
+vlan 48
+ name IPMI
+!
+vlan 81
+ name Production
+!
+vlan 82
+ name Pre-Prod
+!
+vlan 83
+ name Demo
+!
+vlan 84
+ name Dev
+!
+vlan 85
+ name QA
+!
+vlan 86
+ name Test
+!
+vlan 128
+ name Corporate
+!
+interface Gig1/1
+ description Host host-1
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/2
+ description Host host-2
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/3
+ description Host host-3
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/4
+ description Host host-4
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/5
+ description Host host-5
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/6
+ description Host host-6
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/7
+ description Host host-7
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/8
+ description Host host-8
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/9
+ description Host host-9
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/10
+ description Host host-10
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/11
+ description Host host-11
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/12
+ description Host host-12
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/13
+ description Host host-13
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/14
+ description Host host-14
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/15
+ description Host host-15
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/16
+ description Host host-16
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/17
+ description Host host-17
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/18
+ description Host host-18
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/19
+ description Host host-19
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/20
+ description Host host-20
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/21
+ description Host host-21
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/22
+ description Host host-22
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/23
+ description Host host-23
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ shutdown
+!
+interface Gig1/24
+ description Host host-24
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 16,32,64,81-86,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/25
+ description IPMI host-1
+ switchport access vlan 48
+ switchport mode access
+ no shutdown
+!
+interface Gig1/26
+ description IPMI host-3
+ switchport access vlan 48
+ switchport mode access
+ no shutdown
+!
+interface Gig1/27
+ description IPMI host-5
+ switchport access vlan 48
+ switchport mode access
+ no shutdown
+!
+interface Gig1/28
+ description IPMI host-7
+ switchport access vlan 48
+ switchport mode access
+ no shutdown
+!
+interface Gig1/29
+ description IPMI host-9
+ switchport access vlan 48
+ switchport mode access
+ no shutdown
+!
+interface Gig1/30
+ description IPMI host-11
+ switchport access vlan 48
+ switchport mode access
+ no shutdown
+!
+interface Gig1/31
+ description IPMI host-13
+ switchport access vlan 48
+ switchport mode access
+ shutdown
+!
+interface Gig1/32
+ description IPMI host-15
+ switchport access vlan 48
+ switchport mode access
+ shutdown
+!
+interface Gig1/33
+ description IPMI host-17
+ switchport access vlan 48
+ switchport mode access
+ shutdown
+!
+interface Gig1/34
+ description IPMI host-19
+ switchport access vlan 48
+ switchport mode access
+ shutdown
+!
+interface Gig1/35
+ description IPMI host-21
+ switchport access vlan 48
+ switchport mode access
+ shutdown
+!
+interface Gig1/36
+ description IPMI host-23
+ switchport access vlan 48
+ switchport mode access
+ shutdown
+!
+interface Gig1/37
+ description Firewall-VLAN firewall-1
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 2,3,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/38
+ description Firewall-External isp-1
+ switchport access vlan 2
+ switchport mode access
+ no shutdown
+!
+interface Gig1/39
+ description LoadBal loadbal-1
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 3,4,81-86
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/40
+ description LoadBal loadbal-2
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 3,4,81-86
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/41
+ description Management firewall-1
+ switchport access vlan 16
+ switchport mode access
+ no shutdown
+!
+interface Gig1/42
+ description Management loadbal-1
+ switchport access vlan 16
+ switchport mode access
+ no shutdown
+!
+interface Gig1/43
+ description Management console
+ switchport access vlan 16
+ switchport mode access
+ no shutdown
+!
+interface Gig1/44
+ description Management pdu-1
+ switchport access vlan 16
+ switchport mode access
+ no shutdown
+!
+interface Gig1/45
+ description Firewall-VLAN firewall-2
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport trunk allowed vlan 2,3,128
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/46
+ description Management laptop-1
+ switchport access vlan 16
+ switchport mode access
+ no shutdown
+!
+interface Gig1/47
+ description trunk to switch-2
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport mode trunk
+ no shutdown
+!
+interface Gig1/48
+ description trunk to switch-2
+ switchport access vlan 16
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 16
+ switchport mode trunk
+ no shutdown
+!
+interface Ten1/49
+ description unused
+ shutdown
+!
+interface Ten1/50
+ description unused
+ shutdown
+!
+interface Vlan1
+ description Cisco default Ethernet VLAN -- NOTHING SHOULD USE THIS
+!
+interface Vlan2
+ no shutdown
+ description ISP-to-Firewall
+! no IP on "switch"-type VLAN; acts as switch only
+ no ip address
+!
+interface Vlan3
+ no shutdown
+ description Firewall-to-LoadBal
+! no IP on "switch"-type VLAN; acts as switch only
+ no ip address
+!
+interface Vlan4
+ no shutdown
+ description LB-Rtr: LoadBal-to-Router
+ ip address 10.5.4.2 255.255.255.0
+ vrrp 1 description default router for LB-Rtr VLAN (VLAN 4)
+ vrrp 1 ip 10.5.4.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+interface Vlan16
+ no shutdown
+ description Management: Management
+ ip address 10.5.16.2 255.255.240.0
+ vrrp 1 description default router for Management VLAN (VLAN 16)
+ vrrp 1 ip 10.5.16.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+interface Vlan32
+ no shutdown
+ description Bulk: Bulk
+ ip address 10.5.32.2 255.255.240.0
+ vrrp 1 description default router for Bulk VLAN (VLAN 32)
+ vrrp 1 ip 10.5.32.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+interface Vlan48
+ no shutdown
+ description IPMI: IPMI
+ ip address 10.5.48.2 255.255.240.0
+ vrrp 1 description default router for IPMI VLAN (VLAN 48)
+ vrrp 1 ip 10.5.48.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+interface Vlan81
+ no shutdown
+ description Production
+ ip address 10.5.81.2 255.255.255.0
+ vrrp 1 description default router for Production VLAN (VLAN 81)
+ vrrp 1 ip 10.5.81.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+ip access-list extended MATCH_SUBNET_81
+  permit ip 10.5.81.0 0.0.0.255 any
+!
+! add this VLAN to the "MATCH_SUBNET_ALL_ENV" access-list, which should already
+! have other env subnets on it as well.
+ip access-list extended MATCH_SUBNET_ALL_ENV
+  permit ip 10.5.81.0 0.0.0.255 any
+!
+vlan access-map VLAN81_MAP 10
+  match ip address MATCH_SUBNET_81
+  action forward
+vlan access-map VLAN81_MAP 20
+  match ip address MATCH_SUBNET_ALL_ENV
+  action drop
+vlan access-map VLAN81_MAP 30
+  match ip address MATCH_ANY
+  action forward
+vlan filter VLAN81_MAP vlan-list 81
+interface Vlan82
+ no shutdown
+ description Pre-Prod
+ ip address 10.5.82.2 255.255.255.0
+ vrrp 1 description default router for Pre-Prod VLAN (VLAN 82)
+ vrrp 1 ip 10.5.82.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+ip access-list extended MATCH_SUBNET_82
+  permit ip 10.5.82.0 0.0.0.255 any
+!
+! add this VLAN to the "MATCH_SUBNET_ALL_ENV" access-list, which should already
+! have other env subnets on it as well.
+ip access-list extended MATCH_SUBNET_ALL_ENV
+  permit ip 10.5.82.0 0.0.0.255 any
+!
+vlan access-map VLAN82_MAP 10
+  match ip address MATCH_SUBNET_82
+  action forward
+vlan access-map VLAN82_MAP 20
+  match ip address MATCH_SUBNET_ALL_ENV
+  action drop
+vlan access-map VLAN82_MAP 30
+  match ip address MATCH_ANY
+  action forward
+vlan filter VLAN82_MAP vlan-list 82
+interface Vlan83
+ no shutdown
+ description Demo
+ ip address 10.5.83.2 255.255.255.0
+ vrrp 1 description default router for Demo VLAN (VLAN 83)
+ vrrp 1 ip 10.5.83.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+ip access-list extended MATCH_SUBNET_83
+  permit ip 10.5.83.0 0.0.0.255 any
+!
+! add this VLAN to the "MATCH_SUBNET_ALL_ENV" access-list, which should already
+! have other env subnets on it as well.
+ip access-list extended MATCH_SUBNET_ALL_ENV
+  permit ip 10.5.83.0 0.0.0.255 any
+!
+vlan access-map VLAN83_MAP 10
+  match ip address MATCH_SUBNET_83
+  action forward
+vlan access-map VLAN83_MAP 20
+  match ip address MATCH_SUBNET_ALL_ENV
+  action drop
+vlan access-map VLAN83_MAP 30
+  match ip address MATCH_ANY
+  action forward
+vlan filter VLAN83_MAP vlan-list 83
+interface Vlan84
+ no shutdown
+ description Dev
+ ip address 10.5.84.2 255.255.255.0
+ vrrp 1 description default router for Dev VLAN (VLAN 84)
+ vrrp 1 ip 10.5.84.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+ip access-list extended MATCH_SUBNET_84
+  permit ip 10.5.84.0 0.0.0.255 any
+!
+! add this VLAN to the "MATCH_SUBNET_ALL_ENV" access-list, which should already
+! have other env subnets on it as well.
+ip access-list extended MATCH_SUBNET_ALL_ENV
+  permit ip 10.5.84.0 0.0.0.255 any
+!
+vlan access-map VLAN84_MAP 10
+  match ip address MATCH_SUBNET_84
+  action forward
+vlan access-map VLAN84_MAP 20
+  match ip address MATCH_SUBNET_ALL_ENV
+  action drop
+vlan access-map VLAN84_MAP 30
+  match ip address MATCH_ANY
+  action forward
+vlan filter VLAN84_MAP vlan-list 84
+interface Vlan85
+ no shutdown
+ description QA
+ ip address 10.5.85.2 255.255.255.0
+ vrrp 1 description default router for QA VLAN (VLAN 85)
+ vrrp 1 ip 10.5.85.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+ip access-list extended MATCH_SUBNET_85
+  permit ip 10.5.85.0 0.0.0.255 any
+!
+! add this VLAN to the "MATCH_SUBNET_ALL_ENV" access-list, which should already
+! have other env subnets on it as well.
+ip access-list extended MATCH_SUBNET_ALL_ENV
+  permit ip 10.5.85.0 0.0.0.255 any
+!
+vlan access-map VLAN85_MAP 10
+  match ip address MATCH_SUBNET_85
+  action forward
+vlan access-map VLAN85_MAP 20
+  match ip address MATCH_SUBNET_ALL_ENV
+  action drop
+vlan access-map VLAN85_MAP 30
+  match ip address MATCH_ANY
+  action forward
+vlan filter VLAN85_MAP vlan-list 85
+interface Vlan86
+ no shutdown
+ description Test
+ ip address 10.5.86.2 255.255.255.0
+ vrrp 1 description default router for Test VLAN (VLAN 86)
+ vrrp 1 ip 10.5.86.1
+ vrrp 1 priority 150
+ vrrp 1 authentication text plugh
+!
+ip access-list extended MATCH_SUBNET_86
+  permit ip 10.5.86.0 0.0.0.255 any
+!
+! add this VLAN to the "MATCH_SUBNET_ALL_ENV" access-list, which should already
+! have other env subnets on it as well.
+ip access-list extended MATCH_SUBNET_ALL_ENV
+  permit ip 10.5.86.0 0.0.0.255 any
+!
+vlan access-map VLAN86_MAP 10
+  match ip address MATCH_SUBNET_86
+  action forward
+vlan access-map VLAN86_MAP 20
+  match ip address MATCH_SUBNET_ALL_ENV
+  action drop
+vlan access-map VLAN86_MAP 30
+  match ip address MATCH_ANY
+  action forward
+vlan filter VLAN86_MAP vlan-list 86
+interface Vlan128
+ no shutdown
+ description Corporate
+! no IP on "switch"-type VLAN; acts as switch only
+ no ip address
+!
+ip default-gateway 10.5.4.9
+ip route 0.0.0.0 0.0.0.0 10.5.4.9
+! route for Brent's OpenVPN server on admin host
+ip route 172.16.2.0 255.255.255.0 10.5.16.25
+no ip http server
+no ip http secure-server
+!
+!
+!
+logging facility local5
+logging 10.5.16.26
+!
+!
+snmp-server community public RO
+snmp-server host 10.5.16.27 public 
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ password 7 0518131D24005B070B041919
+ transport input ssh
+!
+end

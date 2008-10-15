@@ -243,7 +243,7 @@ class Netomata::Node < Dictionary
 	    when "+"
 	    	r = self.keys.max
 		if (r.nil?) then
-		    return "0000001"
+		    return "@000000001"
 		else
 		    return r.succ
 		end

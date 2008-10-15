@@ -1,11 +1,11 @@
-<% raise "target name undefined" if (! target.has_key?("name")) %>
+<% raise "target name undefined" if (! @target.has_key?("name")) %>
 no service pad
 service timestamps debug datetime
 service timestamps log datetime
 service password-encryption
 service compress-config
 !
-hostname <%= target["name"] %>
+hostname <%= @target["name"] %>
 !
 boot-start-marker
 boot system flash bootflash:cat4500-entservicesk9-mz.122-40.SG.bin
@@ -35,11 +35,11 @@ power redundancy-mode redundant
 spanning-tree mode pvst
 spanning-tree extend system-id
 spanning-tree vlan 1-4094 priority <%=
-    raise "target role undefined" if (! target.has_key?("role"))
-    case target["role"]
+    raise "target role undefined" if (! @target.has_key?("role"))
+    case @target["role"]
         when "primary" then 24576
 	when "secondary" then 28672
-	else raise("Unknown role \"#{target["role"]}\"")
+	else raise("Unknown role \"#{@target["role"]}\"")
     end %>
 !
 !
@@ -48,32 +48,37 @@ ip access-list extended MATCH_ANY
 !
 vlan internal allocation policy ascending
 !
-<% net["!vlans"].each { |key,vlan| %>
+<% @net["!vlans"].each { |key,vlan| %>
 vlan <%= vlan["id"] %>
  name <%= vlan["name"] %>
 !
 <% } %>
-<%= interface_results = ""
-target["interfaces"].each { |key,interface|
-    raise "interface name undefined" if (! interface.has_key?("name"))
-    raise "interface template 'ncg_template' undefined for device '#{target["name"]}', interface '#{interface["name"]}'" if (! interface.has_key?("ncg_template"))
-    erb_result = ""
-    interface_results << ERB.new(File.new(interface["ncg_template"]).read, 0, "<>","erb_result").result(binding)
+<%=
+interface_results = ""
+@target["interfaces"].each { |key,interface|
+    raise "interface name undefined for key '#{key}'" if (! interface.has_key?("name"))
+    raise "interface template 'ncg_template' undefined for device '#{@target["name"]}', interface '#{interface["name"]}'" if (! interface.has_key?("ncg_template"))
+    r = Netomata::Template::Result.new(interface["ncg_template"], 
+    	{"@interface" => interface})
+    interface_results << r.result
 }
 interface_results %>interface Vlan1
  description Cisco default Ethernet VLAN -- NOTHING SHOULD USE THIS
 !
-<%= vlan_results = ""
-net["vlans"].each { |key,vlan|
-    raise "vlan name undefined" if (! vlan.has_key?("name"))
-    # raise "vlan template 'ncg_template' undefined for device '#{target["name"]}', vlan '#{vlan["name"]}'" if (! vlan.has_key?("ncg_template"))
-    vlt = net["!templates!devices!(make=cisco,type=router)!vlans"]
-    vlt_template = vlt["(type=#{vlan["type"]})!ncg_template"]
-    # debugger
-    erb_result = ""
-    vlan_results << ERB.new(File.new(vlt_template).read, 0, "<>","erb_result").result(binding)
+<%=
+vlan_results = ""
+vlt_base = @net["!templates!devices!(make=cisco,type=router)!vlans"]
+raise "VLAN template base not found" if (vlt_base.nil?)
+@net["vlans"].each { |key,vlan|
+    raise "vlan name undefined for key '#{key}'" if (! vlan.has_key?("name"))
+    raise "vlan type undefined for vlan '#{vlan["name"]}'" if (! vlan.has_key?("type"))
+    template_name = vlt_base["(type=#{vlan["type"]})!ncg_template"]
+    raise "vlan template undefined for vlan '#{vlan["name"]}', type '#{vlan["type"]}'" if (template_name.nil?)
+    r = Netomata::Template::Result.new(template_name,
+    	{"@vlan" => vlan, "@target" => @target})
+    vlan_results << r.result
 }
-vlan_results %> ip default-gateway 10.5.4.9
+vlan_results %>ip default-gateway 10.5.4.9
 ip route 0.0.0.0 0.0.0.0 10.5.4.9
 ! route for Brent's OpenVPN server on admin host
 ip route 172.16.2.0 255.255.255.0 10.5.16.25

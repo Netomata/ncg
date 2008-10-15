@@ -33,7 +33,7 @@ power redundancy-mode redundant
 !
 spanning-tree mode pvst
 spanning-tree extend system-id
-spanning-tree vlan 1-4094 priority 24576 
+spanning-tree vlan 1-4094 priority 24576
 !
 !
 ip access-list extended MATCH_ANY

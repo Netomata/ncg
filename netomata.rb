@@ -10,3 +10,4 @@ class Netomata
 end
 
 require 'netomata/node'
+require 'netomata/template'

@@ -21,11 +21,16 @@ class Netomata::Node < Dictionary
 	# strip/skip leading "!", and split into left and right keys
 	# TODO: figure out what to _really_ do about keys beginning with "!"
 	l,r = k.gsub(/^!+/,"").split("!",2)
+	skl = selector_to_key(l)
+	if skl.nil? then
+	    # if slector_to_key(l) is nil, then we return nil
+	    return nil
+	end
 	if r.nil? then
 	    # if r is nil, then there was no "!" in the key
-	    return super(selector_to_key(l))
+	    return super(skl)
 	else
-	    return super(selector_to_key(l))[r]
+	    return super(skl)[r]
 	end
     end
 

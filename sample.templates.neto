@@ -84,4 +84,10 @@ templates!devices!(+) {
 	active	= no
 	ncg_template = templates/configs/devices/routers/cisco/vlans/switch.ncg
     }
+    ######## Idioms
+    idioms {
+	shutdown {
+	    ncg_template = templates/configs/devices/routers/cisco/idioms/shutdown.ncg
+	}
+    }
 }

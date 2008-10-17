@@ -17,8 +17,8 @@ require 'yaml'
 
 class NodeTest < Test::Unit::TestCase
     def setup
-	@node = Netomata::Node.new
-	@node["!n1"] = Netomata::Node.new
+	@node = Netomata::Node.new(nil)
+	@node["!n1"] = Netomata::Node.new(@node)
 	@node["!n1!k_n1a1"] = "v_n1a1"
 	@node["!n1!k_n1a2"] = "v_n1a2"
 	@node["!n1!k_n1a3"] = "v_n1a3"
@@ -76,6 +76,10 @@ class NodeTest < Test::Unit::TestCase
     def test_append
 	@node["!n1!(+)"] = "v_n1a4"
 	assert_equal "v_n1a4", @node["!n1!(>)"]
+    end
+
+    def test_parenthood
+	assert_equal true, parent_of_all_children?(@node)
     end
 
     def test_import_table
@@ -673,11 +677,31 @@ EOF
            "target"=>"unused",
            "active"=>"no"}}}}}}
 EOF
-	n = Netomata::Node.new
+	n = Netomata::Node.new(nil)
 	n["!xyzzy!devices!(+)!hostname"] = "switch-1"
 	n["!xyzzy!devices!(+)!hostname"] = "switch-2"
 	n.import_table(input, "!xyzzy")
 	output = PP::pp(n, StringIO.new)
 	assert_equal expected, output.string
+	assert_equal true, parent_of_all_children?(n)
     end
+
+    def parent_of_all_children?(node)
+	if (node.class == Netomata::Node) then
+	    node.each { |k,v|
+		if (node[k].class != Netomata::Node) then
+		    return true
+		elsif (node[k].parent != node)
+		    return false
+		end
+		if (! parent_of_all_children?(node[k])) then
+		    return false
+		end
+	    }
+	    return true;
+	else 
+	    return true;
+	end
+    end
+
 end

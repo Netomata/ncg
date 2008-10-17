@@ -1,0 +1,7 @@
+<%=
+    if @active == "yes" then
+        "no shutdown"
+    else
+        "shutdown"
+    end
+%>

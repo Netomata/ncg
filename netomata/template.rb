@@ -26,6 +26,15 @@ class Netomata::Template
 	@template.result(b)
     end
 
+    # class methods
+    def self.apply_by_filename(idiom_name, vars=nil)
+	Netomata::Template::Result.new(idiom_name, vars).result.chomp
+    end
+
+    def self.apply_by_key(key, vars=nil)
+	filename = key["ncg_template"]
+	Netomata::Template.apply_by_filename(filename, vars)
+    end
 end
 
 class Netomata::Template::Context

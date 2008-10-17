@@ -7,10 +7,8 @@
  switchport access vlan 2
  switchport mode access
  <%=
-    if @interface["active"] == "yes" then
- 	"no shutdown"
-    else
-    	"shutdown"
-    end
+    Netomata::Template.idiom(
+	"templates/configs/devices/routers/cisco/idioms/shutdown.ncg",
+	{"@active" => @interface["active"]})
  %>
 !

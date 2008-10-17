@@ -12,7 +12,10 @@ end
 
 class Netomata::Node < Dictionary
 
-    def initialize
+    attr_reader :parent
+
+    def initialize(parent)
+	@parent = parent
 	super()
     end
 
@@ -52,7 +55,7 @@ class Netomata::Node < Dictionary
 	    end
 	    if self[nk].nil? then
 		# path references a node that doesn't exist yet, so create it
-		self[nk] = Netomata::Node.new
+		self[nk] = Netomata::Node.new(self)
 	    end
 	    if self[nk].class != Netomata::Node then
 		raise ArgumentError, "key \"#{l}\" already defined, but value is not of type Netomata::Node"
@@ -118,7 +121,7 @@ class Netomata::Node < Dictionary
 		s = $3
 		if (k.include?("(+)")) then
 		    # if key ends in "(+)", then make empty node
-		    self[parent.last + "!" + k] = Netomata::Node.new
+		    self[parent.last + "!" + k] = Netomata::Node.new(self[parent.last])
 		    # and change key to match newly-created node
 		    k.sub!("(+)","(>)")
 		end

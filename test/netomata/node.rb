@@ -17,8 +17,8 @@ require 'yaml'
 
 class NodeTest < Test::Unit::TestCase
     def setup
-	@node = Netomata::Node.new(nil)
-	@node["!n1"] = Netomata::Node.new(@node)
+	$debug = false
+	@node = Netomata::Node.new
 	@node["!n1!k_n1a1"] = "v_n1a1"
 	@node["!n1!k_n1a2"] = "v_n1a2"
 	@node["!n1!k_n1a3"] = "v_n1a3"
@@ -29,6 +29,16 @@ class NodeTest < Test::Unit::TestCase
 	@node["!n2!k_n2a3"] = "v_n2a3"
 	@node["!n2!k_common_k"] = "v_common_n2"
 	@node["!n2!k_common_kv"] = "v_common_kv"
+	@node["!n1!n11!k_n11"] = "v_n11"
+	@node["!n1!n12!k_n12"] = "v_n12"
+	@node["!n1!n13!k_n13"] = "v_n13"
+	@node["!n1!n11!n111!k_n111"] = "v_n111"
+	@node["!n1!n11!n112!k_n112"] = "v_n112"
+	@node["!n1!n11!n113!k_n113"] = "v_n113"
+    end
+
+    def test_get_root
+	assert_same @node, @node["!"]
     end
 
     def test_get
@@ -41,9 +51,23 @@ class NodeTest < Test::Unit::TestCase
 	assert_equal "new_v_n1a1", @node["!n1!k_n1a1"]
     end
 
+    def test_reset_from_middle
+	assert_equal "v_n1a1", @node["!n1!k_n1a1"]
+	n11 = @node["!n1!n11"]
+	n11["!n1!k_n1a1"] = "new_v_n1a1"
+	assert_equal "new_v_n1a1", @node["!n1!k_n1a1"]
+    end
+
     def test_set
 	assert_equal nil, @node["!n1!k_n1a4"]
 	@node["!n1!k_n1a4"] = "new_v_n1a4"
+	assert_equal "new_v_n1a4", @node["!n1!k_n1a4"]
+    end
+
+    def test_set_from_middle
+	assert_equal nil, @node["!n1!k_n1a4"]
+	n11 = @node["!n1!n11"]
+	n11["!n1!k_n1a4"] = "new_v_n1a4"
 	assert_equal "new_v_n1a4", @node["!n1!k_n1a4"]
     end
 
@@ -56,13 +80,20 @@ class NodeTest < Test::Unit::TestCase
     end
 
     def test_selector_max
-	assert_equal "v_n1a3", @node["!n1!(>)"]
+	assert_same @node["!n1!n13"], @node["!n1!(>)"]
+    end
+
+    def test_selector_dotdot
+	assert_same @node["!n1"], @node["!n1!n11!(..)"]
+	assert_same @node["!n1!n11"], @node["!n1!n11!n111!(..)"]
     end
 
     def test_selector_to_key
 	assert_equal "n1", @node.selector_to_key("(<)")
 	assert_equal "n2", @node.selector_to_key("(>)")
 	assert_equal "n3", @node.selector_to_key("(+)")
+	assert_equal "!n1", @node["!n1!n11"].selector_to_key("(..)")
+	assert_equal "!n1!n11", @node["!n1!n11!n111"].selector_to_key("(..)")
     end
 
     def test_selector_criteria
@@ -78,8 +109,30 @@ class NodeTest < Test::Unit::TestCase
 	assert_equal "v_n1a4", @node["!n1!(>)"]
     end
 
+    def test_parent_validation_method1
+	# intentionally create a child node without a parent, to test
+	# that the parent_of_all_children? method is working
+	@node["!n3"] = Netomata::Node.new(nil)
+	assert_equal false, parent_of_all_children?(@node)
+    end
+
+    def test_parent_validation_method2
+	# intentionally create a child node without a parent, to test
+	# that the parent_of_all_children? method is working
+	@node["!n3"] = Netomata::Node.new(@node["!n1"])
+	assert_equal false, parent_of_all_children?(@node)
+    end
+
     def test_parenthood
 	assert_equal true, parent_of_all_children?(@node)
+    end
+
+    def test_key
+	assert_equal "!", @node.key
+	assert_equal "!n1", @node["!n1"].key
+	assert_equal "!n1", @node["n1"].key
+	assert_equal "!n2", @node["!n2"].key
+	assert_equal "!n2", @node["n2"].key
     end
 
     def test_import_table
@@ -100,15 +153,15 @@ class NodeTest < Test::Unit::TestCase
 #
 # Note that next non-comment begins with ':', and defines the field names
 #
-@ name = !devices!(hostname=switch-1)!interfaces!(+)!name
-@ type = !devices!(hostname=switch-1)!interfaces!(name=%name)!type
-@ target1 = !devices!(hostname=switch-1)!interfaces!(name=%name)!target
-@ active1 = !devices!(hostname=switch-1)!interfaces!(name=%name)!active
+@ name = devices!(hostname=switch-1)!interfaces!(+)!name
+@ type = devices!(hostname=switch-1)!interfaces!(name=%name)!type
+@ target1 = devices!(hostname=switch-1)!interfaces!(name=%name)!target
+@ active1 = devices!(hostname=switch-1)!interfaces!(name=%name)!active
 #
-@ name = !devices!(hostname=switch-2)!interfaces!(+)!name
-@ type = !devices!(hostname=switch-2)!interfaces!(name=%name)!type
-@ target2 = !devices!(hostname=switch-2)!interfaces!(name=%name)!target
-@ active2 = !devices!(hostname=switch-2)!interfaces!(name=%name)!active
+@ name = devices!(hostname=switch-2)!interfaces!(+)!name
+@ type = devices!(hostname=switch-2)!interfaces!(name=%name)!type
+@ target2 = devices!(hostname=switch-2)!interfaces!(name=%name)!target
+@ active2 = devices!(hostname=switch-2)!interfaces!(name=%name)!active
 #
 % name	type	target1		active1	target2		active2
 # ----	----	------		-------	------		-------
@@ -681,6 +734,7 @@ EOF
 	n["!xyzzy!devices!(+)!hostname"] = "switch-1"
 	n["!xyzzy!devices!(+)!hostname"] = "switch-2"
 	n.import_table(input, "!xyzzy")
+	# debugger
 	output = PP::pp(n, StringIO.new)
 	assert_equal expected, output.string
 	assert_equal true, parent_of_all_children?(n)

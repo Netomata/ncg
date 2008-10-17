@@ -13,54 +13,103 @@ end
 class Netomata::Node < Dictionary
 
     attr_reader :parent
+    attr_reader :root
+    @key = nil
 
-    def initialize(parent)
+    def initialize(parent=nil)
 	@parent = parent
+	if (parent.nil?) then
+	    # if we have no parent, then we are the root of the tree
+	    @root = self
+	else
+	    # otherwise, we inherit our parent's root
+	    @root = parent.root
+	end
 	super()
     end
 
     def [](k)
-	puts "[](\"#{k}\")" if $debug
+	# puts "[](\"#{k}\")" if $debug
+	target = self	# if there's a leading "!", target changes to root
+	if k.nil? then
+	    return nil
+	end
+	if (k[0..0] == "!") then
+	    # leading "!", so target changes from self to root
+	    target = @root
+	end
 	# strip/skip leading "!", and split into left and right keys
-	# TODO: figure out what to _really_ do about keys beginning with "!"
 	l,r = k.gsub(/^!+/,"").split("!",2)
-	skl = selector_to_key(l)
+	if (l.nil?) then
+	    # key was simply "!", so return the root node
+	    return @root
+	end
+	skl = target.selector_to_key(l)
 	if skl.nil? then
-	    # if slector_to_key(l) is nil, then we return nil
+	    # if selector_to_key(l) is nil, then we return nil
 	    return nil
 	end
 	if r.nil? then
 	    # if r is nil, then there was no "!" in the key
-	    return super(skl)
+	    if (target.equal?(self) && (skl[0..0] != "!")) then
+		# target has not been redirected, and skl isn't a root key
+		return super(skl)
+	    else
+		return target[skl]
+	    end
 	else
-	    return super(skl)[r]
+	    if (target.equal?(self) && (skl[0..0] != "!")) then
+		# target has not been redirected, and skl isn't a root key
+		return super(skl)[r]
+	    else
+		return target[skl][r]
+	    end
 	end
     end
 
     def []=(k,v)
 	puts "[]=(\"#{k}\", \"#{v}\")" if $debug
+	target = self	# if there's a leading "!", target will change to root
+	if k.nil? then
+	    return nil
+	end
+	if (k[0..0] == "!") then
+	    # leading "!", so target changes from self to root
+	    target = @root
+	end
 	# strip/skip leading "!", and split into left and right keys
-	# TODO: figure out what to _really_ do about keys beginning with "!"
 	l,r = k.gsub(/^!+/,"").split("!",2)
+	if l.nil? then
+	    # key was simply "!", so assign to root node
+	    return root = v
+	end
+	skl = target.selector_to_key(l)
 	if r.nil? then
 	    # if r is nil, then there was no "!" in the key
-	    return super(selector_to_key(l),v)
+	    if (target.equal?(self) && (skl[0..0] != "!")) then
+		return super(skl,v)
+	    else
+		return target[skl] = v
+	    end
 	else
-	    nk = selector_to_key(l)
-	    if nk.nil? then
+	    if skl.nil? then
 		# selector_to_key didn't return anything, so must have
 		# been a criteria selector which didn't match anything;
 		# nothing we can do about it but raise an error
 		raise ArgumentError, "criteria #{l} doesn't match any subnodes"
 	    end
-	    if self[nk].nil? then
+	    if target[skl].nil? then
 		# path references a node that doesn't exist yet, so create it
-		self[nk] = Netomata::Node.new(self)
+		target[skl] = Netomata::Node.new(target)
 	    end
-	    if self[nk].class != Netomata::Node then
+	    if target[skl].class != Netomata::Node then
 		raise ArgumentError, "key \"#{l}\" already defined, but value is not of type Netomata::Node"
 	    end
-	    return self[nk][r] = v
+	    if (target.equal?(self) && (skl[0..0] != "!")) then
+		return self[skl][r] = v
+	    else
+		return target[skl][r] = v
+	    end
 	end
     end
 
@@ -255,6 +304,8 @@ class Netomata::Node < Dictionary
 		else
 		    return r.succ
 		end
+	    when ".."
+		return self.parent.key
 	    when /.*=.*/
 		r = selector_criteria_to_keys(s)
 		if (r.class == Array) then
@@ -266,6 +317,30 @@ class Netomata::Node < Dictionary
 		raise ArgumentError, "Unknown selector \"#{s}\""
 	    end
 	end
+    end
+
+    # what is my own key?
+    def key
+	if (@key.nil?) then
+	    # my key hasn't been cached yet, so figure it out
+	    if self.parent.nil? then
+		return @key = "!"
+	    else
+		self.parent.keys.each { |k,v|
+		    if self.parent[k] == self then
+			pk = self.parent.key
+			if (pk[-1..-1] == "!") then
+			    # parent key already ends in "!", so just add child
+			    return @key = pk + k
+			else
+			    return @key = pk + "!" + k
+			end
+		    end
+		}
+		raise "Self not found among parent's children!"
+	    end
+	end
+	@key
     end
 
     ###################################################################
@@ -313,6 +388,7 @@ class Netomata::Node < Dictionary
 	}
 	return true
     end
+
 end
 
 # fa = Netomata::Node.new

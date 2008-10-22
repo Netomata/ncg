@@ -8,17 +8,135 @@ lib = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
 if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end
 
 
-require File.join(File.dirname(__FILE__), '..', '..', 'netomata')
-require File.join(File.dirname(__FILE__), '..', '..', 'netomata', 'node')
+require 'netomata'
+
 require 'test/unit'
 require 'ruby-debug'
 require 'stringio'
 require 'yaml'
 
-class NodeTest < Test::Unit::TestCase
+class NodeTest_1 < Test::Unit::TestCase
+    # First set of tests for Netomata::Node.
+    # This set tests fundamental functionality, _without_ assuming that []
+    # and []= handle complex keys (anything with a "!" in it) properly. 
+    # If this set of tests fails, none of the other tests can even be set
+    # up properly
+    def setup
+	$debug = false
+	@n = Netomata::Node.new
+	@n1 = @n.dictionary_store("n1", Netomata::Node.new(@n))
+	@n2 = @n.dictionary_store("n2", Netomata::Node.new(@n))
+
+	@n11 = @n1.dictionary_store("n11", Netomata::Node.new(@n1))
+	@n12 = @n1.dictionary_store("n12", Netomata::Node.new(@n1))
+	@n21 = @n2.dictionary_store("n21", Netomata::Node.new(@n2))
+	@n22 = @n2.dictionary_store("n22", Netomata::Node.new(@n2))
+
+	@n111 = @n11.dictionary_store("n111", Netomata::Node.new(@n11))
+	@n112 = @n11.dictionary_store("n112", Netomata::Node.new(@n11))
+	@n121 = @n12.dictionary_store("n121", Netomata::Node.new(@n12))
+	@n122 = @n12.dictionary_store("n122", Netomata::Node.new(@n12))
+	@n211 = @n21.dictionary_store("n211", Netomata::Node.new(@n21))
+	@n212 = @n21.dictionary_store("n212", Netomata::Node.new(@n21))
+	@n221 = @n22.dictionary_store("n221", Netomata::Node.new(@n22))
+	@n222 = @n22.dictionary_store("n222", Netomata::Node.new(@n22))
+
+	@k1111 = @n111.dictionary_store("k1111", "v1111")
+	@k1112 = @n111.dictionary_store("k1112", "v1112")
+	@k1121 = @n112.dictionary_store("k1121", "v1121")
+	@k1122 = @n112.dictionary_store("k1122", "v1122")
+	@k1211 = @n121.dictionary_store("k1211", "v1211")
+	@k1212 = @n121.dictionary_store("k1212", "v1212")
+	@k1221 = @n122.dictionary_store("k1221", "v1221")
+	@k1222 = @n122.dictionary_store("k1222", "v1222")
+	@k2111 = @n211.dictionary_store("k2111", "v2111")
+	@k2112 = @n211.dictionary_store("k2112", "v2112")
+	@k2121 = @n212.dictionary_store("k2121", "v2121")
+	@k2122 = @n212.dictionary_store("k2122", "v2122")
+	@k2211 = @n221.dictionary_store("k2211", "v2211")
+	@k2212 = @n221.dictionary_store("k2212", "v2212")
+	@k2221 = @n222.dictionary_store("k2221", "v2221")
+	@k2222 = @n222.dictionary_store("k2222", "v2222")
+    end
+
+    def test_buildkey
+	assert_equal "!", @n.buildkey("!")
+	assert_equal "!a", @n.buildkey("!","a")
+	assert_equal "!a!b", @n.buildkey("!","a","b")
+	assert_equal "!a!b!c", @n.buildkey("!","a","b","c")
+	assert_equal "!a", @n.buildkey("!a")
+	assert_equal "!a!b", @n.buildkey("!a","b")
+	assert_equal "!a!b!c", @n.buildkey("!a","b","c")
+	assert_equal "a", @n.buildkey("a")
+	assert_equal "a!b", @n.buildkey("a","b")
+	assert_equal "a!b!c", @n.buildkey("a","b","c")
+	assert_equal "!a!b!c!d", @n.buildkey("!a!b","c","d")
+	assert_equal "a!b!c!d", @n.buildkey("a!b","c","d")
+    end
+
+    def test_dictionary_tuple
+
+	assert_equal [@n, "n1"], @n.dictionary_tuple("n1")
+	assert_equal [@n, "n1"], @n.dictionary_tuple("!n1")
+
+	$debug = true
+	assert_equal [@n1, "n12"], @n.dictionary_tuple("n1!n12")
+	assert_equal [@n1, "n12"], @n.dictionary_tuple("!n1!n12")
+
+	assert_equal [@n12, "n121"], @n.dictionary_tuple("n1!n12!n121")
+	assert_equal [@n12, "n121"], @n.dictionary_tuple("!n1!n12!n121")
+
+	assert_equal [@n121, "k1212"], @n.dictionary_tuple("n1!n12!n121!k1212")
+	assert_equal [@n121, "k1212"], @n.dictionary_tuple("!n1!n12!n121!k1212")
+
+	# n0 doesn't exist, but its parent does, so should return [parent, "n0"]
+	assert_equal [@n, "n0"], @n.dictionary_tuple("n0")
+	assert_equal [@n, "n0"], @n.dictionary_tuple("!n0")
+
+	# n0 doesn't exist, and we didn't pass create=true, so should return nil
+	assert_equal nil, @n.dictionary_tuple("n0!n1")
+	assert_equal nil, @n.dictionary_tuple("!n0!n1")
+
+	# n0 doesn't exist, but we pass create=true, so should return tuple.
+	# Unfortunately, we don't really have a way to check the validity
+	# of the tuple returned, because @n["n0"] gets created during the
+	# dictionary_tuple invocation.  We can check that it exists after,
+	# though
+	assert_not_nil @n.dictionary_tuple("n0!n1",true)
+        assert_not_nil @n["n0"]	# check that it exists
+	assert_not_nil @n.dictionary_tuple("!n9!n1",true)
+        assert_not_nil @n["n9"]	# check that it exists
+    end
+
+    def test_node_fetch
+	assert_equal "v1122", @n.node_fetch("n1!n11!n112!k1122")
+	assert_equal "v1122", @n.node_fetch("!n1!n11!n112!k1122")
+	assert_equal "missing leaf",
+	    @n.node_fetch("n1!n11!n112!k1124", "missing leaf")
+	assert_equal "missing leaf",
+	    @n.node_fetch("!n1!n11!n112!k1124", "missing leaf")
+	assert_equal "missing node",
+	    @n.node_fetch("n1!n11!n114!k1141", "missing node")
+	assert_equal "missing node",
+	    @n.node_fetch("!n1!n11!n114!k1141", "missing node")
+	assert_equal "missing leaf block",
+	    @n.node_fetch("n1!n11!n112!k1124") { "missing leaf block" }
+	assert_equal "missing leaf block",
+	    @n.node_fetch("!n1!n11!n112!k1124") { "missing leaf block" }
+	assert_equal "missing node block",
+	    @n.node_fetch("n1!n11!n114!k1141") { "missing node block" }
+	assert_equal "missing node block",
+	    @n.node_fetch("!n1!n11!n114!k1141") { "missing node block" }
+	assert_equal nil, @n.node_fetch("n1!n11!n112!k1124")	# missing leaf
+	assert_equal nil, @n.node_fetch("n1!n11!n114!k1141")	#  missing node
+    end
+end
+
+class NodeTest_2 < Test::Unit::TestCase
     def setup
 	$debug = false
 	@node = Netomata::Node.new
+	# debugger
 	@node["!n1!k_n1a1"] = "v_n1a1"
 	@node["!n1!k_n1a2"] = "v_n1a2"
 	@node["!n1!k_n1a3"] = "v_n1a3"
@@ -32,9 +150,47 @@ class NodeTest < Test::Unit::TestCase
 	@node["!n1!n11!k_n11"] = "v_n11"
 	@node["!n1!n12!k_n12"] = "v_n12"
 	@node["!n1!n13!k_n13"] = "v_n13"
-	@node["!n1!n11!n111!k_n111"] = "v_n111"
-	@node["!n1!n11!n112!k_n112"] = "v_n112"
-	@node["!n1!n11!n113!k_n113"] = "v_n113"
+	@node["!n1!n11!n111!k1111"] = "v1111"
+	@node["!n1!n11!n111!k1112"] = "v1112"
+	@node["!n1!n11!n111!k1113"] = "v1113"
+	@node["!n1!n11!n112!k1121"] = "v1121"
+	@node["!n1!n11!n112!k1122"] = "v1122"
+	@node["!n1!n11!n112!k1123"] = "v1123"
+	@node["!n1!n11!n113!k1131"] = "v1131"
+	@node["!n1!n11!n113!k1132"] = "v1132"
+	@node["!n1!n11!n113!k1133"] = "v1133"
+    end
+
+    def test_fetch
+	assert_raise RuntimeError do
+	    @node.fetch("n1!n11!n114!k1141")	#  missing node
+	end
+    end
+
+    def test_node_fetch
+	assert_equal "v1122", @node.node_fetch("n1!n11!n112!k1122")
+	assert_equal "v1122", @node.node_fetch("!n1!n11!n112!k1122")
+	assert_equal "missing leaf",
+	    @node.node_fetch("n1!n11!n112!k1124", "missing leaf")
+	assert_equal "missing leaf",
+	    @node.node_fetch("!n1!n11!n112!k1124", "missing leaf")
+	assert_equal "missing node",
+	    @node.node_fetch("n1!n11!n114!k1141", "missing node")
+	assert_equal "missing node",
+	    @node.node_fetch("!n1!n11!n114!k1141", "missing node")
+	assert_equal "missing leaf block",
+	    @node.node_fetch("n1!n11!n112!k1124") { "missing leaf block" }
+	assert_equal "missing leaf block",
+	    @node.node_fetch("!n1!n11!n112!k1124") { "missing leaf block" }
+	assert_equal "missing node block",
+	    @node.node_fetch("n1!n11!n114!k1141") { "missing node block" }
+	assert_equal "missing node block",
+	    @node.node_fetch("!n1!n11!n114!k1141") { "missing node block" }
+	# assert_raise IndexError do
+	#     @node.node_fetch("n1!n11!n112!k1124")	# missing leaf
+	# end
+	assert_equal nil,  @node.node_fetch("n1!n11!n112!k1124") # missing leaf
+	assert_equal nil, @node.node_fetch("n1!n11!n114!k1141")	#  missing node
     end
 
     def test_get_root
@@ -88,6 +244,11 @@ class NodeTest < Test::Unit::TestCase
 	assert_same @node["!n1!n11"], @node["!n1!n11!n111!(..)"]
     end
 
+    def test_selector_dotdotdot
+	assert_same @node["!n2"], @node["!n1!n11!(...)!n2"]
+	assert_same @node["!n1!n13"], @node["!n1!n11!n111!(...)!n13"]
+    end
+
     def test_selector_to_key
 	assert_equal "n1", @node.selector_to_key("(<)")
 	assert_equal "n2", @node.selector_to_key("(>)")
@@ -109,22 +270,12 @@ class NodeTest < Test::Unit::TestCase
 	assert_equal "v_n1a4", @node["!n1!(>)"]
     end
 
-    def test_parent_validation_method1
-	# intentionally create a child node without a parent, to test
-	# that the parent_of_all_children? method is working
-	@node["!n3"] = Netomata::Node.new(nil)
-	assert_equal false, parent_of_all_children?(@node)
-    end
-
-    def test_parent_validation_method2
-	# intentionally create a child node without a parent, to test
-	# that the parent_of_all_children? method is working
+    def test_valid
+	assert_equal true, @node.valid?
+	# intentionally create a child node with an incorrect parent,
+	# to test that the valid? method is working
 	@node["!n3"] = Netomata::Node.new(@node["!n1"])
-	assert_equal false, parent_of_all_children?(@node)
-    end
-
-    def test_parenthood
-	assert_equal true, parent_of_all_children?(@node)
+	assert_equal false, @node.valid?
     end
 
     def test_key
@@ -133,6 +284,17 @@ class NodeTest < Test::Unit::TestCase
 	assert_equal "!n1", @node["n1"].key
 	assert_equal "!n2", @node["!n2"].key
 	assert_equal "!n2", @node["n2"].key
+    end
+
+    def test_has_key
+	assert_equal true, @node.has_key?("!n1")
+	assert_equal true, @node.has_key?("n1")
+	assert_equal true, @node.has_key?("!n1!n11")
+	assert_equal true, @node.has_key?("n1!n11")
+	assert_equal false, @node.has_key?("!n4")
+	assert_equal false, @node.has_key?("n4")
+	assert_equal false, @node.has_key?("!n1!n14")
+	assert_equal false, @node.has_key?("n1!n14")
     end
 
     def test_import_table
@@ -734,28 +896,8 @@ EOF
 	n["!xyzzy!devices!(+)!hostname"] = "switch-1"
 	n["!xyzzy!devices!(+)!hostname"] = "switch-2"
 	n.import_table(input, "!xyzzy")
-	# debugger
+	assert_equal true, n.valid?
 	output = PP::pp(n, StringIO.new)
 	assert_equal expected, output.string
-	assert_equal true, parent_of_all_children?(n)
     end
-
-    def parent_of_all_children?(node)
-	if (node.class == Netomata::Node) then
-	    node.each { |k,v|
-		if (node[k].class != Netomata::Node) then
-		    return true
-		elsif (node[k].parent != node)
-		    return false
-		end
-		if (! parent_of_all_children?(node[k])) then
-		    return false
-		end
-	    }
-	    return true;
-	else 
-	    return true;
-	end
-    end
-
 end

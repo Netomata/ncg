@@ -4,6 +4,7 @@ require 'ruby-debug'
 
 net = Netomata::Node.new
 net.import_file(open("sample.neto"))
+
 # get the list of targets to generate config files for
 net.keys_having_key("ncg_output").each { |target_key|
     unless template_filename = net[target_key]["ncg_template"] 
@@ -23,5 +24,4 @@ net.keys_having_key("ncg_output").each { |target_key|
     of.write(r.result)
     of.close
 }
-# $debug = true
 # pp net.keys_r

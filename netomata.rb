@@ -9,5 +9,6 @@ class Netomata
     # stub class, for other files to add subclasses to
 end
 
+require 'netomata/base'
 require 'netomata/node'
 require 'netomata/template'

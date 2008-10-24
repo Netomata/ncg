@@ -15,116 +15,78 @@ class Netomata::Node < Dictionary
     include Netomata::Utilities
 
     attr_accessor :parent
-    attr_accessor :root
-    attr_writer :key	# 'key' method is defined below
+    attr_writer :root	# caching 'root' method is defined below
+    attr_writer :key	# caching 'key' method is defined below
 
     def initialize(parent=nil)
-	# set @parent
-	@parent = parent
-	# set @root
-	if (parent.nil?) then
-	    # if we have no parent, then we are the root of the tree
-	    @root = self
-	else
-	    # otherwise, we inherit our parent's root
-	    @root = parent.root
-	    # FIXME parent.make_valid
-	end
-	# set key
+	self.legitimize(parent)
+	# unset key (will be figured out and cached first time key() is called)
 	@key = nil
 	# invoke super()
 	super()
     end
 
     def initialize_copy(original)
+	init_copy(original)
+    end
+
+    def init_copy(original)
 	# leave these to be set by the dup() that's calling us
-	@parent = nil
-	@root = nil
-	@key = nil
+	@parent = nil	# because we aren't sure who our parent is
+	@root = nil	# because we aren't sure who the root is
+	@key = nil	# because we aren't sure who we are
 	# make a duplicate of each value
 	original.each { |k,v|
-	    store(k,v.dup(self))
+	    sk = dictionary_store(k,v.dup)
+	    if (sk.class == Netomata::Node) then
+		sk.legitimize(self)
+	    end
 	}
 	self
     end
 
-    def dup(parent=nil)
-	new = super()
-	new.parent = parent
-	if (! parent.nil?) then
-	    new.root = parent.root
-	else
-	    new.root = nil
-	end
-	new.make_valid
-	new
+    def dup
+	n = super()
+	n.init_copy(self)
+	n
     end
 
-    # Take a key as argument, untangle it (including any "()" selectors),
-    # and return the node that it maps to.  If optional "create" arg is true,
-    # create any necessary intermediate nodes implied by the key; otherwise,
-    # if any intermediate node doesn't yet exist, return nil.
-    def key_to_node(key_orig, create=false)
-	if (key_orig == "!") then
-	    return @root
-	end
-	# we want to work with a duplicate key, because we might modify it
-	key = key_orig.dup
-	if (key[-1..-1] == "!") then
-	    # strip trailing "!"
-	    key.gsub!(/!*$/,"")
-	end
-	if (! key.include?("!")) then
-	    # key does _not_ include a "!", but still might be a "()" selector
-	    ks = selector_to_key(key)
-	    if (ks != key) then
-		# key was a "()" selector, so now we need to get what it
-		# resolved to
-		return node_fetch(ks)
-	    else
-		# key was not a "()" selector, and has no "!", so it is a
-		# simple key that we can use dictionary_fetch() on
-		if (dictionary_has_key?(key)) then
-		    return dictionary_fetch(key)
-		else
-		    # key doesn't exist; do we create it, or return nil?
-		    if (create) then
-			# create it, with self as parent
-			return Netomata::Node.new(self)
-		    else
-			return nil
-		    end
-		end
+    def update(h)
+	h.each { |k,v|
+	    sk = self[k] = v.dup
+	    if (sk.class == Netomata::Node) then
+		sk.legitimize(self)
 	    end
+	}
+	self
+    end
+
+    # graft node in as self[key]
+    def graft(key,node)
+	self[key].update(node)
+	self[key].legitimize(self)
+    end
+
+    # make self a legitimate child of parent p, and set root and key along
+    # the way
+    def legitimize(my_parent)
+	self.parent = my_parent
+	if (my_parent.nil?) then
+	    # if parent is nil, then we are root
+	    self.root = self
 	else
-	    l,r = key.split("!",2)
-	    if (l.empty?) then
-		# l == nil means key started with "!", so reference from root
-		return @root.node_fetch(r)
-	    else
-		ls = selector_to_key(l,r)
-		if (ls != l) then
-		    # l was a "()" selector, so now we need to get what it
-		    # resolved to
-		    return node_fetch(ls).node_fetch(r)
-		else
-		    if (dictionary_has_key?(l)) then
-			# We have key l, so use it to fetch r.  Since we know
-			# we have the key l, there is no need to
-			# pass default args for dictionary_fetch(l)
-			return dictionary_fetch(l).node_fetch(r)
-		    else
-			# key l doesn't exist; do we create it, or return nil?
-			if (create) then
-			    # create it, with self as parent
-			    ln = Netomata::Node.new(self)
-			    return ln.node_fetch(r)
-			else
-			    return nil
-			end
-		    end
+	    self.root = my_parent.root
+	end
+	# call recursively, to set root all the way down the tree
+	# Sometimes we're being called from initialize(), and things aren't
+	# set up right yet, causing self.keys to return nil (instead of []),
+	# and self.each raises an error (instead of just doing nothing).
+	if (! self.keys.nil?) then
+	    self.each { |k,v| 
+		if (v.class == Netomata::Node) then
+		    v.legitimize(self)
 		end
-	    end
+	    }
 	end
     end
 
@@ -145,6 +107,9 @@ class Netomata::Node < Dictionary
     # Note that the element identified by simple_key does NOT need to exist
     # yet (nor is it created if it doesn't, regardless of the "create" arg).
     def dictionary_tuple(key, create=false)
+	if (key.nil?) then
+	    return nil
+	end
 	if (key == "!") then
 	    # FIXME: not sure this is correct.
 	    # 	Maybe should return something like [@root, "(.)"]?
@@ -183,6 +148,7 @@ class Netomata::Node < Dictionary
 			# We have key l, so use it to access r.
 			# Since we know we have a key l, there is  no need
 			# to pass default args for dictionary_fetch(l)
+			debugger if dictionary_fetch(l).class != Netomata::Node
 			return dictionary_fetch(l).dictionary_tuple(r,create)
 		    else
 			# key l doesn't exist; do we create it, or return nil?
@@ -342,19 +308,27 @@ class Netomata::Node < Dictionary
 		# !devices!(+) < templates!devices!(type=router,make=cisco) {
 		k = $1
 		s = $3
-		if (k.include?("(+)")) then
-		    # if key ends in "(+)", then make empty node
-		    self[buildkey(pstack.last, k)] = Netomata::Node.new(self[pstack.last])
-		    # and change key to match newly-created node
-		    k.sub!("(+)","(>)")
-		end
+		kb = buildkey(pstack.last,k)
+		kn,kk = dictionary_tuple(kb,true)
+		raise "Unknown key #{k}" if(kn.nil? || kk.nil?)
+		kn[kk] = Netomata::Node.new(kn)
+		# if key ends in "(+)", then dictionary_tuple will
+		# have already made an empty node, so
+		# change k to match newly-created node (so k can be
+		# used later in this method)
+		k.sub!("(+)","(>)")
+		kb = buildkey(pstack.last,k)
 		if ! s.nil? then
+		    sb = buildkey(basekey,s)
+		    sn,sk = dictionary_tuple(sb,false)
+		    raise "Unknown key #{s}" if(sn.nil? || sk.nil?)
 		    # copy subnodes from s
-		    self[buildkey(pstack.last, k)].update(self[buildkey(basekey, s)])
+		    raise "Unknown key #{sb}" if sn[sk].nil? 
+		    kn.graft(kk,sn[sk])
 		end
-		pstack.push(buildkey(pstack.last, k))
+		pstack.push(kb)
 	    when /^([^=\s]*)\s*=\s*(.*)$/
-		# make        = cisco
+		# make = cisco
 		self[buildkey(pstack.last, $1)] = $2
 	    when /^\}$/
 		# }
@@ -444,16 +418,23 @@ class Netomata::Node < Dictionary
 			self[k] = d[fields[f]]
 		    when '+'
 			fk = vsub(f,fields,d,basekey)
+			fkn,fkk = dictionary_tuple(fk,true)
+			raise "Unknown key #{fk}" if (fkn.nil? || fkk.nil?)
 			ak = vsub(a,fields,d,basekey)
-			if (! self.has_key?(fk)) then
-			    r = self[fk] = self[ak].dup
+			akn,akk = dictionary_tuple(ak,false)
+			raise "Unknown key #{ak}" if (akn.nil? || akk.nil?)
+			if (! fkn.has_key?(fkk)) then
+			    if akn[akk].nil? then
+				raise RuntimeError, "Key #{ak} not found"
+			    end
+			    fkn[fkk] = Netomata::Node.new(fkn)
+			    fkn.graft(fkk, akn[akk])
 			    # we don't want to use self[fk] again, because
 			    # fk might include a "(+)" or other selector,
 			    # and would lead to a different (or nonexistant)
 			    # node now that self[fk] has been instantiated.
-			    r.make_valid
 			else 
-			    self[fk].update(self[ak])
+			    fkn.graft(fkk,akn[akk])
 			end
 		    else
 			raise "Unknown action '#{t}'"
@@ -509,6 +490,19 @@ class Netomata::Node < Dictionary
 	end
     end
 
+    # what is my own root?
+    def root
+	if (@root.nil?) then
+	    if (@parent.nil?) then
+		# no parent, so we must be root
+		@root = self
+	    else
+		@root = @parent.root
+	    end
+	end
+	@root
+    end
+
     # what is my own key?
     def key
 	if (@key.nil?) then
@@ -558,12 +552,16 @@ class Netomata::Node < Dictionary
 		# child is not a Netomata::Node, so skip checks
 		next
 	    elsif (! self[k].parent.equal?(self)) then		# check parent
+		debugger if $debug
 		return false
 	    elsif (! self[k].root.equal?(self.root)) then	# check root
+		debugger if $debug
 		return false
 	    elsif (self[k].key != child_k) then			# check key
+		debugger if $debug
 		return false
 	    elsif (! self[k].valid?) 		# check recursively
+		debugger if $debug
 		return false
 	    end
 	}
@@ -582,15 +580,15 @@ class Netomata::Node < Dictionary
 		next
 	    end
 	    if (! self[k].parent.equal?(self)) then		# check parent
-		puts "fixing self[\"#{self.key}!#{k}\"].parent" if $debug
+		puts "# fixing self[\"#{self.key}!#{k}\"].parent" if $debug
 		self[k].parent = self
 	    end
 	    if (! self[k].root.equal?(self.root)) then		# check root
-		puts "fixing self[\"#{self.key}!#{k}\"].root" if $debug
+		puts "# fixing self[\"#{self.key}!#{k}\"].root" if $debug
 		self[k].root = self.root
 	    end
 	    if (self[k].key != child_k) then			# check key
-		puts "fixing self[\"#{self.key}!#{k}\"].key" if $debug
+		puts "# fixing self[\"#{self.key}!#{k}\"].key" if $debug
 		self[k].key = child_k
 	    end
 	    self[k].make_valid	# check recursively

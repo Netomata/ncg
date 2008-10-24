@@ -3,13 +3,7 @@
     raise "vlan key 'id' undefined" if (! @vlan.has_key?("id"))
     raise "vlan key 'active' undefined" if (! @vlan.has_key?("active"))
 %>interface <%= "Vlan" + @vlan["id"] %>
- <%=
-    if @vlan["active"] == "yes" then
- 	"no shutdown"
-    else
-    	"shutdown"
-    end
- %>
+ <%= apply_idiom("shutdown", @target, {"@active" => @vlan["active"]}) %>
  description <%= @vlan["description"] %>
 ! no IP on "switch"-type VLAN; acts as switch only
  no ip address

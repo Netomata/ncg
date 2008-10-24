@@ -67,7 +67,7 @@ interface_results %>interface Vlan1
 !
 <%=
 vlan_results = ""
-vlt_base = @net["!templates!devices!(make=cisco,type=router)!vlans"]
+vlt_base = @target["(...)!templates!vlan-interfaces"]
 raise "VLAN template base not found" if (vlt_base.nil?)
 @net["vlans"].each { |key,vlan|
     raise "vlan name undefined for key '#{key}'" if (! vlan.has_key?("name"))

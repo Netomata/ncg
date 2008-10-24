@@ -1,5 +1,8 @@
 class Netomata::Template
 
+    include Netomata::Utilities::ClassMethods
+    include Netomata::Utilities
+
     @@cache = Hash.new
 
     attr_reader :template
@@ -26,18 +29,12 @@ class Netomata::Template
 	@template.result(b)
     end
 
-    # class methods
-    def self.apply_by_filename(idiom_name, vars=nil)
-	Netomata::Template::Result.new(idiom_name, vars).result.chomp
-    end
-
-    def self.apply_by_key(key, vars=nil)
-	filename = key["ncg_template"]
-	Netomata::Template.apply_by_filename(filename, vars)
-    end
 end
 
 class Netomata::Template::Context
+
+    include Netomata::Utilities::ClassMethods
+    include Netomata::Utilities
 
     def initialize(h = nil)
 	if (! h.nil?) then
@@ -65,9 +62,32 @@ class Netomata::Template::Context
     def eval(s)
 	super(s,binding)
     end
+
+    def apply_idiom(idiom, node, vars=nil)
+	raise ArgumentError, "Not a node" if node.class != Netomata::Node
+	inode = node[buildkey("(...)","idioms",idiom)]
+	raise "Idiom \"#{idiom}\" not found for node #{node.key}" if inode.nil?
+	Netomata::Template::Context.apply_by_node(inode, vars)
+    end
+
+    # class methods
+
+    def self.apply_by_filename(name, vars=nil)
+	Netomata::Template::Result.new(name, vars).result.chomp
+    end
+
+    def self.apply_by_node(node, vars=nil)
+	filename = node["ncg_template"]
+	Netomata::Template::Context.apply_by_filename(filename, vars)
+    end
+
+
 end
 
 class Netomata::Template::Result
+
+    include Netomata::Utilities::ClassMethods
+    include Netomata::Utilities
 
     attr_reader :result
 

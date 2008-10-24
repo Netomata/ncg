@@ -3,91 +3,96 @@ templates!devices!(+) {
     type	= router
     name	= REQUIRED
     model	= OPTIONAL
-    ncg_template = templates/configs/devices/routers/cisco.ncg
+    ncg_template = templates/configs/devices/routers/cisco/config.ncg
     ncg_target	= true	# generate a config from this point in tree
-    ######## Interfaces
-    interfaces!(+) {
-	name	= REQUIRED
-	type	= host
-	description = OPTIONAL
-	active	= no
-	ncg_template	= templates/configs/devices/routers/cisco/interfaces/host.ncg
-    }
-    interfaces!(+) {
-	name	= REQUIRED
-	type	= ipmi
-	description = OPTIONAL
-	active	= no
-	ncg_template	= templates/configs/devices/routers/cisco/interfaces/ipmi.ncg
-    }
-    interfaces!(+) {
-	name	= REQUIRED
-	type	= fwvlan
-	description = OPTIONAL
-	active	= no
-	ncg_template	= templates/configs/devices/routers/cisco/interfaces/fwvlan.ncg
-    }
-    interfaces!(+) {
-	name	= REQUIRED
-	type	= fwext
-	description = OPTIONAL
-	active	= no
-	ncg_template	= templates/configs/devices/routers/cisco/interfaces/fwext.ncg
-    }
-    interfaces!(+) {
-	name	= REQUIRED
-	type	= loadbal
-	description = OPTIONAL
-	active	= no
-	ncg_template	= templates/configs/devices/routers/cisco/interfaces/loadbal.ncg
-    }
-    interfaces!(+) {
-	name	= REQUIRED
-	type	= mgmt
-	description = OPTIONAL
-	active	= no
-	ncg_template	= templates/configs/devices/routers/cisco/interfaces/mgmt.ncg
-    }
-    interfaces!(+) {
-	name	= REQUIRED
-	type	= trunk
-	description = OPTIONAL
-	active	= no
-	ncg_template	= templates/configs/devices/routers/cisco/interfaces/trunk.ncg
-    }
-    interfaces!(+) {
-	name	= REQUIRED
-	type	= unused
-	description = OPTIONAL
-	active	= no
-	ncg_template	= templates/configs/devices/routers/cisco/interfaces/unused.ncg
-    }
-    ######## VLANs
-    vlans!(+) {
-    	name	= REQUIRED
-	type	= admin
-	description = OPTIONAL
-	active	= no
-	ncg_template = templates/configs/devices/routers/cisco/vlans/admin.ncg
-    }
-    vlans!(+) {
-    	name	= REQUIRED
-	type	= env
-	description = OPTIONAL
-	active	= no
-	ncg_template = templates/configs/devices/routers/cisco/vlans/env.ncg
-    }
-    vlans!(+) {
-    	name	= REQUIRED
-	type	= switch
-	description = OPTIONAL
-	active	= no
-	ncg_template = templates/configs/devices/routers/cisco/vlans/switch.ncg
+    templates {
+	######## Interfaces
+	interfaces!(+) {
+	    name	= REQUIRED
+	    type	= host
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template	= templates/configs/devices/routers/cisco/interfaces/host.ncg
+	}
+	interfaces!(+) {
+	    name	= REQUIRED
+	    type	= ipmi
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template	= templates/configs/devices/routers/cisco/interfaces/ipmi.ncg
+	}
+	interfaces!(+) {
+	    name	= REQUIRED
+	    type	= fwvlan
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template	= templates/configs/devices/routers/cisco/interfaces/fwvlan.ncg
+	}
+	interfaces!(+) {
+	    name	= REQUIRED
+	    type	= fwext
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template	= templates/configs/devices/routers/cisco/interfaces/fwext.ncg
+	}
+	interfaces!(+) {
+	    name	= REQUIRED
+	    type	= loadbal
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template	= templates/configs/devices/routers/cisco/interfaces/loadbal.ncg
+	}
+	interfaces!(+) {
+	    name	= REQUIRED
+	    type	= mgmt
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template	= templates/configs/devices/routers/cisco/interfaces/mgmt.ncg
+	}
+	interfaces!(+) {
+	    name	= REQUIRED
+	    type	= trunk
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template	= templates/configs/devices/routers/cisco/interfaces/trunk.ncg
+	}
+	interfaces!(+) {
+	    name	= REQUIRED
+	    type	= unused
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template	= templates/configs/devices/routers/cisco/interfaces/unused.ncg
+	}
+	######## VLANs
+	vlan-interfaces!(+) {
+	    name	= REQUIRED
+	    type	= admin
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template = templates/configs/devices/routers/cisco/vlan-interfaces/admin.ncg
+	}
+	vlan-interfaces!(+) {
+	    name	= REQUIRED
+	    type	= env
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template = templates/configs/devices/routers/cisco/vlan-interfaces/env.ncg
+	}
+	vlan-interfaces!(+) {
+	    name	= REQUIRED
+	    type	= switch
+	    description = OPTIONAL
+	    active	= no
+	    ncg_template = templates/configs/devices/routers/cisco/vlan-interfaces/switch.ncg
+	}
     }
     ######## Idioms
     idioms {
 	shutdown {
 	    ncg_template = templates/configs/devices/routers/cisco/idioms/shutdown.ncg
+	}
+	vrrp {
+	    ncg_template = templates/configs/devices/routers/cisco/idioms/vrrp.ncg
 	}
     }
 }

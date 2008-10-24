@@ -9,11 +9,5 @@
  switchport trunk native vlan 16
  switchport trunk allowed vlan 3,4,81-86
  switchport mode trunk
- <%=
-    if @interface["active"] == "yes" then
- 	"no shutdown"
-    else
-    	"shutdown"
-    end
- %>
+ <%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
 !

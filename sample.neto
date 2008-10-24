@@ -2,24 +2,18 @@
 
 .include sample.templates.neto
 
-devices!(+) {
+devices!(+) < !templates!devices!(make=cisco,type=router) {
     name	= switch-1
-    type	= router
-    make	= cisco
     model	= 4948-10G
     role	= primary
-    ncg_template	= templates/configs/devices/routers/cisco/switch.ncg
 #   ncg_output		= configs/<name>
     ncg_output		= configs/switch-1.config
 }
 
-devices!(+) {
+devices!(+) < !templates!devices!(make=cisco,type=router) {
     name	= switch-2
-    type	= router
-    make	= cisco
     model	= 4948-10G
     role	= secondary
-    ncg_template	= templates/configs/devices/routers/cisco/switch.ncg
 #   ncg_output		= configs/<name>
     ncg_output		= configs/switch-2.config
 }

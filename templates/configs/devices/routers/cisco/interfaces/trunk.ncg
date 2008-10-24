@@ -8,11 +8,5 @@
  switchport trunk encapsulation dot1q
  switchport trunk native vlan 16
  switchport mode trunk
- <%=
-    if @interface["active"] == "yes" then
- 	"no shutdown"
-    else
-    	"shutdown"
-    end
- %>
+ <%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
 !

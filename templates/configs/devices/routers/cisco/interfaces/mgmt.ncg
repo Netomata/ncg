@@ -6,11 +6,5 @@
  description Management <%= @interface["target"] %>
  switchport access vlan 16
  switchport mode access
- <%=
-    if @interface["active"] == "yes" then
- 	"no shutdown"
-    else
-    	"shutdown"
-    end
- %>
+ <%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
 !

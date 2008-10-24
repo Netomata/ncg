@@ -6,11 +6,5 @@
  description Firewall-External <%= @interface["target"] %>
  switchport access vlan 2
  switchport mode access
- <%=
-   Netomata::Template.apply_by_filename(
-	"templates/configs/devices/routers/cisco/idioms/shutdown.ncg",
-	{"@active" => @interface["active"]})
-#    Netomata::Template.apply_by_key(@interface["(...)!idioms!shutdown"],
-#	{"@active" => @interface["active"]})
- %>
+ <%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
 !

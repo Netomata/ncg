@@ -12,6 +12,7 @@ end
 
 class Netomata::Node < Dictionary
 
+    include Netomata::Utilities::ClassMethods
     include Netomata::Utilities
 
     attr_accessor :parent
@@ -148,7 +149,9 @@ class Netomata::Node < Dictionary
 			# We have key l, so use it to access r.
 			# Since we know we have a key l, there is  no need
 			# to pass default args for dictionary_fetch(l)
-			debugger if dictionary_fetch(l).class != Netomata::Node
+			if dictionary_fetch(l).class != Netomata::Node
+			    raise "#{self.key}!#{l} not of class Netomata::Node"
+			end
 			return dictionary_fetch(l).dictionary_tuple(r,create)
 		    else
 			# key l doesn't exist; do we create it, or return nil?
@@ -599,24 +602,6 @@ class Netomata::Node < Dictionary
     def describe
 	puts "#{self.key}\tself=#{self.object_id}\tparent=#{self.parent.object_id}\troot=#{self.root.object_id}"
 	each { |k,v| if (v.class == Netomata::Node) then v.describe end }
-    end
-
-    # Make a key from a set of components, using "!" as a separator
-    def buildkey(*a)
-	return nil if (a.nil?)
-	return nil if (a.size == 0)
-	r = String.new
-	ad = a.dup
-	until (ad.size == 1) do
-	    if ad.first.nil? then
-		ad.shift
-		next
-	    end
-	    r << ad.shift
-	    r << "!" if ( r[-1..-1] != "!")
-	end
-	r << ad.shift
-	r
     end
 
     ###################################################################

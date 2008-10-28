@@ -1,4 +1,21 @@
+Change all instances of
+    	foo.class == ClassName (or foo.class != ClassName)
+    to 
+        foo.is_a?(ClassName) (or ! foo.is_a?(ClassName))
+    so that code works properly with subclasses.
+
 Fix import_file and import_table to get rid of basekey?
+
 Set up ARGV processing in ncg
+
 Add file/line info to error messages
+
 Build net["!templates"] tree automatically from templates/... files
+
+Raise NetomataError for config errors
+        Catch in Netomata::Template::Context for better error messages to user
+        Flag other errors to be reported to Netomata, Inc. as bugs.
+                Save somewhere, for easy reporting later?
+
+Use missing_ (missing_instance_var, if there is such a thing?) methods in
+template apply_* routines, to catch references to unpassed variables

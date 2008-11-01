@@ -10,8 +10,6 @@ Set up ARGV processing in ncg
 
 Add file/line info to error messages
 
-Build net["!templates"] tree automatically from templates/... files
-
 Raise NetomataError for config errors
         Catch in Netomata::Template::Context for better error messages to user
         Flag other errors to be reported to Netomata, Inc. as bugs.

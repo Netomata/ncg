@@ -38,7 +38,7 @@ class Netomata::Template::Context
 
     def initialize(h = nil)
 	if (! h.nil?) then
-	    if (h.class != Hash) then
+	    if (! h.is_a?(Hash)) then
 		raise ArgumentError, "optional argument must be hash"
 	    end
 	    set_h(h)
@@ -64,7 +64,7 @@ class Netomata::Template::Context
     end
 
     def apply_idiom(idiom, node, vars=nil)
-	raise ArgumentError, "Not a node" if node.class != Netomata::Node
+	raise ArgumentError, "Not a node" if (! node.is_a?(Netomata::Node))
 	inode = node[buildkey("(...)","idioms",idiom)]
 	raise "Idiom \"#{idiom}\" not found for node #{node.key}" if inode.nil?
 	Netomata::Template::Context.apply_by_node(inode, vars)

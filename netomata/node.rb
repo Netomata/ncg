@@ -39,7 +39,7 @@ class Netomata::Node < Dictionary
 	# make a duplicate of each value
 	original.each { |k,v|
 	    sk = dictionary_store(k,v.dup)
-	    if (sk.class == Netomata::Node) then
+	    if (sk.is_a?(Netomata::Node)) then
 		sk.legitimize(self)
 	    end
 	}
@@ -55,7 +55,7 @@ class Netomata::Node < Dictionary
     def update(h)
 	h.each { |k,v|
 	    sk = self[k] = v.dup
-	    if (sk.class == Netomata::Node) then
+	    if (sk.is_a?(Netomata::Node)) then
 		sk.legitimize(self)
 	    end
 	}
@@ -84,7 +84,7 @@ class Netomata::Node < Dictionary
 	# and self.each raises an error (instead of just doing nothing).
 	if (! self.keys.nil?) then
 	    self.each { |k,v| 
-		if (v.class == Netomata::Node) then
+		if (v.is_a?(Netomata::Node)) then
 		    v.legitimize(self)
 		end
 	    }
@@ -149,7 +149,7 @@ class Netomata::Node < Dictionary
 			# We have key l, so use it to access r.
 			# Since we know we have a key l, there is  no need
 			# to pass default args for dictionary_fetch(l)
-			if dictionary_fetch(l).class != Netomata::Node
+			if (! dictionary_fetch(l).is_a?(Netomata::Node)) then
 			    raise "#{self.key}!#{l} not of class Netomata::Node"
 			end
 			return dictionary_fetch(l).dictionary_tuple(r,create)
@@ -290,7 +290,7 @@ class Netomata::Node < Dictionary
 
     def keys_having_key(key)
 	select_r { |p,k,v|
-	    v.class == Netomata::Node && v.has_key?(key)
+	    v.is_a?(Netomata::Node) && v.has_key?(key)
 	}.collect { |a| a.first }
     end
 
@@ -482,7 +482,7 @@ class Netomata::Node < Dictionary
 		return self.selector_inheritor_to_key(rest_of_key)
 	    when /.*=.*/
 		r = selector_criteria_to_keys(s)
-		if (r.class == Array) then
+		if (r.is_a?(Array)) then
 		    raise ArgumentError,
 		    	"selector \"#{s}\" matches multiple subnodes"
 		end
@@ -551,7 +551,7 @@ class Netomata::Node < Dictionary
     def valid?
 	self.each { |k,v|
 	    child_k = buildkey(self.key,k)
-	    if (self[k].class != Netomata::Node) then
+	    if (! self[k].is_a?(Netomata::Node)) then
 		# child is not a Netomata::Node, so skip checks
 		next
 	    elsif (! self[k].parent.equal?(self)) then		# check parent
@@ -578,7 +578,7 @@ class Netomata::Node < Dictionary
     def make_valid
 	self.each { |k,v|
 	    child_k = buildkey(self.key,k)
-	    if (self[k].class != Netomata::Node) then
+	    if (! self[k].is_a?(Netomata::Node)) then
 		# child is not a Netomata::Node, so skip checks
 		next
 	    end
@@ -601,7 +601,7 @@ class Netomata::Node < Dictionary
 
     def describe
 	puts "#{self.key}\tself=#{self.object_id}\tparent=#{self.parent.object_id}\troot=#{self.root.object_id}"
-	each { |k,v| if (v.class == Netomata::Node) then v.describe end }
+	each { |k,v| if (v.is_a?(Netomata::Node)) then v.describe end }
     end
 
     ###################################################################

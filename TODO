@@ -1,9 +1,3 @@
-Change all instances of
-    	foo.class == ClassName (or foo.class != ClassName)
-    to 
-        foo.is_a?(ClassName) (or ! foo.is_a?(ClassName))
-    so that code works properly with subclasses.
-
 Fix import_file and import_table to get rid of basekey?
 
 Set up ARGV processing in ncg

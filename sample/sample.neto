@@ -1,13 +1,13 @@
-.table vlans
+.table sample/vlans
 
-.include sample.templates.neto
+.include sample/templates.neto
 
 devices!(+) < !templates!devices!(make=cisco,type=router) {
     name	= switch-1
     model	= 4948-10G
     role	= primary
 #   ncg_output		= configs/<name>
-    ncg_output		= configs/switch-1.config
+    ncg_output		= sample/configs/switch-1.config
 }
 
 devices!(+) < !templates!devices!(make=cisco,type=router) {
@@ -15,7 +15,7 @@ devices!(+) < !templates!devices!(make=cisco,type=router) {
     model	= 4948-10G
     role	= secondary
 #   ncg_output		= configs/<name>
-    ncg_output		= configs/switch-2.config
+    ncg_output		= sample/configs/switch-2.config
 }
 
-.table interfaces
+.table sample/interfaces

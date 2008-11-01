@@ -5,5 +5,5 @@ require 'erb'
 require 'ruby-debug'
 
 net = Netomata::Node.new
-net.import_file(open("sample.neto"))
+net.import_file(open("sample/sample.neto"))
 pp net

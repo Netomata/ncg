@@ -1,6 +1,0 @@
-<%
-require "netomata.rb"
-require "erb"
-vlans = Netomata::Util::FileArray.new(open("vlans"))
-interfaces = Netomata::Util::FileArray.new(open("interfaces"))
-%>

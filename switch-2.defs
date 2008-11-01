@@ -1,4 +1,0 @@
-<%
-    hostname = "switch-2"
-    role = "secondary"
-%>

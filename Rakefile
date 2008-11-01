@@ -21,6 +21,10 @@ end
 
 desc "Snapshot current SVN trunk to demo tag"
 task "tag_demo" => ["test", "configs"] do
+    svn_status = `svn status`
+    unless svn_status.empty?
+	fail "#"*60 + "\n" + "'svn status' is not clean; are there unchecked-in files?\n" + "#"*60
+    end
     sh 'svn delete https://dev.netomata.com/svn/ncg/tags/demo -m "Removing old demo tag"'
     sh 'svn copy https://dev.netomata.com/svn/ncg/trunk https://dev.netomata.com/svn/ncg/tags/demo -m "Setting new demo tag"'
 end

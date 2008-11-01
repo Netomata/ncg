@@ -10,7 +10,8 @@ net.import_file(open("sample/sample.neto"))
 # get the list of targets to generate config files for
 net.keys_having_key("ncg_output").each { |target_key|
     unless template_filename = net[target_key]["ncg_template"] 
-	raise "Target '#{target_key}' has 'ncg_output' key, but no 'ncg_template' key"
+	raise
+	"Target '#{target_key}' has 'ncg_output' key, but no 'ncg_template' key"
     end
 
     # set up shortcut "target" variable

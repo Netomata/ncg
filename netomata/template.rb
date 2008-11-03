@@ -91,7 +91,7 @@ class Netomata::Template::Result
 
     attr_reader :result
 
-    def initialize(filename, vars=nil, str=nil)
+    def initialize(filename, vars=nil)
 	@template = Netomata::Template.new(filename)
 	@context = Netomata::Template::Context.new(vars)
 	@result = @template.result(@context.binding)

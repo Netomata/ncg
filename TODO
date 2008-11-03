@@ -1,7 +1,5 @@
 Fix import_file and import_table to get rid of basekey?
 
-Set up ARGV processing in ncg
-
 Add file/line info to error messages
 
 Raise NetomataError for config errors

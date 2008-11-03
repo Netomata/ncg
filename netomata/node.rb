@@ -314,7 +314,15 @@ class Netomata::Node < Dictionary
 		kb = buildkey(pstack.last,k)
 		kn,kk = dictionary_tuple(kb,true)
 		raise "Unknown key #{k}" if(kn.nil? || kk.nil?)
-		kn[kk] = Netomata::Node.new(kn)
+		if kn.has_key?(kk) then
+		    # key already exists, so use it
+		    if (! kn[kk].is_a?(Netomata::Node)) then
+			raise "Key #{k} already exists, but is not a Netomata::Node"
+		    end
+		else
+		    # key doesn't exist, so create it
+		    kn[kk] = Netomata::Node.new(kn)
+		end
 		# if key ends in "(+)", then dictionary_tuple will
 		# have already made an empty node, so
 		# change k to match newly-created node (so k can be
@@ -324,6 +332,7 @@ class Netomata::Node < Dictionary
 		if ! s.nil? then
 		    sb = buildkey(basekey,s)
 		    sn,sk = dictionary_tuple(sb,false)
+		    debugger if(sn.nil? || sk.nil?)
 		    raise "Unknown key #{s}" if(sn.nil? || sk.nil?)
 		    # copy subnodes from s
 		    raise "Unknown key #{sb}" if sn[sk].nil? 
@@ -626,7 +635,8 @@ class Netomata::Node < Dictionary
 	# start with an empty array of results
 	ra = Array.new
 	self.keys.each { |k|
-	    if self[k].node_match_array?(ca) then
+	    if (self[k].is_a?(Netomata::Node) && 
+		    self[k].node_match_array?(ca)) then
 		ra << k
 	    end
 	}

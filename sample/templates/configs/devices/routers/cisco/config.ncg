@@ -16,9 +16,9 @@ enable secret 5 $1$1BW4$gGvqlOneOo7NyZJofhNg1.
 username access password 7 021511490E4A1A2F5E4F0712
 aaa new-model
 clock timezone PST -8
-clock summer-time PDT recurring 
+clock summer-time PDT recurring
 ip subnet-zero
-ip domain-name mgmt.edgenuity.net
+ip domain-name <%= @target["(...)!domain"] %>
 !
 ip ssh time-out 60
 ip ssh source-interface Vlan16
@@ -48,7 +48,7 @@ ip access-list extended MATCH_ANY
 !
 vlan internal allocation policy ascending
 !
-<% @net["!vlans"].each { |key,vlan| %>
+<% @target["(...)!vlans"].each { |key,vlan| %>
 vlan <%= vlan["id"] %>
  name <%= vlan["name"] %>
 !
@@ -69,7 +69,7 @@ interface_results %>interface Vlan1
 vlan_results = ""
 vlt_base = @target["(...)!templates!vlan-interfaces"]
 raise "VLAN template base not found" if (vlt_base.nil?)
-@net["vlans"].each { |key,vlan|
+@target["(...)!vlans"].each { |key,vlan|
     raise "vlan name undefined for key '#{key}'" if (! vlan.has_key?("name"))
     raise "vlan type undefined for vlan '#{vlan["name"]}'" if (! vlan.has_key?("type"))
     template_name = vlt_base["(type=#{vlan["type"]})!ncg_template"]
@@ -78,21 +78,19 @@ raise "VLAN template base not found" if (vlt_base.nil?)
     	{"@vlan" => vlan, "@target" => @target})
     vlan_results << r.result
 }
-vlan_results %>ip default-gateway 10.5.4.9
-ip route 0.0.0.0 0.0.0.0 10.5.4.9
-! route for Brent's OpenVPN server on admin host
-ip route 172.16.2.0 255.255.255.0 10.5.16.25
+vlan_results %>ip default-gateway <%= @target["(...)!default_route"] %>
+ip route 0.0.0.0 0.0.0.0 <%= @target["(...)!default_route"] %>
 no ip http server
 no ip http secure-server
 !
 !
 !
-logging facility local5
-logging 10.5.16.26
+logging facility <%= @target["(...)!syslog_facility"] %>
+logging <%= @target["(...)!syslog_ip"] %>
 !
 !
-snmp-server community public RO
-snmp-server host 10.5.16.27 public 
+snmp-server community <%= @target["(...)!snmp_community"] %> RO
+snmp-server host <%= @target["(...)!snmp_ip"] %> <%= @target["(...)!snmp_community"] %>
 !
 control-plane
 !

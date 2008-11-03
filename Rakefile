@@ -14,9 +14,10 @@ end
 desc "Generate test configs and diff against baseline"
 task "configs" do
     sh 'rm sample/configs/switch-1.config sample/configs/switch-2.config'
-    sh 'ncg'
+    sh 'ncg -v sample/sample.neto'
     sh 'diff -u sample/configs/switch-1.baseline sample/configs/switch-1.config'
     sh 'diff -u sample/configs/switch-2.baseline sample/configs/switch-2.config'
+    puts "Success!"
 end
 
 desc "Snapshot current SVN trunk to demo tag"

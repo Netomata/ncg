@@ -3,12 +3,56 @@
 require 'netomata'
 require 'erb'
 require 'ruby-debug'
+require 'optparse'
+
+class NcgArguments < Hash
+    def initialize(args)
+	super()
+
+	opts = OptionParser.new do |opts|
+	    opts.banner = "Usage: #$0 [options]"
+	    opts.on('-v', '--verbose', 'verbose mode') do
+		self[:verbose] = true
+	    end
+	    opts.on('-k', '--keys',
+		'dump the list of keys defined by the config') do
+		self[:keys] = true
+	    end
+	    opts.on('-d', '--dump',
+	    	'dump the fully-parsed data structure defined by the config') do
+		self[:dump] = true
+	    end
+	    opts.on_tail('-h', '--help', 'display this help and exit') do
+		puts opts
+		exit
+	    end
+	end
+	
+	opts.parse!(args)
+    end
+end
+
+args = NcgArguments.new(ARGV)
 
 net = Netomata::Node.new
-net.import_file(open("sample/sample.neto"))
+
+ARGV.each do |fn|
+    net.import_file(open(fn))
+end
+
+if (args[:keys]) then
+    puts net.keys_r.join("\n")
+    exit
+end
+
+if (args[:dump]) then
+    pp net
+    exit
+end
 
 # get the list of targets to generate config files for
 net.keys_having_key("ncg_output").each { |target_key|
+    puts "Generating #{net[target_key]["ncg_output"]} for #{target_key}" if args[:verbose]
     unless template_filename = net[target_key]["ncg_template"] 
 	raise
 	"Target '#{target_key}' has 'ncg_output' key, but no 'ncg_template' key"
@@ -27,4 +71,3 @@ net.keys_having_key("ncg_output").each { |target_key|
     of.write(r.result)
     of.close
 }
-# pp net.keys_r

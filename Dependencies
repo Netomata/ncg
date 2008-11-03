@@ -1,0 +1,14 @@
+MacOS 10.5.5 Leopard
+--------------------
+
+[Install Xcode Tools package from Optional Installs folder on MacOS 10.5 DVD]
+
+[Add to ~/.bashrc:
+	export GEM_PATH=/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/gems/1.8:/Library/Ruby/Gems/1.8
+	export GEM_HOME=/Library/Ruby/Gems/1.8
+]
+
+gem update --system
+gem update
+gem install facets
+gem install ruby-debug

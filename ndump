@@ -1,9 +1,0 @@
-#!/usr/bin/ruby
-
-require 'netomata'
-require 'erb'
-require 'ruby-debug'
-
-net = Netomata::Node.new
-net.import_file(open("sample/sample.neto"))
-pp net

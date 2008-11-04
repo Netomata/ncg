@@ -1,13 +1,8 @@
 base_ip		= 10.5.0.0
-# admin_ip	= <base_ip> & 0.0.16.0
-# admin_ip	= <%= ip_union(@target["(...)!base_ip"], "0.0.16.0") %>
-# admin_ip	= <%= @target["(...)!base_ip"] + "|0.0.16.0" %>
-admin_ip	= 10.5.16.0
-# syslog_ip	= <admin_ip> & 0.0.0.26
-syslog_ip	= 10.5.16.26
+admin_ip	= <%= ip_union(@target["(...)!base_ip"], "0.0.16.0") %>
+syslog_ip	= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.26") %>
 syslog_facility = local5
-# snmp_ip	= <admin_ip> & 0.0.0.27
-snmp_ip		= 10.5.16.27
+snmp_ip		= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.27") %>
 snmp_community	= public
 domain		= edgenuity.net
 
@@ -18,23 +13,22 @@ domain		= edgenuity.net
 !templates!devices!(make=cisco,type=router) {
     # add to Cisco router device template
     model	= 4948-10G
-    # default_route = <base_ip> & 0.0.4.9
-    default_route = 10.5.4.9
-    domain	= mgmt.edgenuity.net
+    default_route = <%= ip_union(@target["(...)!base_ip"], "0.0.4.9") %>
+    domain	= <%= "mgmt." + @target["(...)!domain"] %>
 }
 
 devices!(+) < !templates!devices!(make=cisco,type=router) {
     name	= switch-1
     role	= primary
-#   ncg_output	= configs/<name>
-    ncg_output	= sample/configs/switch-1.config
+    # can't put this in the template, because "name" isn't defined there
+    ncg_output  = <%= "sample/configs/" + @target["name"] + ".config" %>
 }
 
 devices!(+) < !templates!devices!(make=cisco,type=router) {
     name	= switch-2
     role	= secondary
-#   ncg_output	= configs/<name>
-    ncg_output	= sample/configs/switch-2.config
+    # can't put this in the template, because "name" isn't defined there
+    ncg_output  = <%= "sample/configs/" + @target["name"] + ".config" %>
 }
 
 .table sample/interfaces

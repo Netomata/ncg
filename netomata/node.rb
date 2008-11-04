@@ -341,7 +341,20 @@ class Netomata::Node < Dictionary
 		pstack.push(kb)
 	    when /^([^=\s]*)\s*=\s*(.*)$/
 		# make = cisco
-		self[buildkey(pstack.last, $1)] = $2
+		# admin_ip = <%= @target["(...)!base_ip"] + "|0.0.16.0" %>
+		kl = $1
+		kr = $2
+		if (kr.match(/<%.*%>/)) then
+		    # kr contains an ERB template
+		    pn = self[buildkey(pstack.last)]
+		    if pn.nil? then
+			pn = self 
+		    end
+		    kr = Netomata::Template::FromString.new(kr).result_from_vars({
+			    "@target" => pn,
+			    "@target_key" => pn.key})
+		end
+		self[buildkey(pstack.last, kl)] = kr
 	    when /^\}$/
 		# }
 		pstack.pop

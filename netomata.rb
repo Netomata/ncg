@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'facets'
 require 'facets/dictionary'
+require 'ipaddr'
 require 'pp'
 require 'breakpoint'
 require 'ruby-debug'

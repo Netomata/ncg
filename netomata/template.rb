@@ -1,34 +1,46 @@
 class Netomata::Template
+end
+
+class Netomata::Template::FromString
+
+    include Netomata::Utilities::ClassMethods
+    include Netomata::Utilities
+
+    attr_reader :erb
+
+    def initialize(str)
+	# make a private @erb_result variable, to keep ERB from overwriting
+	# global _erbout (which is what it does by default)
+	@erb_result = String.new
+	# FIXME: should figure out what appropriate save_level is,
+	# and how to make it work
+	@erb = ERB.new(str, 0, "<>", "@erb_result")
+    end
+
+    def result(b = nil)
+	@erb.result(b)
+    end
+end
+
+class Netomata::Template::FromFile < Netomata::Template::FromString
 
     include Netomata::Utilities::ClassMethods
     include Netomata::Utilities
 
     @@cache = Hash.new
 
-    attr_reader :template
-
     def initialize(filename)
-	# make a private @erb_result variable, to keep ERB from overwriting
-	# global _erbout (which is what it does by default)
-	@erb_result = ""
 	if (! @@cache.has_key?(filename)) then
-	    f = File.new(filename)
 	    begin
-		# FIXME: should figure out what appropriate save_level is,
-		# and how to make it work
-		@@cache[filename] = ERB.new(f.read, 0, "<>", "@erb_result")
+	    	f = File.new(filename)
+		@@cache[filename] = f.read
+		f.close
 	    rescue => exc
 		raise exc.exception("template '#{filename}'\n" + exc.message)
 	    end
-	    f.close
 	end
-	@template = @@cache[filename]
+	return super(@@cache[filename])
     end
-
-    def result(b = nil)
-	@template.result(b)
-    end
-
 end
 
 class Netomata::Template::Context
@@ -72,16 +84,14 @@ class Netomata::Template::Context
 
     # class methods
 
-    def self.apply_by_filename(name, vars=nil)
-	Netomata::Template::Result.new(name, vars).result.chomp
+    def self.apply_by_filename(filename, vars=nil)
+	Netomata::Template::Result.new(filename, vars).result.chomp
     end
 
     def self.apply_by_node(node, vars=nil)
 	filename = node["ncg_template"]
 	Netomata::Template::Context.apply_by_filename(filename, vars)
     end
-
-
 end
 
 class Netomata::Template::Result
@@ -92,8 +102,8 @@ class Netomata::Template::Result
     attr_reader :result
 
     def initialize(filename, vars=nil)
-	@template = Netomata::Template.new(filename)
+	@erb = Netomata::Template::FromFile.new(filename)
 	@context = Netomata::Template::Context.new(vars)
-	@result = @template.result(@context.binding)
+	@result = @erb.result(@context.binding)
     end
 end

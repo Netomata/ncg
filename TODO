@@ -9,3 +9,5 @@ Raise NetomataError for config errors
 
 Use missing_ (missing_instance_var, if there is such a thing?) methods in
 template apply_* routines, to catch references to unpassed variables
+
+Clean up VLAN code in sample/templates/configs/devices/routers/cisco/config.ncg

@@ -90,25 +90,11 @@ class Netomata::Template::Context
     # class methods
 
     def self.apply_by_filename(filename, vars=nil)
-	Netomata::Template::Result.new(filename, vars).result.chomp
+	Netomata::Template::FromFile.new(filename).result_from_vars(vars).chomp
     end
 
     def self.apply_by_node(node, vars=nil)
 	filename = node["ncg_template"]
 	Netomata::Template::Context.apply_by_filename(filename, vars)
-    end
-end
-
-class Netomata::Template::Result
-
-    include Netomata::Utilities::ClassMethods
-    include Netomata::Utilities
-
-    attr_reader :result
-
-    def initialize(filename, vars=nil)
-	@erb = Netomata::Template::FromFile.new(filename)
-	@context = Netomata::Template::Context.new(vars)
-	@result = @erb.result(@context.binding)
     end
 end

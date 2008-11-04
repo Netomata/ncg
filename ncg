@@ -61,13 +61,13 @@ net.keys_having_key("ncg_output").each { |target_key|
     # set up shortcut "target" variable
     target = net[target_key]
 
-    r = Netomata::Template::Result.new(template_filename, {
+    r = Netomata::Template::FromFile.new(template_filename).result_from_vars({
 	"@net" => net,
         "@target_key" => target_key,
         "@target" => target
     })
 
     of = File.new(target["ncg_output"], "w")
-    of.write(r.result)
+    of.write(r)
     of.close
 }

@@ -17,8 +17,13 @@ class Netomata::Template::FromString
 	@erb = ERB.new(str, 0, "<>", "@erb_result")
     end
 
-    def result(b = nil)
-	@erb.result(b)
+    def result(binding = nil)
+	@erb.result(binding)
+    end
+
+    def result_from_vars(vars = nil)
+	context = Netomata::Template::Context.new(vars)
+	@erb.result(context.binding)
     end
 end
 

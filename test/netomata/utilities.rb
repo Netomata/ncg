@@ -1,6 +1,6 @@
 # for ruby-debug, per
 # http://blog.nanorails.com/articles/2006/07/14/a-better-rails-debugger-ruby-debug
-SCRIPT_LINES__ = {}
+# SCRIPT_LINES__ = {}
 
 cwd = File.expand_path(File.dirname(__FILE__))
 if not $LOAD_PATH.include?(cwd) then $LOAD_PATH.unshift(cwd) end
@@ -11,9 +11,6 @@ if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end
 require 'netomata'
 
 require 'test/unit'
-require 'ruby-debug'
-require 'stringio'
-require 'yaml'
 
 class UtilitiesTest < Test::Unit::TestCase
     # First set of tests for Netomata::Utilities

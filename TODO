@@ -5,6 +5,9 @@ Make <% ... %> assignments late-binding rather than early-binding
 Detect and deal with self-referenctial loops of form
 	domain = <% "mgmt." + @target["(...)!domain"] %>
 
+Figure out automatic way to check for existence of variables used in templates
+	Some sort of mode switch on [] accesses, on when evaluating templates?
+
 Add file/line info to error messages
 
 Raise NetomataError for config errors

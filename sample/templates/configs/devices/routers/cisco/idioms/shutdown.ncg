@@ -1,4 +1,6 @@
-<%=
+<%
+    raise "argument '@active' undefined" unless instance_variable_defined?("@active")
+%><%=
     if @active == "yes" then
         "no shutdown"
     else

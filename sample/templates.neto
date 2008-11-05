@@ -91,8 +91,11 @@ templates!devices!(+) {
 	shutdown {
 	    ncg_template = sample/templates/configs/devices/routers/cisco/idioms/shutdown.ncg
 	}
-	vrrp {
-	    ncg_template = sample/templates/configs/devices/routers/cisco/idioms/vrrp.ncg
+	vlan_ip_address {
+	    ncg_template = sample/templates/configs/devices/routers/cisco/idioms/vlan_ip_address.ncg
+	}
+	vlan_vrrp {
+	    ncg_template = sample/templates/configs/devices/routers/cisco/idioms/vlan_vrrp.ncg
 	}
     }
 }

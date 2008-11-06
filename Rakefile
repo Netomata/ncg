@@ -20,6 +20,11 @@ task "configs" do
     puts "Success!"
 end
 
+desc "Generate RDOC documentation"
+task "rdoc" do
+    sh 'rdoc netomata.rb netomata/'
+end
+
 desc "Snapshot current SVN trunk to demo tag"
 task "tag_demo" => ["test", "configs"] do
     svn_status = `svn status`

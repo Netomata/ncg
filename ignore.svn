@@ -1,2 +1,5 @@
 t.rb
 t2.rb
+doc
+doc/
+doc/*

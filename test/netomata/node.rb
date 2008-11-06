@@ -15,6 +15,15 @@ require 'ruby-debug'
 require 'stringio'
 require 'yaml'
 
+# need to crack these open for testing
+class Netomata::Node
+    public :dictionary_store
+    public :dictionary_tuple
+    public :node_fetch
+    public :selector_to_key
+    public :valid?
+end
+
 class NodeTest_1 < Test::Unit::TestCase
     # First set of tests for Netomata::Node.
     # This set tests fundamental functionality, _without_ assuming that []
@@ -75,7 +84,6 @@ class NodeTest_1 < Test::Unit::TestCase
     end
 
     def test_dictionary_tuple
-
 	assert_equal [@n, "n1"], @n.dictionary_tuple("n1")
 	assert_equal [@n, "n1"], @n.dictionary_tuple("!n1")
 
@@ -103,9 +111,9 @@ class NodeTest_1 < Test::Unit::TestCase
 	# dictionary_tuple invocation.  We can check that it exists after,
 	# though
 	assert_not_nil @n.dictionary_tuple("n0!n1",true)
-        assert_not_nil @n["n0"]	# check that it exists
+	assert_not_nil @n["n0"]	# check that it exists
 	assert_not_nil @n.dictionary_tuple("!n9!n1",true)
-        assert_not_nil @n["n9"]	# check that it exists
+	assert_not_nil @n["n9"]	# check that it exists
     end
 
     def test_node_fetch
@@ -162,9 +170,29 @@ class NodeTest_2 < Test::Unit::TestCase
     end
 
     def test_fetch
-	assert_raise RuntimeError do
-	    @node.fetch("n1!n11!n114!k1141")	#  missing node
-	end
+	assert_equal "v1122", @node.fetch("n1!n11!n112!k1122")
+	assert_equal "v1122", @node.fetch("!n1!n11!n112!k1122")
+	assert_equal "missing leaf",
+	    @node.fetch("n1!n11!n112!k1124", "missing leaf")
+	assert_equal "missing leaf",
+	    @node.fetch("!n1!n11!n112!k1124", "missing leaf")
+	assert_equal "missing node",
+	    @node.fetch("n1!n11!n114!k1141", "missing node")
+	assert_equal "missing node",
+	    @node.fetch("!n1!n11!n114!k1141", "missing node")
+	assert_equal "missing leaf block",
+	    @node.fetch("n1!n11!n112!k1124") { "missing leaf block" }
+	assert_equal "missing leaf block",
+	    @node.fetch("!n1!n11!n112!k1124") { "missing leaf block" }
+	assert_equal "missing node block",
+	    @node.fetch("n1!n11!n114!k1141") { "missing node block" }
+	assert_equal "missing node block",
+	    @node.fetch("!n1!n11!n114!k1141") { "missing node block" }
+	# assert_raise IndexError do
+	#     @node.fetch("n1!n11!n112!k1124")	# missing leaf
+	# end
+	assert_equal nil,  @node.fetch("n1!n11!n112!k1124") # missing leaf
+	assert_equal nil, @node.fetch("n1!n11!n114!k1141")	#  missing node
     end
 
     def test_node_fetch
@@ -295,6 +323,11 @@ class NodeTest_2 < Test::Unit::TestCase
 	assert_equal false, @node.has_key?("n4")
 	assert_equal false, @node.has_key?("!n1!n14")
 	assert_equal false, @node.has_key?("n1!n14")
+    end
+
+    def test_keys_having_key
+	assert_equal [], @node.keys_having_key("k_uncommon_k")
+	assert_equal ["!n1", "!n2"], @node.keys_having_key("k_common_k")
     end
 
     def test_import_table

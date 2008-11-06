@@ -1,0 +1,80 @@
+.TH NCG 1 "" "" "Netomata, Inc."
+.SH NAME
+ngc \- Netomata Config Generator
+.SH SYNOPSYS
+.B ncg 
+.RB [ \-v | \-\-verbose ]
+.RB [ \-k | \-\-keys ]
+.RB [ \-d | \-\-dump ]
+.RB [ \-h | \-\-help ]
+.I file [...]
+
+.SH DESCRIPTION
+.B ncg
+generates config files for network devices and services described
+by 
+.B .neto
+format file(s).
+
+.B ncg
+parses the file(s) (in 
+.B .neto
+format) specified by the
+.I file ...
+argument(s)
+to build an internal model of a network, and then 
+generates a config file for each node in the resulting
+network model which has a
+.B ncg_output
+tag defined for it (which specifies the file where the node's config should
+be written to, creating or overwriting the file as necessary),
+using the template file (in
+.BR .ncg
+format)
+specified by the node's
+.B ncg_template
+tag. 
+
+.SH OPTIONS
+.TP
+.BR \-v " or " \-\-verbose                   
+Enable verbose mode, causing
+.B ncg
+to emit comments about what it is doing as it proceeds.
+.TP
+.BR \-k " or " \-\-keys
+Print a list of all keys defined within the model, then exit without generating any config files.
+.TP
+.BR \-d " or " \-\-dump
+Print the fully-parsed data structure defined by the model, then exit without
+generating any config files.
+.TP
+.BR \-h " or " \-\-help
+Print a help message and exit.
+
+.SH ENVIRONMENT
+.P
+.B ncg
+doesn't look for anything special in the environment, beyond
+what the standard Ruby interpreter looks for (see 
+.BR ruby (1)).
+
+.SH HISTORY
+.P
+.B ncg
+was originally written in 2008 by Brent Chapman of Netomata, Inc.
+
+.SH BUGS
+.P
+Probably.  Please report any you find by email to bugs@netomata.com.
+
+.SH AUTHOR
+Brent Chapman <brent@netomata.com> of Netomata, Inc.
+
+.SH COPYRIGHT
+Copyright (c) 2008 Netomata, Inc.
+.PP
+All Rights Reserved.
+
+.SH "SEE ALSO"
+ncg(5), neto(5).

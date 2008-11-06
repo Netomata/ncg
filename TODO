@@ -2,6 +2,9 @@ Fix import_file and import_table to get rid of basekey?
 
 Make <% ... %> assignments late-binding rather than early-binding
 
+Make --dump generate output in .neto format, such that it could itself be
+used as input.
+
 Detect and deal with self-referenctial loops of form
 	domain = <% "mgmt." + @target["(...)!domain"] %>
 

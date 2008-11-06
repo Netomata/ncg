@@ -30,9 +30,12 @@ Create a Node.
   newly-created Node takes that as its parent
 =end
     def initialize(parent=nil)
-	self.legitimize(parent)
+	# It's important to call parent=() rather than setting @parent
+	# directly, because parent=() also does a recursive fixup of
+	# parent/root/key settings in children.
+	self.parent=(parent)
 	# unset key (will be figured out and cached first time key() is called)
-	@key = nil
+	self.key_reset
 	# invoke super()
 	super()
     end
@@ -104,7 +107,7 @@ Create a Node.
     # Graft _node_ in as self[_key_]
     def graft(key,node)
 	self[key].update(node)
-	self[key].legitimize(self)
+	self[key].parent=(self)
     end
 
     # :call-seq:
@@ -324,21 +327,31 @@ Create a Node.
     #   key -> String
     #
     # Return Node's own key
+    #--
+    # Key is kept in an oddly-named variable to keep us from accidentally
+    # accessing it directly via the obvious "@key" elsewere in this class.
+    # It's important to use the self.key() method because the method figures
+    # out what the key should be the first time it is used, and then caches
+    # the result for later reuse.
+    #++
     def key
-	if (@key.nil?) then
+	if (@hidden_key.nil?) then
 	    # my key hasn't been cached yet, so figure it out
-	    if self.parent.nil? then
-		return @key = "!"
+	    #
+	    # We use @hidden_parent directly throughout here,
+	    # rather than self.parent, for performance reasons
+	    if @hidden_parent.nil? then
+		return @hidden_key = "!"
 	    else
-		self.parent.keys.each { |k,v|
-		    if self.parent[k] == self then
-			return @key = buildkey(self.parent.key,k)
+		@hidden_parent.keys.each { |k,v|
+		    if @hidden_parent[k] == self then
+			return @hidden_key = buildkey(@hidden_parent.key,k)
 		    end
 		}
 		raise "Self not found among parent's children!"
 	    end
 	end
-	@key
+	@hidden_key
     end
 
     # :call-seq:
@@ -377,34 +390,66 @@ Create a Node.
     #
     # Returns parent of current Node.  Returns nil if Node has no parent
     # (i.e., if it's the root node)
+    #--
+    # Parent is kept in an oddly-named variable to keep us from accidentally
+    # setting it directly via @parent elsewere in this class.  It's generally
+    # important to use the parent=() method because the method does some
+    # recursive fixup of root and key in children when a node's parent is
+    # changed.
+    #++
     def parent
-	@parent
+	@hidden_parent
     end
 
     # :call-seq:
-    #   parent=(p) -> p
+    #   parent=(my_parent) -> my_parent
     #
     # Sets the parent of current Node.
-    def parent=(p)
-	# legitimize sets @parent = p, and does other stuff recursively
-	legitimize(p)
+    # Makes self a legitimate child of _my_parent_, recursively
+    # fixing parent, root, and key of self and any child Nodes as needed
+    def parent=(my_parent)
+	@hidden_parent = my_parent
+	if (my_parent.nil?) then
+	    # if parent is nil, then we are root
+	    @hidden_root = self
+	else
+	    @hidden_root = my_parent.root
+	end
+	# call recursively, to set root all the way down the tree
+	# Sometimes we're being called from initialize(), and things aren't
+	# set up right yet, causing self.keys to return nil (instead of []),
+	# and self.each raises an error (instead of just doing nothing).
+	if (! self.keys.nil?) then
+	    self.each { |k,v| 
+		if (v.is_a?(Netomata::Node)) then
+		    v.parent=(self)
+		end
+	    }
+	end
     end
 
     # :call-seq:
     #   node.root -> Node
     #
     # Get root Node (most distant ancestor) of current Node
+    #--
+    # Root is kept in an oddly-named variable to keep us from accidentally
+    # accessing it from elsewhere in this class directly via the obvious
+    # "@root". It's important to use the self.key() method because the method
+    # figures out what the key should be the first time it is used, and then
+    # caches the result for later reuse.
+    #++
     def root
-	if (@root.nil?) then
-	    # sets @root, if it isn't already set
-	    if (@parent.nil?) then
+	if (@hidden_root.nil?) then
+	    # sets @hidden_root, if it isn't already set
+	    if (@hidden_parent.nil?) then
 		# no parent, so we must be root
-		@root = self
+		@hidden_root = self
 	    else
-		@root = @parent.root
+		@hidden_root = @hidden_parent.root
 	    end
 	end
-	@root
+	@hidden_root
     end
 
     # :call-seq:
@@ -462,7 +507,7 @@ Create a Node.
 	h.each { |k,v|
 	    sk = self[k] = v.dup
 	    if (sk.is_a?(Netomata::Node)) then
-		sk.legitimize(self)
+		sk.parent=(self)
 	    end
 	}
 	self
@@ -556,9 +601,9 @@ Create a Node.
 	end
 	if (key == "!") then
 	    # FIXME: not sure this is correct.
-	    # 	Maybe should return something like [@root, "(.)"]?
+	    # 	Maybe should return something like [self.root, "(.)"]?
 	    # 	But "(.)" won't work as key to Dictionary methods...
-	    return [@root, nil]
+	    return [self.root, nil]
 	end
 	if (key[-1..-1] == "!") then
 	    # strip trailing "!"
@@ -580,7 +625,7 @@ Create a Node.
 	    l,r = key.split("!",2)
 	    if (l.empty?) then
 		# l == nil means key started with "!", so reference from root
-		return @root.dictionary_tuple(r,create)
+		return self.root.dictionary_tuple(r,create)
 	    else
 		ls = selector_to_key(l,r)
 		if (ls != l) then
@@ -615,19 +660,19 @@ Create a Node.
 
     # Initializes self as a copy of the _original_ node, by duplicating each
     # subelement of _original_ in turn. If a subelement is itself a Node, uses
-    # legitimize() on the copy of the subelement to fix up its parent
+    # parent=() on the copy of the subelement to fix up its parent
     # reference to point to self (rather than whatever parent
     # the original had before)
     def initialize_copy(original)
 	# leave these to be set by the dup() that's calling us
-	@parent = nil	# because we aren't sure who our parent is
-	@root = nil	# because we aren't sure who the root is
-	@key = nil	# because we aren't sure who we are
+	@hidden_parent = nil	# because we aren't sure who our parent is
+	@hidden_root = nil	# because we aren't sure who the root is
+	@hidden_key = nil	# because we aren't sure who we are
 	# make a duplicate of each value
 	original.each { |k,v|
 	    sk = dictionary_store(k,v.dup)
 	    if (sk.is_a?(Netomata::Node)) then
-		sk.legitimize(self)
+		sk.parent=(self)
 	    end
 	}
 	self
@@ -641,27 +686,18 @@ Create a Node.
 
     protected :initialize_copy
 
-    # Makes self a legitimate child of _my_parent_, recursively
-    # fixing parent, root, and key of self and any child Nodes as needed
-    def legitimize(my_parent)
-	@parent = my_parent
-	if (my_parent.nil?) then
-	    # if parent is nil, then we are root
-	    @root = self
-	else
-	    @root = my_parent.root
-	end
-	# call recursively, to set root all the way down the tree
-	# Sometimes we're being called from initialize(), and things aren't
-	# set up right yet, causing self.keys to return nil (instead of []),
-	# and self.each raises an error (instead of just doing nothing).
-	if (! self.keys.nil?) then
-	    self.each { |k,v| 
-		if (v.is_a?(Netomata::Node)) then
-		    v.legitimize(self)
-		end
-	    }
-	end
+    # :call-seq:
+    #   key_reset()
+    #
+    # Resets the key of the current node. 
+    #--
+    # We can't really trust what somebody else tells us our key should be, so
+    # this gives us a way to reset the current node's key to nil, so that
+    # self.key() will figure out (and cache) what it should be the next
+    # time something attempts to access it.
+    #++
+    def key_reset
+	@hidden_key = nil
     end
 
     # Makes this Node valid by recursively ensuring that all child nodes:
@@ -679,13 +715,13 @@ Create a Node.
 		puts "# fixing self[\"#{self.key}!#{k}\"].parent" if $debug
 		self[k].parent = self
 	    end
-	    if (! self[k].root.equal?(@root)) then		# check root
+	    if (! self[k].root.equal?(self.root)) then		# check root
 		puts "# fixing self[\"#{self.key}!#{k}\"].root" if $debug
-		self[k].root = @root
+		self[k].root = self.root
 	    end
 	    if (self[k].key != child_k) then			# check key
 		puts "# fixing self[\"#{self.key}!#{k}\"].key" if $debug
-		self[k].key = child_k
+		self[k].key_reset
 	    end
 	    self[k].make_valid	# check recursively
 	}
@@ -719,12 +755,12 @@ Create a Node.
 	if self.has_key?(rest_of_key) then
 	    # we've got the rest of the key, so return our own key
 	    return self.key
-	elsif self.parent.nil? then
+	elsif @hidden_parent.nil? then
 	    # we're at the root, so nothing has the key
 	    return nil
 	else
 	    # see if our parent has the rest of the key
-	    return self.parent.selector_inheritor_to_key(rest_of_key)
+	    return @hidden_parent.selector_inheritor_to_key(rest_of_key)
 	end
     end
 
@@ -744,7 +780,7 @@ Create a Node.
 	    elsif (! self[k].parent.equal?(self)) then	# check parent
 		debugger if $debug
 		return false
-	    elsif (! self[k].root.equal?(@root)) then	# check root
+	    elsif (! self[k].root.equal?(self.root)) then # check root
 		debugger if $debug
 		return false
 	    elsif (self[k].key != child_k) then		# check key
@@ -793,8 +829,8 @@ Create a Node.
 	else
 	    if k.nil? then
 		# if we got back n, but k is nil, then this was a reference
-		# to the root node, so just return @root
-		return @root
+		# to the root node, so just return self.root
+		return self.root
 	    else
 		if n.dictionary_has_key?(k) then
 		    # we know the element has the key, so no need to pass
@@ -829,7 +865,7 @@ Create a Node.
 	else
 	    if k.nil? then
 		# if we got back n, but k is nil, then this was a reference
-		# to the root node, so just return @root
+		# to the root node
 		raise IndexError, "Attempt to store nil key in root"
 	    else
 		return n.dictionary_store(k,value)
@@ -898,7 +934,7 @@ Create a Node.
 		    return r.succ
 		end
 	    when ".."
-		return self.parent.key
+		return @hidden_parent.key
 	    when "..."
 		return self.selector_inheritor_to_key(rest_of_key)
 	    when /.*=.*/

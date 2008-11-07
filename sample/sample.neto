@@ -4,7 +4,7 @@ syslog_ip	= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.26") %>
 syslog_facility = local5
 snmp_ip		= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.27") %>
 snmp_community	= public
-domain		= edgenuity.net
+domain		= example.com
 
 .table sample/vlans
 

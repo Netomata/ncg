@@ -10,14 +10,14 @@ boot-start-marker
 boot system flash bootflash:cat4500-entservicesk9-mz.122-40.SG.bin
 boot-end-marker
 !
-enable secret 5 $1$1BW4$gGvqlOneOo7NyZJofhNg1.
+enable secret 46,ShaZam/
 !
-username access password 7 021511490E4A1A2F5E4F0712
+username access password 48,SesAme-
 aaa new-model
 clock timezone PST -8
 clock summer-time PDT recurring
 ip subnet-zero
-ip domain-name mgmt.edgenuity.net
+ip domain-name mgmt.example.com
 !
 ip ssh time-out 60
 ip ssh source-interface Vlan16
@@ -703,7 +703,7 @@ control-plane
 line con 0
  stopbits 1
 line vty 0 4
- password 7 0518131D24005B070B041919
+ password 48,SesAme-
  transport input ssh
 !
 end

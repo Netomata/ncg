@@ -34,3 +34,11 @@ task "tag_demo" => ["test", "configs"] do
     sh 'svn delete https://dev.netomata.com/svn/ncg/tags/demo -m "Removing old demo tag"'
     sh 'svn copy https://dev.netomata.com/svn/ncg/trunk https://dev.netomata.com/svn/ncg/tags/demo -m "Setting new demo tag"'
 end
+
+desc "Accept the current generated configs as the new baseline"
+task "accept_baseline" => ["sample/configs/switch-1.config",
+			    "sample/configs/switch-2.config"] do
+    sh 'cp -p sample/configs/switch-1.config sample/configs/switch-1.baseline'
+    sh 'cp -p sample/configs/switch-2.config sample/configs/switch-2.baseline'
+end
+

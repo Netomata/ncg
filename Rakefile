@@ -22,7 +22,7 @@ end
 
 desc "Generate RDOC documentation"
 task "rdoc" do
-    sh 'rdoc netomata.rb netomata/'
+    sh 'rdoc -o rdoc netomata.rb netomata/'
 end
 
 desc "Snapshot current SVN trunk to demo tag"

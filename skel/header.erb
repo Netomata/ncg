@@ -4,12 +4,4 @@
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
-
-    raise "argument '@active' undefined" unless instance_variable_defined?("@active")
-%><%=
-    if @active == "yes" then
-        "no shutdown"
-    else
-        "shutdown"
-    end
 %>

@@ -1,4 +1,10 @@
 <%
+# $Id$
+# Copyright (c) 2008 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/license_v1 for important notices,
+# disclaimers, and license terms (GPL v2.0 or alternative).
+
     raise "argument '@target' not defined" unless instance_variable_defined?("@target")
     raise "@target[\"(...)!base_ip\"] not defined" if @target["(...)!base_ip"].nil?
     raise "@target[\"role\"] not defined" if @target["role"].nil?

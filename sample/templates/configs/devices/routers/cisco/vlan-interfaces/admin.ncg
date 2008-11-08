@@ -1,4 +1,10 @@
 <%
+# $Id$
+# Copyright (c) 2008 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/license_v1 for important notices,
+# disclaimers, and license terms (GPL v2.0 or alternative).
+
     raise "vlan key 'name' undefined" if (! @vlan.has_key?("name"))
     raise "vlan key 'description' undefined" if (! @vlan.has_key?("description"))
     raise "vlan key 'id' undefined" if (! @vlan.has_key?("id"))

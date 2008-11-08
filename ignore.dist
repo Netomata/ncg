@@ -1,0 +1,8 @@
+Rakefile
+ignore.svn
+ignore.dist
+ncg.tar
+ncg.tar.gz
+dist
+rdoc
+.svn

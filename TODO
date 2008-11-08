@@ -1,3 +1,10 @@
+Set up environment variables to locate libraries
+
+Make file references in ".table" and ".include" relative to invoking file, 
+not cwd.
+
+Make "sample" independent of cwd.
+
 Fix import_file and import_table to get rid of basekey?
 
 Create Rakefile(s) for man pages

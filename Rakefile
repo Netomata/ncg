@@ -42,3 +42,19 @@ task "accept_baseline" => ["sample/configs/switch-1.config",
     sh 'cp -p sample/configs/switch-2.config sample/configs/switch-2.baseline'
 end
 
+desc "Create a 'tar' file for distribution"
+# Note that this is a _task_ not a _file_, so that it always gets executed.
+# If it were a _file_ directive, it wouldn't get executed if the file already
+# existed (as it often does), unless we listed all the files it depends on
+# (which would be a very long list)
+task "dist/ncg.tar" do
+    sh 'tar cXf ignore.dist dist/ncg.tar .'
+end
+
+desc "Create a 'tar.gz' file for distribution"
+file "dist/ncg.tar.gz" => ["dist/ncg.tar"] do
+    sh 'gzip -c dist/ncg.tar > dist/ncg.tar.gz'
+end
+
+desc "Create all files for distribution"
+task "dist" => ["dist/ncg.tar", "dist/ncg.tar.gz"]

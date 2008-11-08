@@ -1,0 +1,70 @@
+Netomata Alpha Release Notes, 7 Nov 2008
+========================================
+
+Thank you for agreeing to participate in Netomata's first alpha
+release, and welcome!
+
+If you have any questions or comments, please contact me:
+
+	Brent Chapman <brent@netomata.com>
+	+1 510 355 0123 (main)
+	+1 510 355 0134 (fax)
+	+1 510 355 1621 (direct)
+
+This ALPHA version of the software is provided under a
+Nondisclosure Agreement.  Please honor it.  Also, please
+keep in mind that as an alpha release, this is definitely
+_not_ suitable for production use yet.  Please play with
+it, poke around at it, and tell us how it breaks or how
+it falls short of your expectations, so that we can get
+it up to snuff before general release.
+
+Documentation is at http://www.netomata.com/docs
+Please feel free to contribute to it... ;-)
+
+Dependencies are discussed in the "Dependencies" file. 
+In a nutshell, you need Ruby 1.8.6 (it might work under
+other versions, but it hasn't been tested there), and
+the "facets" and "ruby-debug" Ruby gems.
+
+Try It
+------
+
+1)  cd to the directory where "ncg" is (at the moment, it only looks
+    for its libraries and such in the current working directory; before
+    the beta release, we'll set up environment variables for it to use
+    to find its libraries and such).
+
+2)  Run the following command (assumes that "." is in your search path):
+	ncg -v sample/sample.neto
+
+3)  Take a look at these file:
+	sample/configs/switch-1.config
+	sample/configs/switch-2.config
+    Note that they're newly-generated, that they're complete ready-to-use
+    Cisco config files, and that they match the "baseline" config files at:
+	sample/configs/switch-1.baseline
+	sample/configs/switch-2.baseline
+
+4)  Start experimenting by reading through sample/sample.neto, and working
+    your way out from there.
+
+More About the Sample Scenario
+------------------------------
+
+The sample scenario is a small single-rack data center for an
+Internet-facing web service.  The rack contains:
+
+    2 Cisco 4948-10G switch/routers (48 ports of GigE and 2 of 10GigE),
+	configured largely as mirror images of each other
+    2 Cisco ASA 5510 firewalls (running as an active/standby pair)
+    2 Cisco CSS 11501 load balancers (running as an active/standby pair)
+    12 (of a planned total of 24) real servers running RedHat and Xen
+	(several dozen Xen virtual RedHat servers run on those real servers)
+
+Currently, the "sample" directory contains a complete Netomata
+config for the pair of Cisco 4948-10G switch/routers deployed in
+an active/active configuration.  At this point, the sample setup
+is only generating the configs for the switches; before the beta
+release, we plan to have it also generating configs for the firewalls
+and load balancers, as well as for MRTG, Nagios, and DNS.

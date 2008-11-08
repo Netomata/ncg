@@ -1,3 +1,13 @@
+Before LISA:
+
+Set up license web pages
+    http://www.netomata.com/license_v1
+    http://www.netomata.com/license_alpha_v1
+
+Change all files to refer to license_alpha_v1 instead of license_v1
+
+----
+
 Set up environment variables to locate libraries
 
 Make file references in ".table" and ".include" relative to invoking file, 

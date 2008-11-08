@@ -65,7 +65,7 @@ file "dist/ncg.tar.gz" => ["dist/ncg.tar"] do
 end
 
 desc "Create all files for distribution"
-task "dist" => ["Manifest", "Manifest.svn", "dist/ncg.tar", "dist/ncg.tar.gz"]
+task "dist" => ["Manifest", "Versions", "dist/ncg.tar", "dist/ncg.tar.gz"]
 
 desc "Create Manifest"
 task "Manifest" do
@@ -78,10 +78,10 @@ task "Manifest" do
     m.close
 end
 
-desc "Create SVN Manifest, showing version details"
-task "Manifest.svn" do
-    sh 'svn info > Manifest.svn'
-    sh 'svn status -v >> Manifest.svn'
+desc "Create Versions"
+task "Versions" do
+    sh 'svn info > Versions'
+    sh 'svn status -v >> Versions'
 end
 
 desc "Update svn:ignore property"

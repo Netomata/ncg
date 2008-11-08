@@ -6,10 +6,10 @@
 
 require 'rake/testtask'
 
-lib_dir = File.expand_path('netomata')
-
 desc "Run all tests and generate/compare configs against baselines"
 task "default" => ["test", "configs"]
+
+lib_dir = File.expand_path('netomata')
 
 Rake::TestTask.new('test') do |t|
     t.pattern = 'test/**/*.rb'
@@ -48,13 +48,15 @@ task "accept_baseline" => ["sample/configs/switch-1.config",
     sh 'cp -p sample/configs/switch-2.config sample/configs/switch-2.baseline'
 end
 
+dist_exclude_files = File.new("ignore.dist").readlines
+dist_exclude_files.each { |l| l.chomp! }
+dist_files = FileList['**/*']
+dist_exclude_files.each { |e| dist_files.exclude(e) }
+dist_files.exclude {|f| File.stat(f).directory? }
+
 desc "Create a 'tar' file for distribution"
-# Note that this is a _task_ not a _file_, so that it always gets executed.
-# If it were a _file_ directive, it wouldn't get executed if the file already
-# existed (as it often does), unless we listed all the files it depends on
-# (which would be a very long list)
-task "dist/ncg.tar" do
-    sh 'tar cXf ignore.dist dist/ncg.tar .'
+file "dist/ncg.tar" => ["Manifest"] do
+    sh 'tar cfT dist/ncg.tar Manifest'
 end
 
 desc "Create a 'tar.gz' file for distribution"
@@ -64,3 +66,13 @@ end
 
 desc "Create all files for distribution"
 task "dist" => ["dist/ncg.tar", "dist/ncg.tar.gz"]
+
+desc "Create Manifest"
+task "Manifest" do
+    m = File.new("Manifest", "w")
+    m.truncate(0)
+    dist_files.sort.each { |l|
+	m.puts(l)
+    }
+    m.close
+end

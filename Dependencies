@@ -1,14 +1,51 @@
-MacOS 10.5.5 Leopard
---------------------
+Dependencies
+------------
+We haven't yet fully identified all of the dependencies of this
+software; we apologize for that, and promise that we will do so
+before making a general release.  
 
-[Install Xcode Tools package from Optional Installs folder on MacOS 10.5 DVD]
+So far, we know about the following dependencies:
 
-[Add to ~/.bashrc:
-	export GEM_PATH=/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/gems/1.8:/Library/Ruby/Gems/1.8
+    Ruby
+	We've been developing the code under Ruby 1.8.6.
+	We haven't tried it under Ruby 1.9 yet; if you do, let us
+	know how it works! ;-)
+
+    Ruby Facets (http://facets.rubyforge.org/)
+    	In particular, we make heavy use of the "Dictionary" class
+	from the Facets collection of methods and libraries.  We've
+	been using Facets version 2.4.1.  You can easily install
+	Facets with the Ruby "gem" tool, if you have that set up as
+	part of your Ruby installation:
+		gem install facets
+
+    ruby-debug (http://rubyforge.org/projects/ruby-debug/)
+    	We've been using version 0.10.2 of this for our debugging.
+	It's entirely possible that we've left some debugging code
+	in there, which will fail if ruby-debug is missing on your
+	system.  Ruby-debug can be easily installed with the Ruby
+	"gem" tool:
+		gem install ruby-debug
+
+For whatever it's worth, most of the development has been done
+under Mac OS X 10.5.5 (Leopard).  Beyond a basic MacOS X Leopard
+installation, you need to do 3 things to do the same:
+
+    1)  Install the "Xcode Tools" package from the "Optional Installs"
+	folder on the MacOS 10.5 DVD, if you haven't already.
+
+    2)  Set the following environment variables in your .bashrc or
+	equivalent (we're not CERTAIN this is necessary, but it doesn't
+	seem to hurt anything):
+
+	GEM_PATH=/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/gems/1.8:/Library/Ruby/Gems/1.8
 	export GEM_HOME=/Library/Ruby/Gems/1.8
-]
 
-gem update --system
-gem update
-gem install facets
-gem install ruby-debug
+    3)  Run the following commands as root to install the "facets"
+    	and "ruby-debug" packages (discussed above):
+
+	    gem update --system
+	    gem update
+	    gem install facets
+	    gem install ruby-debug
+

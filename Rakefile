@@ -40,10 +40,7 @@ task "tag_demo" => ["test", "configs"] do
     svn_info_rev = `svn info | egrep '^Revision: '`
     svn_info_head_rev = `svn info -r HEAD | egrep '^Revision: '`
     unless (svn_info_rev == svn_info_head_rev)
-	fail "#"*60 + "\n" + "Version mismatch:\n"
-		+ "\tsvn info\t=> \t#{svn_info_rev}"
-		+ "\tsvn info -r HEAD\t=> #{svn_info_head_rev}"
-		+ "'svn update' needed\n" + "#"*60
+	fail "#"*60 + "\n" + "Version mismatch:\n" + "\tsvn info\t=> \t#{svn_info_rev}" + "\tsvn info -r HEAD\t=> #{svn_info_head_rev}" + "'svn update' needed\n" + "#"*60
     end
     sh 'svn delete https://dev.netomata.com/svn/ncg/tags/demo -m "Removing old demo tag"'
     sh 'svn copy https://dev.netomata.com/svn/ncg/trunk https://dev.netomata.com/svn/ncg/tags/demo -m "Setting new demo tag"'

@@ -15,7 +15,7 @@ require 'optparse'
 # arguments are parsed, so that the library location can be specified by a
 # '-L' command line argument
 
-$NETOMATA_LIB = "/usr/local/netomata"
+$NETOMATA_LIB = "/usr/local/lib/netomata/lib"
 if (ENV.key?("NETOMATA_LIB")) then
     $NETOMATA_LIB = ENV["NETOMATA_LIB"]
 end

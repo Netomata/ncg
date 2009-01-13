@@ -27,8 +27,11 @@ So far, we know about the following dependencies:
 	"gem" tool:
 		gem install ruby-debug
 
+MacOS X 10.5.6 (Leopard)
+========================
+
 For whatever it's worth, most of the development has been done
-under Mac OS X 10.5.5 (Leopard).  Beyond a basic MacOS X Leopard
+under Mac OS X 10.5.6 (Leopard).  Beyond a basic MacOS X Leopard
 installation, you need to do 3 things to do the same:
 
     1)  Install the "Xcode Tools" package from the "Optional Installs"
@@ -49,3 +52,20 @@ installation, you need to do 3 things to do the same:
 	    gem install facets
 	    gem install ruby-debug
 
+
+Ubuntu 8.10 (Intrepid)
+======================
+
+The following commands create the necessary environment for ncg on a
+Ubuntu 8.10 (Intrepid) system, assuming you use 'aptitude' for .deb package
+management ('apt-get' instead of 'aptitude' should work just fine, too, with
+the same arguments):
+
+	aptitude install ruby rubygems ruby-dev libbreakpoint-ruby
+	gem update
+	gem install facets
+	gem install ruby-debug
+	gem install breakpoint
+
+Similar commands would probably also do the trick for other versions of
+Ubuntu, as well as for Debian Linux.

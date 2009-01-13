@@ -87,7 +87,7 @@ task "VERSION" do
 end
 
 desc "Create a 'tar' file for distribution"
-task "dist/ncg.tar" => ["VERSION", "Manifest"] do
+task "dist_tar" => ["VERSION", "Manifest"] do
     version = File.new("VERSION").readline
     version.chomp!
     base = "ncg-#{version}"
@@ -98,7 +98,7 @@ task "dist/ncg.tar" => ["VERSION", "Manifest"] do
 end
 
 desc "Create a 'tar.gz' file for distribution"
-task "dist/ncg.tar.gz" => ["dist/ncg.tar"] do
+task "dist_tar_gz" => ["dist_tar"] do
     version = File.new("VERSION").readline
     version.chomp!
     base = "ncg-#{version}"
@@ -107,7 +107,12 @@ task "dist/ncg.tar.gz" => ["dist/ncg.tar"] do
 end
 
 desc "Create all files for distribution"
-task "dist" => ["svn_check", "VERSION", "Manifest", "Versions", "dist/ncg.tar", "dist/ncg.tar.gz"]
+task "dist" => ["svn_check", "VERSION", "Manifest", "Versions", "dist_tar", "dist_tar_gz"]
+
+desc "Clean out the dist directory"
+task "dist_clean" do
+    sh "rm -r dist/*"
+end
 
 desc "Create Manifest"
 task "Manifest" do

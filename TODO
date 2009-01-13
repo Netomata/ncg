@@ -8,6 +8,10 @@ Set up license web pages
 
 Change all files headers to refer to license_beta_v1 instead of license_v1
 
+Set up version/build number scheme
+    Encode version/build number into dist .tar filename
+    Make dist '.tar' files unpack into 'ncg-VERSION-BUILD' rather than '.'
+
 ----
 
 Make file references in ".table" and ".include" relative to invoking file, 

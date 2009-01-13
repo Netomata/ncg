@@ -72,18 +72,42 @@ dist_files = FileList['**/*']
 dist_exclude_files.each { |e| dist_files.exclude(e) }
 dist_files.exclude {|f| File.stat(f).directory? }
 
+desc "Create a 'VERSION' file for distribution"
+#task "VERSION" => ["svn_check"] do
+task "VERSION" do
+    puts "generating VERSION..."
+    release=`cat RELEASE`
+    release.chomp!
+    build=`svn info | awk '(/^Revision: /) { print $2 }'`
+    build.chomp!
+    v = File.new("VERSION", "w")
+    v.truncate(0)
+    v.puts("#{release}-#{build}")
+    v.close
+end
+
 desc "Create a 'tar' file for distribution"
-file "dist/ncg.tar" => ["Manifest"] do
-    sh 'tar cfT dist/ncg.tar Manifest'
+task "dist/ncg.tar" => ["VERSION", "Manifest"] do
+    version = File.new("VERSION").readline
+    version.chomp!
+    base = "ncg-#{version}"
+    distbase = "dist/#{base}"
+    sh "rm -f #{distbase}"
+    sh "ln -s .. #{distbase}"
+    sh "sed -e 's,^,#{base}/,' Manifest | tar chCfT dist #{distbase}.tar -"
 end
 
 desc "Create a 'tar.gz' file for distribution"
-file "dist/ncg.tar.gz" => ["dist/ncg.tar"] do
-    sh 'gzip -c dist/ncg.tar > dist/ncg.tar.gz'
+task "dist/ncg.tar.gz" => ["dist/ncg.tar"] do
+    version = File.new("VERSION").readline
+    version.chomp!
+    base = "ncg-#{version}"
+    distbase = "dist/#{base}"
+    sh "gzip -c #{distbase}.tar > #{distbase}.tar.gz"
 end
 
 desc "Create all files for distribution"
-task "dist" => ["svn_check", "Manifest", "Versions", "dist/ncg.tar", "dist/ncg.tar.gz"]
+task "dist" => ["svn_check", "VERSION", "Manifest", "Versions", "dist/ncg.tar", "dist/ncg.tar.gz"]
 
 desc "Create Manifest"
 task "Manifest" do

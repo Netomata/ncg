@@ -31,20 +31,29 @@ task "rdoc" do
     sh 'rdoc -o rdoc netomata.rb netomata/'
 end
 
-desc "Snapshot current SVN trunk to demo tag"
-task "tag_demo" => ["test", "configs"] do
+desc "Check whether 'svn commit' or 'svn update' is needed"
+task "svn_check" do
     svn_status = `svn status`
     unless svn_status.empty?
-	fail "#"*60 + "\n" + "'svn status' is not clean; are there unchecked-in files?\n" + "#"*60
+	fail ("#"*60 + "\n" +
+	      "'svn status' is not clean; are there unchecked-in files?\n" +
+	      "Need to do:\n\tsvn commit\n" +
+	      "#"*60)
     end
     svn_info_rev = `svn info | egrep '^Revision: '`
     svn_info_head_rev = `svn info -r HEAD | egrep '^Revision: '`
     unless (svn_info_rev == svn_info_head_rev)
-	fail ("#"*60 + "\n" + "Version mismatch:\n" +
+	fail ("#"*60 + "\n" + 
+	      "Version mismatch:\n" +
 	      "\tsvn info\t\t=> #{svn_info_rev}" +
 	      "\tsvn info -r HEAD\t=> #{svn_info_head_rev}" +
-	      "Need to do: svn update\n" + "#"*60)
+	      "Need to do:\n\tsvn update\n" +
+	      "#"*60)
     end
+end
+
+desc "Snapshot current SVN trunk to demo tag"
+task "tag_demo" => ["test", "configs", "svn_check"] do
     sh 'svn delete https://dev.netomata.com/svn/ncg/tags/demo -m "Removing old demo tag"'
     sh 'svn copy https://dev.netomata.com/svn/ncg/trunk https://dev.netomata.com/svn/ncg/tags/demo -m "Setting new demo tag"'
 end
@@ -73,7 +82,7 @@ file "dist/ncg.tar.gz" => ["dist/ncg.tar"] do
 end
 
 desc "Create all files for distribution"
-task "dist" => ["Manifest", "Versions", "dist/ncg.tar", "dist/ncg.tar.gz"]
+task "dist" => ["svn_check", "Manifest", "Versions", "dist/ncg.tar", "dist/ncg.tar.gz"]
 
 desc "Create Manifest"
 task "Manifest" do

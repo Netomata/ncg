@@ -33,6 +33,7 @@ end
 
 desc "Check whether 'svn commit' or 'svn update' is needed"
 task "svn_check" do
+    puts "checking whether 'svn commit' or 'svn update' is needed..."
     svn_status = `svn status`
     unless svn_status.empty?
 	fail ("#"*60 + "\n" +
@@ -97,6 +98,7 @@ end
 
 desc "Create Versions"
 task "Versions" do
+    puts "generating Versions..."
     sh 'svn info > Versions'
     sh 'svn status -v >> Versions'
 end

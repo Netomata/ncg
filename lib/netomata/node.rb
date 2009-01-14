@@ -146,87 +146,93 @@ Create a Node.
     # FIXME: need to document what _basekey_ does, or get rid of it
     # FIXME: need to insert a reference to .neto file format docs
     #++
-    def import_file(io,basekey="")
+    def import_file(io,basekey="",filename="UNKNOWN")
 	# FIXME add file/line info to error messages
 	if (! io.respond_to?(:each_line)) then
 	    raise ArgumentError,
 	    "'io' parameter to must provide an each_line() method"
 	end
 	pstack = [basekey]
-	io.each_line { |l|
-	    l.chomp!			# eliminate trailing newline
-	    l.gsub!(/#.*$/, "")		# eliminate trailing comments
-	    l.gsub!(/\s*$/, "")		# eliminate trailing whitespace
-	    l.gsub!(/^\s*/, "")		# eliminate leading whitespace
-	    case l
-	    when /^$/ then
-		# blank line
-		next	# skip blank lines
-	    when /^(\S*)\s*(<\s*(\S*))?\s*\{$/
-		# templates!devices!(+) {
-		# !devices!(+) < templates!devices!(type=router,make=cisco) {
-		k = $1
-		s = $3
-		kb = buildkey(pstack.last,k)
-		kn,kk = dictionary_tuple(kb,true)
-		raise "Unknown key #{k}" if(kn.nil? || kk.nil?)
-		if kn.has_key?(kk) then
-		    # key already exists, so use it
-		    if (! kn[kk].is_a?(Netomata::Node)) then
-			raise "Key #{k} already exists, but is not a Netomata::Node"
+	begin	# rescue block
+	    io.each_line { |l|
+		l.chomp!			# eliminate trailing newline
+		l.gsub!(/#.*$/, "")		# eliminate trailing comments
+		l.gsub!(/\s*$/, "")		# eliminate trailing whitespace
+		l.gsub!(/^\s*/, "")		# eliminate leading whitespace
+		case l
+		when /^$/ then
+		    # blank line
+		    next	# skip blank lines
+		when /^(\S*)\s*(<\s*(\S*))?\s*\{$/
+		    # templates!devices!(+) {
+		    # !devices!(+) < templates!devices!(type=router,make=cisco) {
+		    k = $1
+		    s = $3
+		    kb = buildkey(pstack.last,k)
+		    kn,kk = dictionary_tuple(kb,true)
+		    raise "Unknown key #{k}" if(kn.nil? || kk.nil?)
+		    if kn.has_key?(kk) then
+			# key already exists, so use it
+			if (! kn[kk].is_a?(Netomata::Node)) then
+			    raise "Key #{k} already exists, but is not a Netomata::Node"
+			end
+		    else
+			# key doesn't exist, so create it
+			kn[kk] = Netomata::Node.new(kn)
 		    end
+		    # if key ends in "(+)", then dictionary_tuple will
+		    # have already made an empty node, so
+		    # change k to match newly-created node (so k can be
+		    # used later in this method)
+		    k.sub!("(+)","(>)")
+		    kb = buildkey(pstack.last,k)
+		    if ! s.nil? then
+			sb = buildkey(basekey,s)
+			sn,sk = dictionary_tuple(sb,false)
+			debugger if(sn.nil? || sk.nil?)
+			raise "Unknown key #{s}" if(sn.nil? || sk.nil?)
+			# copy subnodes from s
+			raise "Unknown key #{sb}" if sn[sk].nil? 
+			kn.graft(kk,sn[sk])
+		    end
+		    pstack.push(kb)
+		when /^([^=\s]*)\s*=\s*(.*)$/
+		    # make = cisco
+		    # admin_ip = <%= @target["(...)!base_ip"] + "|0.0.16.0" %>
+		    kl = $1
+		    kr = $2
+		    if (kr.match(/<%.*%>/)) then
+			# kr contains an ERB template
+			pn = self[buildkey(pstack.last)]
+			if pn.nil? then
+			    pn = self 
+			end
+			kr = Netomata::Template::FromString.new(kr).result_from_vars({
+				"@target" => pn,
+				"@target_key" => pn.key})
+		    end
+		    self[buildkey(pstack.last, kl)] = kr
+		when /^\}$/
+		    # }
+		    pstack.pop
+		    if pstack.length == 0 then
+			raise "Unmatched '}'"
+		    end
+		when /^\.include\s+(\S+)$/
+		    # .include sample.templates.neto
+		    self.import_file(open($1), basekey, $1)
+		when /^\.table\s+(\S+)$/
+		    # .table interfaces
+		    self.import_table(open($1), basekey, $1)
 		else
-		    # key doesn't exist, so create it
-		    kn[kk] = Netomata::Node.new(kn)
+		    raise "Unrecognized line '#{l}'"
 		end
-		# if key ends in "(+)", then dictionary_tuple will
-		# have already made an empty node, so
-		# change k to match newly-created node (so k can be
-		# used later in this method)
-		k.sub!("(+)","(>)")
-		kb = buildkey(pstack.last,k)
-		if ! s.nil? then
-		    sb = buildkey(basekey,s)
-		    sn,sk = dictionary_tuple(sb,false)
-		    debugger if(sn.nil? || sk.nil?)
-		    raise "Unknown key #{s}" if(sn.nil? || sk.nil?)
-		    # copy subnodes from s
-		    raise "Unknown key #{sb}" if sn[sk].nil? 
-		    kn.graft(kk,sn[sk])
-		end
-		pstack.push(kb)
-	    when /^([^=\s]*)\s*=\s*(.*)$/
-		# make = cisco
-		# admin_ip = <%= @target["(...)!base_ip"] + "|0.0.16.0" %>
-		kl = $1
-		kr = $2
-		if (kr.match(/<%.*%>/)) then
-		    # kr contains an ERB template
-		    pn = self[buildkey(pstack.last)]
-		    if pn.nil? then
-			pn = self 
-		    end
-		    kr = Netomata::Template::FromString.new(kr).result_from_vars({
-			    "@target" => pn,
-			    "@target_key" => pn.key})
-		end
-		self[buildkey(pstack.last, kl)] = kr
-	    when /^\}$/
-		# }
-		pstack.pop
-		if pstack.length == 0 then
-		    raise "Unmatched '}'"
-		end
-	    when /^\.include\s+(\S+)$/
-		# .include sample.templates.neto
-		self.import_file(open($1), basekey)
-	    when /^\.table\s+(\S+)$/
-		# .table interfaces
-		self.import_table(open($1), basekey)
-	    else
-		raise "Unrecognized line '#{l}'"
-	    end
-	}
+	    }
+	rescue
+	    $stderr.print "File #{filename}, Line #{io.lineno}: #{$!}\n" 
+	    $stderr.print(("="*79) + "\n")
+	    raise
+	end
 	make_valid
 	if (! self.valid?) then
 	    raise "Corrupted data structure after import_file"
@@ -241,7 +247,7 @@ Create a Node.
     # FIXME: need to document what _basekey_ does, or get rid of it
     # FIXME: need to insert a reference to table file format docs
     #++
-    def import_table(io,basekey) 
+    def import_table(io,basekey,filename="UNKNOWN") 
 	if (! io.respond_to?(:each_line)) then
 	    raise ArgumentError,
 	    "'io' parameter must provide an each_line() method"
@@ -249,80 +255,86 @@ Create a Node.
 	actions = Array.new
 	fields = Dictionary.new
 	# FIXME add file/line info to error messages
-	io.each_line { |l|
-	    l.chomp!			# eliminate trailing newline
-	    l.gsub!(/\s*#.*/, "")	# eliminate trailing comments
-	    case l
-	    when /^$/ then
-		# blank line
-		next	# skip blank lines
-	    when /^\+/ then
-		# new-record line
-		# + !devices!(hostname=switch-1)!interfaces!(+)
-		# + !devices!(hostname=switch-1)!interfaces!(+) < !templates!devices!(make=cisco,type=router)!interfaces!(type=%type)
-		if m = l.match(/^\+\s*([^\s<]*)\s*(<\s*(\S*))?$/) then
-		    actions << ['+', m[1], m[3]]
-		else
-		    raise "Malformed '+' line"
-		end
-	    when /^@/ then
-		# per-row action line
-		if m = l.match(/^@\s*([^\s=]*)\s*=\s*(.*)$/) then
-		    actions << ['@', m[1], m[2]]
-		else
-		    raise "Malformed '@' line"
-		end
-	    when /^%/ then
-		# field-names line
-		# strip leading marker and whitespace
-		l.gsub!(/^%\s*/,"")
-		# break into fields at tab boundaries
-		l.split(/\t+/).each { |f|
-		    if fields.has_key?(f) then
-			raise "Fields must be uniquely named"
-		    end
-		    fields[f] = fields.length
-		}
-	    else
-		# must be a data line
-		if (fields.nil?) then
-		    raise "Fields must be named (via line beginning with '%') before first data line"
-		end
-		d = l.split(/\t+/)
-		if (d.length != fields.length) then
-		    raise "Wrong number of fields in line; expected #{fields.length}, got #{d.length}"
-		end
-		actions.each { |t,f,a|
-		    case t
-		    when '@'
-			k = vsub(a,fields,d,basekey)
-			self[k] = d[fields[f]]
-		    when '+'
-			fk = vsub(f,fields,d,basekey)
-			fkn,fkk = dictionary_tuple(fk,true)
-			raise "Unknown key #{fk}" if (fkn.nil? || fkk.nil?)
-			ak = vsub(a,fields,d,basekey)
-			akn,akk = dictionary_tuple(ak,false)
-			raise "Unknown key #{ak}" if (akn.nil? || akk.nil?)
-			if (! fkn.has_key?(fkk)) then
-			    if akn[akk].nil? then
-				raise RuntimeError, "Key #{ak} not found"
-			    end
-			    fkn[fkk] = Netomata::Node.new(fkn)
-			    fkn.graft(fkk, akn[akk])
-			    # we don't want to use self[fk] again, because
-			    # fk might include a "(+)" or other selector,
-			    # and would lead to a different (or nonexistant)
-			    # node now that self[fk] has been instantiated.
-			else 
-			    fkn.graft(fkk,akn[akk])
-			end
+	begin	# rescue block
+	    io.each_line { |l|
+		l.chomp!			# eliminate trailing newline
+		l.gsub!(/\s*#.*/, "")	# eliminate trailing comments
+		case l
+		when /^$/ then
+		    # blank line
+		    next	# skip blank lines
+		when /^\+/ then
+		    # new-record line
+		    # + !devices!(hostname=switch-1)!interfaces!(+)
+		    # + !devices!(hostname=switch-1)!interfaces!(+) < !templates!devices!(make=cisco,type=router)!interfaces!(type=%type)
+		    if m = l.match(/^\+\s*([^\s<]*)\s*(<\s*(\S*))?$/) then
+			actions << ['+', m[1], m[3]]
 		    else
-			raise "Unknown action '#{t}'"
+			raise "Malformed '+' line"
 		    end
-		}
-	    end
-	}
+		when /^@/ then
+		    # per-row action line
+		    if m = l.match(/^@\s*([^\s=]*)\s*=\s*(.*)$/) then
+			actions << ['@', m[1], m[2]]
+		    else
+			raise "Malformed '@' line"
+		    end
+		when /^%/ then
+		    # field-names line
+		    # strip leading marker and whitespace
+		    l.gsub!(/^%\s*/,"")
+		    # break into fields at tab boundaries
+		    l.split(/\t+/).each { |f|
+			if fields.has_key?(f) then
+			    raise "Fields must be uniquely named"
+			end
+			fields[f] = fields.length
+		    }
+		else
+		    # must be a data line
+		    if (fields.nil?) then
+			raise "Fields must be named (via line beginning with '%') before first data line"
+		    end
+		    d = l.split(/\t+/)
+		    if (d.length != fields.length) then
+			raise "Wrong number of fields in line; expected #{fields.length}, got #{d.length}"
+		    end
+		    actions.each { |t,f,a|
+			case t
+			when '@'
+			    k = vsub(a,fields,d,basekey)
+			    self[k] = d[fields[f]]
+			when '+'
+			    fk = vsub(f,fields,d,basekey)
+			    fkn,fkk = dictionary_tuple(fk,true)
+			    raise "Unknown key #{fk}" if (fkn.nil? || fkk.nil?)
+			    ak = vsub(a,fields,d,basekey)
+			    akn,akk = dictionary_tuple(ak,false)
+			    raise "Unknown key #{ak}" if (akn.nil? || akk.nil?)
+			    if (! fkn.has_key?(fkk)) then
+				if akn[akk].nil? then
+				    raise RuntimeError, "Key #{ak} not found"
+				end
+				fkn[fkk] = Netomata::Node.new(fkn)
+				fkn.graft(fkk, akn[akk])
+				# we don't want to use self[fk] again, because
+				# fk might include a "(+)" or other selector,
+				# and would lead to a different (or nonexistant)
+				# node now that self[fk] has been instantiated.
+			    else 
+				fkn.graft(fkk,akn[akk])
+			    end
+			else
+			    raise "Unknown action '#{t}'"
+			end
+		    }
+		end
+	    }
+	rescue
+	    $stderr.print "File #{filename}, Line #{io.lineno}: #{$!}\n" 
+	    $stderr.print(("="*79) + "\n")
+	    raise
+	end
 	make_valid
 	if (! valid?) then
 	    raise "Corrupted data structure after import_table"

@@ -31,7 +31,7 @@ end
 
 desc "Generate RDOC documentation"
 task "rdoc" do
-    sh 'rdoc -o rdoc netomata.rb netomata/'
+    sh 'rdoc -o rdoc lib/netomata.rb lib/netomata/'
 end
 
 desc "Check whether 'svn commit' or 'svn update' is needed"

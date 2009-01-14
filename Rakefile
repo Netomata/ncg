@@ -4,6 +4,9 @@
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
 
+cwd = Dir.getwd
+ENV["NETOMATA_LIB"] = File.expand_path(File.join(File.dirname(__FILE__),"lib"))
+
 require 'rake/testtask'
 
 desc "Run all tests and generate/compare configs against baselines"

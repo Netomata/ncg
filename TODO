@@ -19,8 +19,6 @@ not cwd.
 
 Make "sample" independent of cwd.
 
-Fix import_file and import_table to get rid of basekey?
-
 Create Rakefile(s) for man pages
     Include nroff-formated output
     Include HTML-formatted output

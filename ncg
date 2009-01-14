@@ -67,7 +67,7 @@ require 'netomata'
 net = Netomata::Node.new
 
 ARGV.each do |fn|
-    net.import_file(open(fn),"",fn)
+    net.import_file(open(fn),fn)
 end
 
 if (args[:keys]) then

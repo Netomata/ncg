@@ -143,16 +143,15 @@ Create a Node.
     # _io_ must be something that has an each_line method, such as
     # an IO object (File, StringIO, or the like)
     #--
-    # FIXME: need to document what _basekey_ does, or get rid of it
     # FIXME: need to insert a reference to .neto file format docs
     #++
-    def import_file(io,basekey="",filename="UNKNOWN")
+    def import_file(io,filename="UNKNOWN")
 	# FIXME add file/line info to error messages
 	if (! io.respond_to?(:each_line)) then
 	    raise ArgumentError,
 	    "'io' parameter to must provide an each_line() method"
 	end
-	pstack = [basekey]
+	pstack = ['']
 	begin	# rescue block
 	    io.each_line { |l|
 		l.chomp!			# eliminate trailing newline
@@ -187,12 +186,11 @@ Create a Node.
 		    k.sub!("(+)","(>)")
 		    kb = buildkey(pstack.last,k)
 		    if ! s.nil? then
-			sb = buildkey(basekey,s)
-			sn,sk = dictionary_tuple(sb,false)
+			sn,sk = dictionary_tuple(s,false)
 			debugger if(sn.nil? || sk.nil?)
 			raise "Unknown key #{s}" if(sn.nil? || sk.nil?)
 			# copy subnodes from s
-			raise "Unknown key #{sb}" if sn[sk].nil? 
+			raise "Unknown key #{s}" if sn[sk].nil? 
 			kn.graft(kk,sn[sk])
 		    end
 		    pstack.push(kb)
@@ -220,10 +218,10 @@ Create a Node.
 		    end
 		when /^\.include\s+(\S+)$/
 		    # .include sample.templates.neto
-		    self.import_file(open($1), basekey, $1)
+		    self.import_file(open($1), $1)
 		when /^\.table\s+(\S+)$/
 		    # .table interfaces
-		    self.import_table(open($1), basekey, $1)
+		    self.import_table(open($1), $1)
 		else
 		    raise "Unrecognized line '#{l}'"
 		end
@@ -244,10 +242,9 @@ Create a Node.
     # _io_ must be something that has an each_line method, such as
     # an IO object (File, StringIO, or the like)
     #--
-    # FIXME: need to document what _basekey_ does, or get rid of it
     # FIXME: need to insert a reference to table file format docs
     #++
-    def import_table(io,basekey,filename="UNKNOWN") 
+    def import_table(io,filename="UNKNOWN") 
 	if (! io.respond_to?(:each_line)) then
 	    raise ArgumentError,
 	    "'io' parameter must provide an each_line() method"
@@ -302,13 +299,13 @@ Create a Node.
 		    actions.each { |t,f,a|
 			case t
 			when '@'
-			    k = vsub(a,fields,d,basekey)
+			    k = vsub(a,fields,d)
 			    self[k] = d[fields[f]]
 			when '+'
-			    fk = vsub(f,fields,d,basekey)
+			    fk = vsub(f,fields,d)
 			    fkn,fkk = dictionary_tuple(fk,true)
 			    raise "Unknown key #{fk}" if (fkn.nil? || fkk.nil?)
-			    ak = vsub(a,fields,d,basekey)
+			    ak = vsub(a,fields,d)
 			    akn,akk = dictionary_tuple(ak,false)
 			    raise "Unknown key #{ak}" if (akn.nil? || akk.nil?)
 			    if (! fkn.has_key?(fkk)) then
@@ -969,8 +966,8 @@ Create a Node.
     end
 
     # FIXME: should document what this does, if I can ever figure it out again
-    def vsub(a,fields,d,basekey)
-	k = buildkey(basekey, a)
+    def vsub(a,fields,d)
+	k = buildkey(a)
 	if (m = k.match(/(\([^)]*=)%([^)]*)(\))/)) then
 	    if ! fields.has_key?(m[2]) then
 		raise "Unknown column name '#{m[2]}'"

@@ -6,9 +6,6 @@
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
 
-require 'rubygems'
-require 'erb'
-require 'ruby-debug'
 require 'optparse'
 
 # we delay requiring the 'netomata' libraries until after the command line
@@ -26,6 +23,14 @@ class NcgArguments < Hash
 
 	opts = OptionParser.new do |opts|
 	    opts.banner = "Usage: #$0 [options]"
+	    opts.on('-d', '--dump',
+	    	'dump the fully-parsed data structure') do
+		self[:dump] = true
+	    end
+	    opts.on('-k', '--keys',
+		'dump the list of keys') do
+		self[:keys] = true
+	    end
 	    opts.on('-L', '--libdir', '=DIRNAME',
 		    'specify Netomata library location (overrides NETOMATA_LIB envariable)') do |val|
 		self[:libdir] = val
@@ -34,13 +39,12 @@ class NcgArguments < Hash
 	    opts.on('-v', '--verbose', 'enable verbose mode') do
 		self[:verbose] = true
 	    end
-	    opts.on('-k', '--keys',
-		'dump the list of keys') do
-		self[:keys] = true
-	    end
-	    opts.on('-d', '--dump',
-	    	'dump the fully-parsed data structure') do
-		self[:dump] = true
+	    opts.on('-V', '--version', 'print version number') do
+		# can't simply print the version number here yet,
+		# because the Netomata libraries haven't been require'd yet,
+		# because options need to be processed first,
+		# because options might include '-L' to specify library location
+		self[:version] = true
 	    end
 	    opts.on_tail('-h', '--help', 'display this help and exit') do
 		puts opts
@@ -63,6 +67,11 @@ puts "NETOMATA_LIB=#{$NETOMATA_LIB}" if args[:verbose]
 # we delay requiring the 'netomata' libraries until here, so that the location
 # of the libraries can be specified by a '-L' command line argument
 require 'netomata'
+
+if (args[:version]) then
+    puts Netomata::Version
+    exit
+end
 
 net = Netomata::Node.new
 

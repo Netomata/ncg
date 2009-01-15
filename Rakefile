@@ -24,14 +24,17 @@ task "default" => ["test", "configs"]
 
 lib_dir = File.expand_path('netomata')
 
-Rake::TestTask.new('test') do |t|
+desc "Run all tests"
+task "test" => ["lib/netomata/version.rb", "do_test"]
+
+Rake::TestTask.new("do_test") do |t|
     t.pattern = 'test/**/*.rb'
     t.libs = [lib_dir]
 #   t.warning = true
 end
 
 desc "Generate test configs and diff against baseline"
-task "configs" do
+task "configs" => ["lib/netomata/version.rb"] do
     sh 'rm -f sample/configs/switch-1.config sample/configs/switch-2.config'
     sh 'ncg -v sample/sample.neto'
     sh 'diff -u sample/configs/switch-1.baseline sample/configs/switch-1.config'

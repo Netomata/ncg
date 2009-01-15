@@ -9,6 +9,16 @@ ENV["NETOMATA_LIB"] = File.expand_path(File.join(File.dirname(__FILE__),"lib"))
 
 require 'rake/testtask'
 
+def svn_revision(rev=nil)
+    if rev.nil? then
+	cmd = "svn info"
+    else
+	cmd = "svn info -r #{rev}"
+    end
+
+    IO.popen(cmd).grep(/^Revision: /)[0].chomp!.split[1]
+end
+
 desc "Run all tests and generate/compare configs against baselines"
 task "default" => ["test", "configs"]
 
@@ -37,15 +47,14 @@ end
 desc "Check whether 'svn commit' or 'svn update' is needed"
 task "svn_check" do
     puts "checking whether 'svn commit' or 'svn update' is needed..."
-    svn_status = `svn status`
-    unless svn_status.empty?
+    unless IO.popen("svn status").readlines.length == 0
 	fail ("#"*60 + "\n" +
 	      "'svn status' is not clean; are there unchecked-in files?\n" +
 	      "Need to do:\n\tsvn commit\n" +
 	      "#"*60)
     end
-    svn_info_rev = `svn info | egrep '^Revision: '`
-    svn_info_head_rev = `svn info -r HEAD | egrep '^Revision: '`
+    svn_info_rev = svn_revision()
+    svn_info_head_rev = svn_revision("HEAD")
     unless (svn_info_rev == svn_info_head_rev)
 	fail ("#"*60 + "\n" + 
 	      "Version mismatch:\n" +
@@ -79,10 +88,8 @@ desc "Create a 'VERSION' file for distribution"
 #task "VERSION" => ["svn_check"] do
 task "VERSION" do
     puts "generating VERSION..."
-    release=`cat RELEASE`
-    release.chomp!
-    build=`svn info | awk '(/^Revision: /) { print $2 }'`
-    build.chomp!
+    release = File.new("RELEASE").readline.chomp!
+    build=svn_revision()
     v = File.new("VERSION", "w")
     v.truncate(0)
     v.puts("#{release}-#{build}")
@@ -106,8 +113,7 @@ end
 
 desc "Create a 'tar' file for distribution"
 task "dist_tar" => ["dist_dir", "VERSION", "Manifest"] do
-    version = File.new("VERSION").readline
-    version.chomp!
+    version = File.new("VERSION").readline.chomp!
     base = "ncg-#{version}"
     distbase = "dist/#{base}"
     sh "rm -f #{distbase}"
@@ -117,8 +123,7 @@ end
 
 desc "Create a 'tar.gz' file for distribution"
 task "dist_tar_gz" => ["dist_dir", "dist_tar"] do
-    version = File.new("VERSION").readline
-    version.chomp!
+    version = File.new("VERSION").readline.chomp!
     base = "ncg-#{version}"
     distbase = "dist/#{base}"
     sh "gzip -c #{distbase}.tar > #{distbase}.tar.gz"

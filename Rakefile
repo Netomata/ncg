@@ -89,8 +89,23 @@ task "VERSION" do
     v.close
 end
 
+desc "Create all files for distribution"
+task "dist" => ["dist_dir", "svn_check", "VERSION", "Manifest", "Versions", "dist_tar", "dist_tar_gz"]
+
+desc "Clean out the dist directory"
+task "dist_clean" do
+    sh "rm -rf dist/*"
+end
+
+desc "Create 'dist' directory"
+task "dist_dir" do
+    if ! (File.exists?("dist") && File.directory?("dist")) then
+	Dir.mkdir("dist")
+    end
+end 
+
 desc "Create a 'tar' file for distribution"
-task "dist_tar" => ["VERSION", "Manifest"] do
+task "dist_tar" => ["dist_dir", "VERSION", "Manifest"] do
     version = File.new("VERSION").readline
     version.chomp!
     base = "ncg-#{version}"
@@ -101,20 +116,12 @@ task "dist_tar" => ["VERSION", "Manifest"] do
 end
 
 desc "Create a 'tar.gz' file for distribution"
-task "dist_tar_gz" => ["dist_tar"] do
+task "dist_tar_gz" => ["dist_dir", "dist_tar"] do
     version = File.new("VERSION").readline
     version.chomp!
     base = "ncg-#{version}"
     distbase = "dist/#{base}"
     sh "gzip -c #{distbase}.tar > #{distbase}.tar.gz"
-end
-
-desc "Create all files for distribution"
-task "dist" => ["svn_check", "VERSION", "Manifest", "Versions", "dist_tar", "dist_tar_gz"]
-
-desc "Clean out the dist directory"
-task "dist_clean" do
-    sh "rm -r dist/*"
 end
 
 desc "Create Manifest"

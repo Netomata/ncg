@@ -8,8 +8,6 @@ Set up license web pages
 
 Change all files headers to refer to license_beta_v1 instead of license_v1
 
-Add "-V" flag to report version/build number
-
 Update README
 
 ----

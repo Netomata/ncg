@@ -5,12 +5,16 @@
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
 
+#@ name         = REQUIRED
+#@ description  = OPTIONAL
+#@ active       = no
+
     raise "interface key 'name' undefined" if (! @interface.has_key?("name"))
     raise "interface key 'target' undefined" if (! @interface.has_key?("target"))
     raise "interface key 'active' undefined" if (! @interface.has_key?("active"))
 %>interface <%= @interface["name"] %>
- description Firewall-External <%= @interface["target"] %>
- switchport access vlan 2
+ description Management <%= @interface["target"] %>
+ switchport access vlan 16
  switchport mode access
  <%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
 !

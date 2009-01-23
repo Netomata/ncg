@@ -37,6 +37,11 @@ module Netomata::Utilities::ClassMethods
 	r
     end
 
+    # Convert a filename name to a key, by simply replacing "/" with "!"
+    def filename_to_key(f)
+	f.split(File::Separator).join("!")
+    end
+
     # return the bitwise OR of two IP addresses, to merge them
     # 	ip_union("10.5.0.0", "0.0.16.34") => "10.5.16.34"
     # 	ip_union("10.5.1.0", "0.0.16.34") => "10.5.17.34"

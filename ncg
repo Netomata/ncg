@@ -27,6 +27,10 @@ class NcgArguments < Hash
 	    	'dump the fully-parsed data structure') do
 		self[:dump] = true
 	    end
+	    opts.on('-D', '--debug', 'enable debug mode') do
+		self[:debug] = true
+		$debug = true
+	    end
 	    opts.on('-k', '--keys',
 		'dump the list of keys') do
 		self[:keys] = true
@@ -38,6 +42,7 @@ class NcgArguments < Hash
 	    end
 	    opts.on('-v', '--verbose', 'enable verbose mode') do
 		self[:verbose] = true
+		$verbose = true
 	    end
 	    opts.on('-V', '--version', 'print version number') do
 		# can't simply print the version number here yet,
@@ -62,7 +67,7 @@ args = NcgArguments.new(ARGV)
 # push the NETOMATA_LIB location onto the load path, before requiring any
 # Netomata-provided libraries
 $LOAD_PATH.push($NETOMATA_LIB)
-puts "NETOMATA_LIB=#{$NETOMATA_LIB}" if args[:verbose]
+puts "NETOMATA_LIB=#{$NETOMATA_LIB}" if $verbose
 
 # we delay requiring the 'netomata' libraries until here, so that the location
 # of the libraries can be specified by a '-L' command line argument
@@ -91,10 +96,9 @@ end
 
 # get the list of targets to generate config files for
 net.keys_having_key("ncg_output").each { |target_key|
-    puts "Generating #{net[target_key]["ncg_output"]} for #{target_key}" if args[:verbose]
+    puts "Generating #{net[target_key]["ncg_output"]} for #{target_key}" if $verbose
     unless template_filename = net[target_key]["ncg_template"] 
-	raise
-	"Target '#{target_key}' has 'ncg_output' key, but no 'ncg_template' key"
+	raise "Target '#{target_key}' has 'ncg_output' key, but no 'ncg_template' key"
     end
 
     # set up shortcut "target" variable

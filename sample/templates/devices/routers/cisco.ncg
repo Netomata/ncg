@@ -5,6 +5,19 @@
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
 
+#@ make = cisco
+#@ name = REQUIRED
+#@ model = OPTIONAL
+#@ ncg_target = true	# generate a config from this point in tree
+#
+# type = filename (minus ".ncg" suffix)
+# ncg_template = full path to file
+#
+# FIXME: 
+# We'd like to specify ncg_output here in parameterized form, but we can't
+# because this stuff is all currently early-bound when parsed into the tree,
+# rather than being late-bound when referenced.
+
 raise "target name undefined" if (! @target.has_key?("name"))
 %>no service pad
 service timestamps debug datetime

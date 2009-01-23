@@ -168,17 +168,10 @@ Create a Node.
 		    k = $1
 		    s = $3
 		    kb = buildkey(pstack.last,k)
+
 		    kn,kk = dictionary_tuple(kb,true)
-		    raise "Unknown key #{k}" if(kn.nil? || kk.nil?)
-		    if kn.has_key?(kk) then
-			# key already exists, so use it
-			if (! kn[kk].is_a?(Netomata::Node)) then
-			    raise "Key #{k} already exists, but is not a Netomata::Node"
-			end
-		    else
-			# key doesn't exist, so create it
-			kn[kk] = Netomata::Node.new(kn)
-		    end
+		    node(kb)	# create the node, if it doesn't exist already
+
 		    # if key ends in "(+)", then dictionary_tuple will
 		    # have already made an empty node, so
 		    # change k to match newly-created node (so k can be
@@ -216,12 +209,24 @@ Create a Node.
 		    if pstack.length == 0 then
 			raise "Unmatched '}'"
 		    end
-		when /^\.include\s+(\S+)$/
-		    # .include sample.templates.neto
+		when /^include\s+(\S+)$/
+		    # include sample.templates.neto
 		    self.import_file(open($1), $1)
-		when /^\.table\s+(\S+)$/
-		    # .table interfaces
+		when /^table\s+(\S+)$/
+		    # table interfaces
 		    self.import_table(open($1), $1)
+		when /^template\s+(\S+)$/
+		    # template templates/config.ncg
+		    self.import_template($1)
+		when /^template\s+(\S+)\s+(\S+)$/
+		    # template templates/config.ncg !templates
+		    self.node($2).import_template($1)
+		when /^template_dir\s+(\S+)$/
+		    # template_dir sample/templates
+		    self.import_template_dir($1)
+		when /^template_dir\s+(\S+)\s+(\S+)$/
+		    # template_dir sample/templates !templates
+		    self.node($2).import_template_dir($1)
 		else
 		    raise "Unrecognized line '#{l}'"
 		end
@@ -336,6 +341,64 @@ Create a Node.
 	if (! valid?) then
 	    raise "Corrupted data structure after import_table"
 	end
+    end
+
+    # Import a template into the current node
+    def import_template(template_file) 
+	# template should be the name of a file ending in '*.ncg', which is
+	# recorded as a template node with the following characteristics:
+	# 	key = path to file with '/' converted to '!' and '.ncg' suffix
+	# 		stripped
+	#	ncg_template = path to file
+	# 	type = last element of key (i.e., filename with '.ncg' stripped)
+	
+	if (! File.file?(template_file)) then
+	    raise ArgumentError, "template_file arg must be a valid filename"
+	end
+
+	puts "# #{self.key}.import_template(#{template_file})" if $debug
+
+	basename = File.basename(template_file, ".ncg")
+	bn = self.node(basename)
+	bn["type"] = basename
+	bn["ncg_template"] = File.expand_path(template_file)
+    end
+
+    # Import a tree of templates into the current node
+    def import_template_dir(template_dir) 
+	# template_dir should be the name of a directory
+	# 
+	# We walk the filesystem from that directory downwards.  Any file
+	# we find named '*.ncg' is noted as a template node with the following
+	# characteristics:
+	# 	key = path to file with '/' converted to '!' and '.ncg' suffix
+	# 		stripped
+	#	ncg_template = path to file
+	# 	type = last element of key (i.e., filename with '.ncg' stripped)
+	
+	if (! File.directory?(template_dir)) then
+	    raise ArgumentError, "template_dir arg must be a directory name"
+	end
+
+	basename = File.basename(template_dir)
+
+	Dir.foreach(template_dir) { |filename|
+	    case filename
+	    when "." then next
+	    when ".." then next
+	    when /^(.*)\.ncg/ then
+		# process file
+		self[template_key].import_template(filename)
+	    else
+		if (File.directory?(filename)) then
+		    # process subdirectory
+		    # FIXME: relative to _what_?  template_dir gets dup'd at each level
+		    self[filename_to_key(template_dir)].import_template_dir(
+			File.join(template_dir, filename))
+		end
+		# otherwise, skip entry
+	    end
+	}
     end
 
     # :call-seq:
@@ -741,6 +804,26 @@ Create a Node.
 	    self[k].make_valid	# check recursively
 	}
 	return true;
+    end
+
+    # :call-seq:
+    #   node(key) -> node
+    #
+    # Returns the node for key, creating it if necessary
+    # If key exists, but isn't a node, raises an error
+    def node(key)
+	kn,kk = dictionary_tuple(key,true)
+	raise "Unknown key #{key}" if(kn.nil? || kk.nil?)
+	if kn.has_key?(kk) then
+	    # key already exists, so use it
+	    if (! kn[kk].is_a?(Netomata::Node)) then
+		raise "Key #{k} already exists, but is not a Netomata::Node"
+	    end
+	else
+	    # key doesn't exist, so create it
+	    kn[kk] = Netomata::Node.new(kn)
+	end
+	kn[kk]
     end
 
     # :call-seq:

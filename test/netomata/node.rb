@@ -17,9 +17,13 @@ if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end
 require 'netomata'
 
 require 'test/unit'
-require 'ruby-debug'
 require 'stringio'
 require 'yaml'
+begin	# rescue block
+    require 'ruby-debug'
+rescue LoadError
+    #
+end
 
 # need to crack these open for testing
 class Netomata::Node

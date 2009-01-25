@@ -351,6 +351,7 @@ Create a Node.
 	# 		stripped
 	#	ncg_template = path to file
 	# 	type = last element of key (i.e., filename with '.ncg' stripped)
+	# FIXME: also need to parse file for '#@' variables to set
 	
 	if (! File.file?(template_file)) then
 	    raise ArgumentError, "template_file arg must be a valid filename"

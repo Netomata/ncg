@@ -9,7 +9,22 @@ ENV["NETOMATA_LIB"] = File.expand_path(File.join(File.dirname(__FILE__),"lib"))
 
 require 'rake/testtask'
 
-def svn_revision(rev=nil)
+$svn_base_url="https://dev.netomata.com/svn/ncg"
+$svn_trunk_url="#{$svn_base_url}/trunk"
+
+def determine_svn_branch
+    # URL: https://dev.netomata.com/svn/ncg/trunk	 => ""
+    # URL: https://dev.netomata.com/svn/ncg/branch/brent => branch/brent
+    branch = IO.popen("svn info").grep(/^URL:/)[0].chomp!
+    branch.sub!("URL: #{$svn_base_url}/", "")
+    if (branch.eql?("trunk")) then
+	return ""
+    else
+	return branch
+    end
+end
+
+def determine_svn_revision(rev=nil)
     if rev.nil? then
 	cmd = "svn info"
     else
@@ -18,6 +33,10 @@ def svn_revision(rev=nil)
 
     IO.popen(cmd).grep(/^Revision: /)[0].chomp!.split[1]
 end
+
+$svn_revision=determine_svn_revision()
+$svn_branch=determine_svn_branch()
+$svn_working_branch="branches/brent"
 
 desc "Run all tests and generate/compare configs against baselines"
 task "default" => ["test", "configs"]
@@ -56,8 +75,8 @@ task "svn_check" do
 	      "Need to do:\n\tsvn commit\n" +
 	      "#"*60)
     end
-    svn_info_rev = svn_revision()
-    svn_info_head_rev = svn_revision("HEAD")
+    svn_info_rev = determine_svn_revision()
+    svn_info_head_rev = determine_svn_revision("HEAD")
     unless (svn_info_rev == svn_info_head_rev)
 	fail ("#"*60 + "\n" + 
 	      "Version mismatch:\n" +
@@ -92,10 +111,13 @@ desc "Create a 'VERSION' file for distribution"
 task "VERSION" do
     puts "generating VERSION..."
     release = File.new("RELEASE").readline.chomp!
-    build=svn_revision()
     v = File.new("VERSION", "w")
     v.truncate(0)
-    v.puts("#{release}-#{build}")
+    if ($svn_branch.eql?("")) then
+	v.puts("#{release}-#{$svn_revision}")
+    else
+	v.puts("#{release}-#{$svn_branch}-#{$svn_revision}")
+    end
     v.close
 end
 
@@ -165,4 +187,30 @@ desc "Update svn:ignore property"
 task "ignore.svn" do
     sh 'svn ps svn:ignore -F ignore.svn .'
     sh 'cd lib/netomata ; svn ps svn:ignore version.rb .'
+end
+
+desc "Merge changes from trunk into current branch"
+task "merge_from_trunk" do
+    if $svn_branch.eql?("") then
+	fail("#"*60 + "\n" +
+	      "'merge_from_trunk' can only be done when working in a branch\n" +
+	      "#"*60)
+    end
+    sh "svn merge #{$svn_trunk_url}"
+end
+
+desc "Merge changes from current branch into trunk"
+task "merge_to_trunk" => ["merge_from_trunk","svn_check"] do
+    if $svn_branch.eql?("") then
+	fail("#"*60 + "\n" +
+	      "'merge_to_trunk' can only be done when working in a branch\n" +
+	      "#"*60)
+    end
+    sh "svn switch #{$svn_trunk_url}"
+    sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
+end
+
+desc "Switch from trunk to branch"
+task "switch_to_branch" do
+    sh "svn switch #{$svn_base_url}/#{$svn_working_branch}"
 end

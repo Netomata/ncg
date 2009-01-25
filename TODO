@@ -1,2 +1,7 @@
 Tasks not yet added to FogBugz
 ==============================
+Unit tests for import_template and import_template_dir
+
+In import_template, parse files for "#@" keys to add
+
+Make VERSION include branch/trunk/tag info as well as revision number

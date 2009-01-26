@@ -210,6 +210,11 @@ task "merge_to_trunk" => ["merge_from_trunk","svn_check"] do
     sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
 end
 
+desc "Make branch from trunk"
+task "make_branch" do
+    sh "svn copy #{$svn_trunk_url} #{$svn_base_url}/#{$svn_working_branch} -m 'Create working branch'"
+end
+
 desc "Switch from trunk to branch"
 task "switch_to_branch" do
     sh "svn switch #{$svn_base_url}/#{$svn_working_branch}"

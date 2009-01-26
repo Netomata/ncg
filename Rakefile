@@ -80,8 +80,8 @@ task "svn_check" do
     unless (svn_info_rev == svn_info_head_rev)
 	fail ("#"*60 + "\n" + 
 	      "Version mismatch:\n" +
-	      "\tsvn info\t\t=> #{svn_info_rev}" +
-	      "\tsvn info -r HEAD\t=> #{svn_info_head_rev}" +
+	      "\tsvn info\t\t=> #{svn_info_rev}\n" +
+	      "\tsvn info -r HEAD\t=> #{svn_info_head_rev}\n" +
 	      "Need to do:\n\tsvn update\n" +
 	      "#"*60)
     end
@@ -225,4 +225,5 @@ end
 desc "Switch from trunk to branch"
 task "switch_to_branch" do
     sh "svn switch #{$svn_base_url}/#{$svn_working_branch}"
+    sh "svn update"
 end

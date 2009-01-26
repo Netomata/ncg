@@ -197,17 +197,24 @@ task "merge_from_trunk" do
 	      "#"*60)
     end
     sh "svn merge #{$svn_trunk_url}"
+    sh "svn update"
+    sh "svn status"
 end
 
 desc "Merge changes from current branch into trunk"
-task "merge_to_trunk" => ["merge_from_trunk","svn_check"] do
+task "merge_to_trunk" => ["svn_check"] do
     if $svn_branch.eql?("") then
 	fail("#"*60 + "\n" +
 	      "'merge_to_trunk' can only be done when working in a branch\n" +
 	      "#"*60)
     end
     sh "svn switch #{$svn_trunk_url}"
+    sh "svn update"
     sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
+    sh "svn update"
+    sh "svn commit -m 'Merge from #{$svn_branch} to trunk'"
+    sh "svn update"
+    puts "#### REMINDER: now working in trunk!"
 end
 
 desc "Make branch from trunk"

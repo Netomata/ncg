@@ -1,5 +1,10 @@
 Tasks not yet added to FogBugz
 ==============================
+DRY open/filestack/close code
+
+Prevent metadata set in node_store
+
 Unit tests for import_template and import_template_dir
 
-In import_template, parse files for "#@" keys to add
+In import_template, parse files for "#@" keys to add,
+or do some sort of equivalent trick with ERB

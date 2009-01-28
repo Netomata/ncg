@@ -40,8 +40,36 @@ class UtilitiesTest < Test::Unit::TestCase
 	assert_equal "a!b!c!d", @n.buildkey("a!b","c","d")
     end
 
+    def test_filename_to_key
+	assert_equal "a", @n.filename_to_key("a")
+	assert_equal "a!b", @n.filename_to_key("a/b")
+	assert_equal "a!b!c", @n.filename_to_key("a/b/c")
+	assert_equal "!", @n.filename_to_key("/")
+	assert_equal "!a", @n.filename_to_key("/a")
+	assert_equal "!a!b", @n.filename_to_key("/a/b")
+	assert_equal "!a!b!c", @n.filename_to_key("/a/b/c")
+	assert_equal "a!b!(.)!c", @n.filename_to_key("a/b/./c")
+	assert_equal "a!.b!(.)!c", @n.filename_to_key("a/.b/./c")
+	assert_equal "a!(.)!b!(.)!c", @n.filename_to_key("a/./b/./c")
+	assert_equal "a!(..)!b!c", @n.filename_to_key("a/../b/c")
+	assert_equal "a!(..)!b!(.)!c", @n.filename_to_key("a/../b/./c")
+    end
+
     def test_ip_union
 	assert_equal "10.5.16.34", @n.ip_union("10.5.0.0", "0.0.16.34")
 	assert_equal "10.5.17.34", @n.ip_union("10.5.1.0", "0.0.16.34")
+    end
+
+    def test_relative_filename
+	assert_equal "./d", @n.relative_filename("a", "d")
+	assert_equal "/d", @n.relative_filename("/a", "d")
+	assert_equal "/a/b/d", @n.relative_filename("/a/b/c", "d")
+	assert_equal "/a/b/d/e", @n.relative_filename("/a/b/c", "d/e")
+	assert_equal "/d", @n.relative_filename("/a/b/c", "/d")
+	assert_equal "/d/e", @n.relative_filename("/a/b/c", "/d/e")
+	assert_equal "a/b/d", @n.relative_filename("a/b/c", "d")
+	assert_equal "a/b/d/e", @n.relative_filename("a/b/c", "d/e")
+	assert_equal "/d", @n.relative_filename("/a/b/c", "/d")
+	assert_equal "/d/e", @n.relative_filename("/a/b/c", "/d/e")
     end
 end

@@ -212,9 +212,16 @@ task "merge_to_trunk" => ["svn_check"] do
     sh "svn update"
     sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
     sh "svn update"
-    sh "svn commit -m 'Merge from #{$svn_branch} to trunk'"
-    sh "svn update"
+    puts "#"*60
+    puts "####"
     puts "#### REMINDER: now working in trunk!"
+    puts "####"
+    puts ""
+    puts "Examine changes, then when ready to accept, do"
+    puts "\tsvn commit -m 'Merge from #{$svn_branch} to trunk'"
+    puts "\tsvn update"
+    puts ""
+    puts "#"*60
 end
 
 desc "Make branch from trunk"

@@ -20,6 +20,8 @@ end
 
 class Netomata::Node < Dictionary
 
+    @@filestack = []
+
     include Netomata::Utilities::ClassMethods
     include Netomata::Utilities
 
@@ -139,19 +141,14 @@ Create a Node.
     end
 
     # Import the contents of a .neto file into the current node
-    #
-    # _io_ must be something that has an each_line method, such as
-    # an IO object (File, StringIO, or the like)
     #--
     # FIXME: need to insert a reference to .neto file format docs
     #++
-    def import_file(io,filename="UNKNOWN")
+    def import_file(filename)
+	io = open(filename)
+	@@filestack.push(filename)
 	# FIXME add file/line info to error messages
-	if (! io.respond_to?(:each_line)) then
-	    raise ArgumentError,
-	    "'io' parameter to must provide an each_line() method"
-	end
-	pstack = ['']
+	pstack = []
 	begin	# rescue block
 	    io.each_line { |l|
 		l.chomp!			# eliminate trailing newline
@@ -205,28 +202,28 @@ Create a Node.
 		    self[buildkey(pstack.last, kl)] = kr
 		when /^\}$/
 		    # }
-		    pstack.pop
 		    if pstack.length == 0 then
 			raise "Unmatched '}'"
 		    end
+		    pstack.pop
 		when /^include\s+(\S+)$/
 		    # include sample.templates.neto
-		    self.import_file(open($1), $1)
+		    self[buildkey(pstack.last)].import_file(relative_filename(filename,$1))
 		when /^table\s+(\S+)$/
 		    # table interfaces
-		    self.import_table(open($1), $1)
+		    self[buildkey(pstack.last)].import_table(relative_filename(filename,$1))
 		when /^template\s+(\S+)$/
 		    # template templates/config.ncg
-		    self.import_template($1)
+		    self[buildkey(pstack.last)].import_template(relative_filename(filename,$1))
 		when /^template\s+(\S+)\s+(\S+)$/
 		    # template templates/config.ncg !templates
-		    self.node($2).import_template($1)
+		    self[buildkey(pstack.last)].node($2).import_template(relative_filename(filename,$1))
 		when /^template_dir\s+(\S+)$/
 		    # template_dir sample/templates
-		    self.import_template_dir($1)
+		    self[buildkey(pstack.last)].import_template_dir(relative_filename(filename,$1))
 		when /^template_dir\s+(\S+)\s+(\S+)$/
 		    # template_dir sample/templates !templates
-		    self.node($2).import_template_dir($1)
+		    self[buildkey(pstack.last)].node($2).import_template_dir(relative_filename(filename,$1))
 		else
 		    raise "Unrecognized line '#{l}'"
 		end
@@ -236,6 +233,8 @@ Create a Node.
 	    $stderr.print(("="*79) + "\n")
 	    raise
 	end
+	io.close
+	@@filestack.pop
 	make_valid
 	if (! self.valid?) then
 	    raise "Corrupted data structure after import_file"
@@ -243,17 +242,12 @@ Create a Node.
     end
 
     # Import the contents of a table file into the current node
-    #
-    # _io_ must be something that has an each_line method, such as
-    # an IO object (File, StringIO, or the like)
     #--
     # FIXME: need to insert a reference to table file format docs
     #++
-    def import_table(io,filename="UNKNOWN") 
-	if (! io.respond_to?(:each_line)) then
-	    raise ArgumentError,
-	    "'io' parameter must provide an each_line() method"
-	end
+    def import_table(filename) 
+	io = open(filename)
+	@@filestack.push(filename)
 	actions = Array.new
 	fields = Dictionary.new
 	# FIXME add file/line info to error messages
@@ -337,6 +331,8 @@ Create a Node.
 	    $stderr.print(("="*79) + "\n")
 	    raise
 	end
+	io.close
+	@@filestack.pop
 	make_valid
 	if (! valid?) then
 	    raise "Corrupted data structure after import_table"
@@ -900,6 +896,26 @@ Create a Node.
     private
 
     # :call-seq:
+    # 	metadata_fetch(req) -> string
+    #
+    # Returns requested metadata.  Valid requests are:
+    # 	"FILENAME":: returns name of config file currently being read
+    # 	"BASENAME":: returns basename of config file currently being read
+    # 	"DIRNAME":: returns dirname of config file currently being read
+    def metadata_fetch(req)
+	case req
+	when "FILENAME" then
+	    return @@filestack.last
+	when "BASENAME" then
+	    return File.basename(@@filestack.last)
+	when "DIRNAME" then
+	    return File.dirname(@@filestack.last)
+	else
+	    raise ArgumentError, "Unknown metadata request '{#{req}}'"
+	end
+    end
+
+    # :call-seq:
     # 	node_fetch(key [, default] )	-> obj
     #   node_fetch(key) {|key| block } 	-> obj
     #
@@ -914,6 +930,10 @@ Create a Node.
     # You should *not* specify *both* a _default_ argument and a block; if
     # you do, you'll get a warning.
     def node_fetch(key, default=nil, &default_block)
+	if (key.match(/^\{(.*)\}$/)) then
+	    # key is a "{foo}" metadata request, so return that
+	    return metadata_fetch($1)
+	end
 	n,k = dictionary_tuple(key,false)
 	if (n.nil?) then
 	    # Dictionary#fetch, which we're emulating, accepts either
@@ -1010,6 +1030,7 @@ Create a Node.
     # (+):: returns successor to current max key
     # (>):: returns current max key
     # (<):: returns current min key
+    # (.):: returns current key
     # (..):: returns parent of current key
     # (...):: returns nearest ancestor of current key which has _rest_of_key_ defined
     # (subkey=value,[subkey2=value ...]):: returns key of first subnode
@@ -1032,6 +1053,8 @@ Create a Node.
 		else
 		    return r.succ
 		end
+	    when "."
+		return self.key
 	    when ".."
 		return @hidden_parent.key
 	    when "..."

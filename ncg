@@ -90,7 +90,7 @@ if (args[:keys]) then
 end
 
 if (args[:dump]) then
-    pp net
+    net.dump
     exit
 end
 

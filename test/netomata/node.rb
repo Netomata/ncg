@@ -318,7 +318,7 @@ class NodeTest_2_General < Test::Unit::TestCase
     end
 
     def test_valid
-	assert_equal true, @node.valid?
+	assert @node.valid?
 	# intentionally create a child node with an incorrect parent,
 	# to test that the valid? method is working
 	@node["!n3"] = Netomata::Node.new(@node["!n1"])
@@ -334,10 +334,10 @@ class NodeTest_2_General < Test::Unit::TestCase
     end
 
     def test_has_key
-	assert_equal true, @node.has_key?("!n1")
-	assert_equal true, @node.has_key?("n1")
-	assert_equal true, @node.has_key?("!n1!n11")
-	assert_equal true, @node.has_key?("n1!n11")
+	assert @node.has_key?("!n1")
+	assert @node.has_key?("n1")
+	assert @node.has_key?("!n1!n11")
+	assert @node.has_key?("n1!n11")
 	assert_equal false, @node.has_key?("!n4")
 	assert_equal false, @node.has_key?("n4")
 	assert_equal false, @node.has_key?("!n1!n14")
@@ -351,15 +351,48 @@ class NodeTest_2_General < Test::Unit::TestCase
 end
 
 class NodeTest_3_Import_Table < Test::Unit::TestCase
+    def setup
+	@n = Netomata::Node.new(nil)
+	@n["!devices!(+)!hostname"] = "switch-1"
+	@n["!devices!(+)!hostname"] = "switch-2"
+	@n.import_table(File.join($testfiles,
+				  "node_test_import_table.neto_table"
+				 )
+		       )
+    end
+
     def test_import_table
-	n = Netomata::Node.new(nil)
-	n["!devices!(+)!hostname"] = "switch-1"
-	n["!devices!(+)!hostname"] = "switch-2"
-	n.import_table(File.join($testfiles,"node_test_import_table.neto_table"))
-	assert_equal true, n.valid?
-	output = PP::pp(n, StringIO.new)
-	expected = File.new(File.join($testfiles, "node_test_import_table.pp")).readlines.join
+	assert @n.valid?
+	output = PP::pp(@n, StringIO.new)
+	expected = File.new(File.join($testfiles, 
+				      "node_test_import_table.pp"
+				     )
+			   ).readlines.join
 	assert_equal expected, output.string
+    end
+
+    def test_dump_imported_table
+	# To re-create tests data file, uncomment following line:
+	# @n.dump(File.new("/tmp/node_dump_imported_table.neto", "w"))
+	
+	# dump to a file
+	t = Tempfile.new("ncg_test.dump_imported_table.neto", "/tmp")
+	@n.dump(t)
+	t.close
+
+	# check that the dumped file matches what it should
+	assert FileUtils.compare_file(t.path,
+				      File.join($testfiles,
+						"node_dump_imported_table.neto")
+				     )
+
+	# import the file that was just created with dump
+	n2 = Netomata::Node.new(nil)
+	n2.import_file(t.path)
+
+	# check that the data structure you get from re-importing is the same
+	# as the original data structure
+	assert_equal @n, n2
     end
 end
 
@@ -424,14 +457,40 @@ EOF
 	# also tests nested includes with relative keys and relative filenames,
 	#	since the .neto files in the generated test tree are set up
 	#	that way
+	# also tests dump and re-import of file (done here instead of in
+	# 	a dedicated test_ method so that setup/teardown doesn't need
+	# 	to be repeated)
 	n = Netomata::Node.new(nil)
 	Dir.chdir(@tmpdirname) do
 	    n.import_file("file.neto")
 	end
-	assert_equal true, n.valid?
+	assert n.valid?
 	output = PP::pp(n, StringIO.new)
-	# File.new("/tmp/node_test_import_file.pp", "w").puts(output.string)
+	# To re-create test data file, uncomment following line:
+	# File.new("/tmp/node_test_import_file.pp", "w").print(output.string)
 	expected = File.new(File.join($testfiles, "node_test_import_file.pp")).readlines.join
 	assert_equal expected, output.string
+
+	# To re-create test data file, uncomment following line:
+	# n.dump(File.new("/tmp/node_dump_imported_file.neto", "w"))
+	
+	# dump to a file
+	t = Tempfile.new("ncg_test.dump_imported_file.neto", "/tmp")
+	n.dump(t)
+	t.close
+
+	# check that the dumped file matches what it should
+	assert FileUtils.compare_file(t.path,
+				      File.join($testfiles,
+						"node_dump_imported_file.neto")
+				     )
+
+	# import the file that was just created with dump
+	n2 = Netomata::Node.new(nil)
+	n2.import_file(t.path)
+
+	# check that the data structure you get from re-importing is the same
+	# as the original data structure
+	assert_equal n, n2
     end
 end

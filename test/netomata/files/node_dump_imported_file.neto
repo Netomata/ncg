@@ -1,0 +1,508 @@
+loc = top
+filename = file.neto
+basename = file.neto
+dirname = .
+a {
+    loc = a
+    filename = ./a/file.neto
+    basename = file.neto
+    dirname = ./a
+    a {
+        loc = a/a
+        filename = ./a/a/file.neto
+        basename = file.neto
+        dirname = ./a/a
+        a {
+            loc = a/a/a
+            filename = ./a/a/a/file.neto
+            basename = file.neto
+            dirname = ./a/a/a
+        }
+        b {
+            loc = a/a/b
+            filename = ./a/a/b/file.neto
+            basename = file.neto
+            dirname = ./a/a/b
+        }
+        c {
+            loc = a/a/c
+            filename = ./a/a/c/file.neto
+            basename = file.neto
+            dirname = ./a/a/c
+        }
+        d {
+            loc = a/a/d
+            filename = ./a/a/d/file.neto
+            basename = file.neto
+            dirname = ./a/a/d
+        }
+    }
+    b {
+        loc = a/b
+        filename = ./a/b/file.neto
+        basename = file.neto
+        dirname = ./a/b
+        a {
+            loc = a/b/a
+            filename = ./a/b/a/file.neto
+            basename = file.neto
+            dirname = ./a/b/a
+        }
+        b {
+            loc = a/b/b
+            filename = ./a/b/b/file.neto
+            basename = file.neto
+            dirname = ./a/b/b
+        }
+        c {
+            loc = a/b/c
+            filename = ./a/b/c/file.neto
+            basename = file.neto
+            dirname = ./a/b/c
+        }
+        d {
+            loc = a/b/d
+            filename = ./a/b/d/file.neto
+            basename = file.neto
+            dirname = ./a/b/d
+        }
+    }
+    c {
+        loc = a/c
+        filename = ./a/c/file.neto
+        basename = file.neto
+        dirname = ./a/c
+        a {
+            loc = a/c/a
+            filename = ./a/c/a/file.neto
+            basename = file.neto
+            dirname = ./a/c/a
+        }
+        b {
+            loc = a/c/b
+            filename = ./a/c/b/file.neto
+            basename = file.neto
+            dirname = ./a/c/b
+        }
+        c {
+            loc = a/c/c
+            filename = ./a/c/c/file.neto
+            basename = file.neto
+            dirname = ./a/c/c
+        }
+        d {
+            loc = a/c/d
+            filename = ./a/c/d/file.neto
+            basename = file.neto
+            dirname = ./a/c/d
+        }
+    }
+    d {
+        loc = a/d
+        filename = ./a/d/file.neto
+        basename = file.neto
+        dirname = ./a/d
+        a {
+            loc = a/d/a
+            filename = ./a/d/a/file.neto
+            basename = file.neto
+            dirname = ./a/d/a
+        }
+        b {
+            loc = a/d/b
+            filename = ./a/d/b/file.neto
+            basename = file.neto
+            dirname = ./a/d/b
+        }
+        c {
+            loc = a/d/c
+            filename = ./a/d/c/file.neto
+            basename = file.neto
+            dirname = ./a/d/c
+        }
+        d {
+            loc = a/d/d
+            filename = ./a/d/d/file.neto
+            basename = file.neto
+            dirname = ./a/d/d
+        }
+    }
+}
+b {
+    loc = b
+    filename = ./b/file.neto
+    basename = file.neto
+    dirname = ./b
+    a {
+        loc = b/a
+        filename = ./b/a/file.neto
+        basename = file.neto
+        dirname = ./b/a
+        a {
+            loc = b/a/a
+            filename = ./b/a/a/file.neto
+            basename = file.neto
+            dirname = ./b/a/a
+        }
+        b {
+            loc = b/a/b
+            filename = ./b/a/b/file.neto
+            basename = file.neto
+            dirname = ./b/a/b
+        }
+        c {
+            loc = b/a/c
+            filename = ./b/a/c/file.neto
+            basename = file.neto
+            dirname = ./b/a/c
+        }
+        d {
+            loc = b/a/d
+            filename = ./b/a/d/file.neto
+            basename = file.neto
+            dirname = ./b/a/d
+        }
+    }
+    b {
+        loc = b/b
+        filename = ./b/b/file.neto
+        basename = file.neto
+        dirname = ./b/b
+        a {
+            loc = b/b/a
+            filename = ./b/b/a/file.neto
+            basename = file.neto
+            dirname = ./b/b/a
+        }
+        b {
+            loc = b/b/b
+            filename = ./b/b/b/file.neto
+            basename = file.neto
+            dirname = ./b/b/b
+        }
+        c {
+            loc = b/b/c
+            filename = ./b/b/c/file.neto
+            basename = file.neto
+            dirname = ./b/b/c
+        }
+        d {
+            loc = b/b/d
+            filename = ./b/b/d/file.neto
+            basename = file.neto
+            dirname = ./b/b/d
+        }
+    }
+    c {
+        loc = b/c
+        filename = ./b/c/file.neto
+        basename = file.neto
+        dirname = ./b/c
+        a {
+            loc = b/c/a
+            filename = ./b/c/a/file.neto
+            basename = file.neto
+            dirname = ./b/c/a
+        }
+        b {
+            loc = b/c/b
+            filename = ./b/c/b/file.neto
+            basename = file.neto
+            dirname = ./b/c/b
+        }
+        c {
+            loc = b/c/c
+            filename = ./b/c/c/file.neto
+            basename = file.neto
+            dirname = ./b/c/c
+        }
+        d {
+            loc = b/c/d
+            filename = ./b/c/d/file.neto
+            basename = file.neto
+            dirname = ./b/c/d
+        }
+    }
+    d {
+        loc = b/d
+        filename = ./b/d/file.neto
+        basename = file.neto
+        dirname = ./b/d
+        a {
+            loc = b/d/a
+            filename = ./b/d/a/file.neto
+            basename = file.neto
+            dirname = ./b/d/a
+        }
+        b {
+            loc = b/d/b
+            filename = ./b/d/b/file.neto
+            basename = file.neto
+            dirname = ./b/d/b
+        }
+        c {
+            loc = b/d/c
+            filename = ./b/d/c/file.neto
+            basename = file.neto
+            dirname = ./b/d/c
+        }
+        d {
+            loc = b/d/d
+            filename = ./b/d/d/file.neto
+            basename = file.neto
+            dirname = ./b/d/d
+        }
+    }
+}
+c {
+    loc = c
+    filename = ./c/file.neto
+    basename = file.neto
+    dirname = ./c
+    a {
+        loc = c/a
+        filename = ./c/a/file.neto
+        basename = file.neto
+        dirname = ./c/a
+        a {
+            loc = c/a/a
+            filename = ./c/a/a/file.neto
+            basename = file.neto
+            dirname = ./c/a/a
+        }
+        b {
+            loc = c/a/b
+            filename = ./c/a/b/file.neto
+            basename = file.neto
+            dirname = ./c/a/b
+        }
+        c {
+            loc = c/a/c
+            filename = ./c/a/c/file.neto
+            basename = file.neto
+            dirname = ./c/a/c
+        }
+        d {
+            loc = c/a/d
+            filename = ./c/a/d/file.neto
+            basename = file.neto
+            dirname = ./c/a/d
+        }
+    }
+    b {
+        loc = c/b
+        filename = ./c/b/file.neto
+        basename = file.neto
+        dirname = ./c/b
+        a {
+            loc = c/b/a
+            filename = ./c/b/a/file.neto
+            basename = file.neto
+            dirname = ./c/b/a
+        }
+        b {
+            loc = c/b/b
+            filename = ./c/b/b/file.neto
+            basename = file.neto
+            dirname = ./c/b/b
+        }
+        c {
+            loc = c/b/c
+            filename = ./c/b/c/file.neto
+            basename = file.neto
+            dirname = ./c/b/c
+        }
+        d {
+            loc = c/b/d
+            filename = ./c/b/d/file.neto
+            basename = file.neto
+            dirname = ./c/b/d
+        }
+    }
+    c {
+        loc = c/c
+        filename = ./c/c/file.neto
+        basename = file.neto
+        dirname = ./c/c
+        a {
+            loc = c/c/a
+            filename = ./c/c/a/file.neto
+            basename = file.neto
+            dirname = ./c/c/a
+        }
+        b {
+            loc = c/c/b
+            filename = ./c/c/b/file.neto
+            basename = file.neto
+            dirname = ./c/c/b
+        }
+        c {
+            loc = c/c/c
+            filename = ./c/c/c/file.neto
+            basename = file.neto
+            dirname = ./c/c/c
+        }
+        d {
+            loc = c/c/d
+            filename = ./c/c/d/file.neto
+            basename = file.neto
+            dirname = ./c/c/d
+        }
+    }
+    d {
+        loc = c/d
+        filename = ./c/d/file.neto
+        basename = file.neto
+        dirname = ./c/d
+        a {
+            loc = c/d/a
+            filename = ./c/d/a/file.neto
+            basename = file.neto
+            dirname = ./c/d/a
+        }
+        b {
+            loc = c/d/b
+            filename = ./c/d/b/file.neto
+            basename = file.neto
+            dirname = ./c/d/b
+        }
+        c {
+            loc = c/d/c
+            filename = ./c/d/c/file.neto
+            basename = file.neto
+            dirname = ./c/d/c
+        }
+        d {
+            loc = c/d/d
+            filename = ./c/d/d/file.neto
+            basename = file.neto
+            dirname = ./c/d/d
+        }
+    }
+}
+d {
+    loc = d
+    filename = ./d/file.neto
+    basename = file.neto
+    dirname = ./d
+    a {
+        loc = d/a
+        filename = ./d/a/file.neto
+        basename = file.neto
+        dirname = ./d/a
+        a {
+            loc = d/a/a
+            filename = ./d/a/a/file.neto
+            basename = file.neto
+            dirname = ./d/a/a
+        }
+        b {
+            loc = d/a/b
+            filename = ./d/a/b/file.neto
+            basename = file.neto
+            dirname = ./d/a/b
+        }
+        c {
+            loc = d/a/c
+            filename = ./d/a/c/file.neto
+            basename = file.neto
+            dirname = ./d/a/c
+        }
+        d {
+            loc = d/a/d
+            filename = ./d/a/d/file.neto
+            basename = file.neto
+            dirname = ./d/a/d
+        }
+    }
+    b {
+        loc = d/b
+        filename = ./d/b/file.neto
+        basename = file.neto
+        dirname = ./d/b
+        a {
+            loc = d/b/a
+            filename = ./d/b/a/file.neto
+            basename = file.neto
+            dirname = ./d/b/a
+        }
+        b {
+            loc = d/b/b
+            filename = ./d/b/b/file.neto
+            basename = file.neto
+            dirname = ./d/b/b
+        }
+        c {
+            loc = d/b/c
+            filename = ./d/b/c/file.neto
+            basename = file.neto
+            dirname = ./d/b/c
+        }
+        d {
+            loc = d/b/d
+            filename = ./d/b/d/file.neto
+            basename = file.neto
+            dirname = ./d/b/d
+        }
+    }
+    c {
+        loc = d/c
+        filename = ./d/c/file.neto
+        basename = file.neto
+        dirname = ./d/c
+        a {
+            loc = d/c/a
+            filename = ./d/c/a/file.neto
+            basename = file.neto
+            dirname = ./d/c/a
+        }
+        b {
+            loc = d/c/b
+            filename = ./d/c/b/file.neto
+            basename = file.neto
+            dirname = ./d/c/b
+        }
+        c {
+            loc = d/c/c
+            filename = ./d/c/c/file.neto
+            basename = file.neto
+            dirname = ./d/c/c
+        }
+        d {
+            loc = d/c/d
+            filename = ./d/c/d/file.neto
+            basename = file.neto
+            dirname = ./d/c/d
+        }
+    }
+    d {
+        loc = d/d
+        filename = ./d/d/file.neto
+        basename = file.neto
+        dirname = ./d/d
+        a {
+            loc = d/d/a
+            filename = ./d/d/a/file.neto
+            basename = file.neto
+            dirname = ./d/d/a
+        }
+        b {
+            loc = d/d/b
+            filename = ./d/d/b/file.neto
+            basename = file.neto
+            dirname = ./d/d/b
+        }
+        c {
+            loc = d/d/c
+            filename = ./d/d/c/file.neto
+            basename = file.neto
+            dirname = ./d/d/c
+        }
+        d {
+            loc = d/d/d
+            filename = ./d/d/d/file.neto
+            basename = file.neto
+            dirname = ./d/d/d
+        }
+    }
+}

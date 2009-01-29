@@ -64,6 +64,24 @@ Create a Node.
 	node_store(k,v)
     end
 
+    # :call-seq:
+    #	dump(io=STDOUT,level=0) -> nil
+    #
+    # Recursively dumps the contents of the node in .neto format
+
+    def dump(io=STDOUT, level=0)
+	indent = " " * level * 4
+	self.each { |k,v|
+	    if v.is_a?(Netomata::Node) then
+		io.print indent, "#{k} {\n"
+		v.dump(io, level+1)
+		io.print indent, "}\n"
+	    else
+		io.print indent, "#{k} = #{v}\n"
+	    end
+	}
+    end
+
     # Create a duplicate of the current Node, including recursively duplicating
     # all its children
     def dup

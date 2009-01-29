@@ -216,6 +216,7 @@ task "merge_to_trunk" => ["svn_check"] do
     puts "####"
     puts "#### REMINDER: now working in trunk!"
     puts "####"
+    puts "#"*60
     puts ""
     puts "Examine changes, then when ready to accept, do"
     puts "\tsvn commit -m 'Merge from #{$svn_branch} to trunk'"
@@ -224,9 +225,14 @@ task "merge_to_trunk" => ["svn_check"] do
     puts "#"*60
 end
 
-desc "Make branch from trunk"
+desc "Delete working branch"
+task "delete_branch" do
+    sh "svn delete #{$svn_base_url}/#{$svn_working_branch} -m 'Delete working branch'"
+end
+
+desc "Make working branch from trunk"
 task "make_branch" do
-    sh "svn copy #{$svn_trunk_url} #{$svn_base_url}/#{$svn_working_branch} -m 'Create working branch'"
+    sh "svn copy #{$svn_trunk_url} #{$svn_base_url}/#{$svn_working_branch} -m 'Create working branch from trunk'"
 end
 
 desc "Switch from trunk to branch"
@@ -234,3 +240,13 @@ task "switch_to_branch" do
     sh "svn switch #{$svn_base_url}/#{$svn_working_branch}"
     sh "svn update"
 end
+
+desc "Delete old working branch, create new branch from trunk, and switch to branch"
+task "branch" => ["delete_branch", "make_branch", "switch_to_branch"] do
+    puts "#"*60
+    puts "####"
+    puts "#### Now working in #{$svn_working_branch}!"
+    puts "####"
+    puts "#"*60
+end
+

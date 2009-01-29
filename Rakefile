@@ -250,3 +250,7 @@ task "branch" => ["delete_branch", "make_branch", "switch_to_branch"] do
     puts "#"*60
 end
 
+desc "Diff working branch against trunk"
+task "branch_diff" do
+    sh "svn diff #{$svn_trunk_url} #{$svn_base_url}/#{$svn_working_branch}"
+end

@@ -196,7 +196,7 @@ task "merge_from_trunk" do
 	      "'merge_from_trunk' can only be done when working in a branch\n" +
 	      "#"*60)
     end
-    sh "svn merge #{$svn_trunk_url}"
+    sh "svn merge --reintegrate #{$svn_trunk_url}"
     sh "svn update"
     sh "svn status"
 end
@@ -251,6 +251,6 @@ task "branch" => ["delete_branch", "make_branch", "switch_to_branch"] do
 end
 
 desc "Diff working branch against trunk"
-task "branch_diff" do
+task "diff_branch" do
     sh "svn diff #{$svn_trunk_url} #{$svn_base_url}/#{$svn_working_branch}"
 end

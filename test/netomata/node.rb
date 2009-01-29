@@ -156,7 +156,6 @@ class NodeTest_2_General < Test::Unit::TestCase
     def setup
 	$debug = false
 	@node = Netomata::Node.new
-	# debugger
 	@node["!n1!k_n1a1"] = "v_n1a1"
 	@node["!n1!k_n1a2"] = "v_n1a2"
 	@node["!n1!k_n1a3"] = "v_n1a3"
@@ -373,11 +372,11 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
 
     def test_dump_imported_table
 	# To re-create tests data file, uncomment following line:
-	# @n.dump(File.new("/tmp/node_dump_imported_table.neto", "w"))
+	# @n.dump(File.new("/tmp/node_dump_imported_table.neto", "w"),0,false)
 	
 	# dump to a file
 	t = Tempfile.new("ncg_test.dump_imported_table.neto", "/tmp")
-	@n.dump(t)
+	@n.dump(t,0,false)
 	t.close
 
 	# check that the dumped file matches what it should
@@ -472,11 +471,11 @@ EOF
 	assert_equal expected, output.string
 
 	# To re-create test data file, uncomment following line:
-	# n.dump(File.new("/tmp/node_dump_imported_file.neto", "w"))
+	# n.dump(File.new("/tmp/node_dump_imported_file.neto", "w"),0,false)
 	
 	# dump to a file
 	t = Tempfile.new("ncg_test.dump_imported_file.neto", "/tmp")
-	n.dump(t)
+	n.dump(t,0,false)
 	t.close
 
 	# check that the dumped file matches what it should

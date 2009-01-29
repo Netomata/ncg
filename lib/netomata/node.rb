@@ -22,6 +22,11 @@ class Netomata::Node < Dictionary
 
     @@filestack = []
 
+    @@source_file = ["<root>"]
+    @@source_line = [0]
+
+    attr_reader :source
+
     include Netomata::Utilities::ClassMethods
     include Netomata::Utilities
 
@@ -44,6 +49,7 @@ Create a Node.
 	self.parent=(parent)
 	# unset key (will be figured out and cached first time key() is called)
 	self.key_reset
+	@source = "#{@@source_file.last}:#{@@source_line.last}"
 	# invoke super()
 	super()
     end
@@ -65,16 +71,25 @@ Create a Node.
     end
 
     # :call-seq:
-    #	dump(io=STDOUT,level=0) -> nil
+    #	dump(io=STDOUT,level=0,show_source=true) -> nil
     #
-    # Recursively dumps the contents of the node in .neto format
+    # Recursively dumps the contents of the node in .neto format to the
+    # _io_ handle specified (stdout by default).  
+    #
+    # _level_ is the indent level to use for this node (0 by default); it
+    # is incremented when this method is recursively invoked for sub-nodes,
+    # and each level is indented 4 spaces more than the previous level.
+    #
+    # _show_source_ specifies whether or not to include a comment revealing
+    # the source (file name and line number) of each node.
 
-    def dump(io=STDOUT, level=0)
+    def dump(io=STDOUT, level=0, show_source=true)
 	indent = " " * level * 4
+	io.print indent, "# #{self.source}\n" if show_source
 	self.each { |k,v|
 	    if v.is_a?(Netomata::Node) then
 		io.print indent, "#{k} {\n"
-		v.dump(io, level+1)
+		v.dump(io, level+1, show_source)
 		io.print indent, "}\n"
 	    else
 		io.print indent, "#{k} = #{v}\n"
@@ -165,10 +180,14 @@ Create a Node.
     def import_file(filename)
 	io = open(filename)
 	@@filestack.push(filename)
+	@@source_file.push(filename)
+	@@source_line.push(0)
+
 	# FIXME add file/line info to error messages
 	pstack = []
 	begin	# rescue block
 	    io.each_line { |l|
+		@@source_line[-1] += 1
 		l.chomp!			# eliminate trailing newline
 		l.gsub!(/#.*$/, "")		# eliminate trailing comments
 		l.gsub!(/\s*$/, "")		# eliminate trailing whitespace
@@ -195,7 +214,6 @@ Create a Node.
 		    kb = buildkey(pstack.last,k)
 		    if ! s.nil? then
 			sn,sk = dictionary_tuple(s,false)
-			debugger if(sn.nil? || sk.nil?)
 			raise "Unknown key #{s}" if(sn.nil? || sk.nil?)
 			# copy subnodes from s
 			raise "Unknown key #{s}" if sn[sk].nil? 
@@ -253,6 +271,8 @@ Create a Node.
 	end
 	io.close
 	@@filestack.pop
+	@@source_file.pop
+	@@source_line.pop
 	make_valid
 	if (! self.valid?) then
 	    raise "Corrupted data structure after import_file"
@@ -266,11 +286,14 @@ Create a Node.
     def import_table(filename) 
 	io = open(filename)
 	@@filestack.push(filename)
+	@@source_file.push(filename)
+	@@source_line.push(0)
 	actions = Array.new
 	fields = Dictionary.new
 	# FIXME add file/line info to error messages
 	begin	# rescue block
 	    io.each_line { |l|
+		@@source_line[-1] += 1
 		l.chomp!			# eliminate trailing newline
 		l.gsub!(/\s*#.*/, "")	# eliminate trailing comments
 		case l
@@ -351,6 +374,8 @@ Create a Node.
 	end
 	io.close
 	@@filestack.pop
+	@@source_file.pop
+	@@source_line.pop
 	make_valid
 	if (! valid?) then
 	    raise "Corrupted data structure after import_table"
@@ -768,6 +793,8 @@ Create a Node.
 		sk.parent=(self)
 	    end
 	}
+	# Note source of original in copy
+	@source << " < " << original.source
 	self
     end
 
@@ -891,16 +918,12 @@ Create a Node.
 		# child is not a Netomata::Node, so skip checks
 		next
 	    elsif (! self[k].parent.equal?(self)) then	# check parent
-		debugger if $debug
 		return false
 	    elsif (! self[k].root.equal?(self.root)) then # check root
-		debugger if $debug
 		return false
 	    elsif (self[k].key != child_k) then		# check key
-		debugger if $debug
 		return false
 	    elsif (! self[k].valid?) 			# check recursively
-		debugger if $debug
 		return false
 	    end
 	}
@@ -1101,5 +1124,4 @@ Create a Node.
 	end
 	k
     end
- 
 end

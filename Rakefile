@@ -67,7 +67,7 @@ task "rdoc" do
 end
 
 desc "Check whether 'svn commit' or 'svn update' is needed"
-task "svn_check" do
+task "check_commit_update" do
     puts "checking whether 'svn commit' or 'svn update' is needed..."
     unless IO.popen("svn status").readlines.length == 0
 	fail ("#"*60 + "\n" +
@@ -88,7 +88,7 @@ task "svn_check" do
 end
 
 desc "Snapshot current SVN trunk to demo tag"
-task "tag_demo" => ["test", "configs", "svn_check"] do
+task "tag_demo" => ["test", "configs", "check_commit_update"] do
     sh 'svn delete https://dev.netomata.com/svn/ncg/tags/demo -m "Removing old demo tag"'
     sh 'svn copy https://dev.netomata.com/svn/ncg/trunk https://dev.netomata.com/svn/ncg/tags/demo -m "Setting new demo tag"'
 end
@@ -107,7 +107,7 @@ dist_exclude_files.each { |e| dist_files.exclude(e) }
 dist_files.exclude {|f| File.stat(f).directory? }
 
 desc "Create a 'VERSION' file for distribution"
-#task "VERSION" => ["svn_check"] do
+#task "VERSION" => ["check_commit_update"] do
 task "VERSION" do
     puts "generating VERSION..."
     release = File.new("RELEASE").readline.chomp!
@@ -133,7 +133,7 @@ EOF
 end
 
 desc "Create all files for distribution"
-task "dist" => ["dist_dir", "svn_check", "VERSION", "Manifest", "Versions", "dist_tar", "dist_tar_gz"]
+task "dist" => ["dist_dir", "check_commit_update", "VERSION", "Manifest", "Versions", "dist_tar", "dist_tar_gz"]
 
 desc "Clean out the dist directory"
 task "dist_clean" do
@@ -216,7 +216,7 @@ task "merge_from_trunk" => ["verify_in_branch"] do
 end
 
 desc "Merge changes from current branch into trunk"
-task "merge_to_trunk" => ["svn_check", "verify_in_branch"] do
+task "merge_to_trunk" => ["check_commit_update", "verify_in_branch"] do
     sh "svn switch #{$svn_trunk_url}"
     sh "svn update"
     sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
@@ -251,7 +251,7 @@ task "switch_to_branch" do
 end
 
 desc "Delete old working branch, create new branch from trunk, and switch to branch"
-task "new_branch" => ["verify_in_trunk", "check_svn", "delete_branch", "make_branch", "switch_to_branch"] do
+task "new_branch" => ["verify_in_trunk", "check_commit_update", "delete_branch", "make_branch", "switch_to_branch"] do
     puts "#"*60
     puts "####"
     puts "#### Now working in #{$svn_working_branch}!"

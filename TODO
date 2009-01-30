@@ -2,6 +2,9 @@ Tasks not yet added to FogBugz
 ==============================
 DRY open/filestack/close code
 
+Create "metadata" method in utilities, and use that rather than
+metadata pseudo-keys?
+
 Prevent metadata set in node_store
 
 Unit tests for import_template and import_template_dir

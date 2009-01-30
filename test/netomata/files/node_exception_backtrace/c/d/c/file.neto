@@ -1,0 +1,4 @@
+loc = c/d/c
+filename = <%= @target["{FILENAME}"] %>
+basename = <%= @target["{BASENAME}"] %>
+dirname = <%= @target["{DIRNAME}"] %>

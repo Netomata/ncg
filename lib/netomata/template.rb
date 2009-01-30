@@ -13,8 +13,10 @@ class Netomata::Template::FromString
     include Netomata::Utilities
 
     attr_reader :erb
+    attr_reader :source
 
-    def initialize(str)
+    def initialize(str,source="UNKNOWN")
+	@source = source.dup
 	# make a private @erb_result variable, to keep ERB from overwriting
 	# global _erbout (which is what it does by default)
 	@erb_result = String.new
@@ -24,12 +26,62 @@ class Netomata::Template::FromString
     end
 
     def result(binding = nil)
-	@erb.result(binding)
+	begin
+	    @erb.result(binding)
+	rescue => exc
+	    fix_exception(exc)
+	    raise exc.exception
+	end
     end
 
     def result_from_vars(vars = nil)
 	context = Netomata::Template::Context.new(vars)
-	@erb.result(context.binding)
+	begin
+	    @erb.result(context.binding)
+	rescue => exc
+	    fix_exception(exc)
+	    raise exc.exception
+	end
+    end
+
+    #########################
+    #### Private methods ####
+    #########################
+
+    private
+
+    def fix_exception(exc = nil)
+	if exc.nil? then
+	    return
+	end
+
+	# fix the backtrace, so it lists the filename that the exception
+	# occurred in, rather than just "(erb)"
+	if @source.match(/^(.*):(\d+)$/) then
+	    file = $1
+	    line = $2.to_i
+	else
+	    file = @source
+	    line = nil
+	end
+
+	bt = exc.backtrace
+	bt.each { |e|
+	    if e.match(/^\(erb\):(\d+)(:.*)?/) then
+		if (line.nil?) then
+		    # source doesn't include a line number, so just use the
+		    # one from the original backtrace element
+		    e.replace(file + ":" + $1)
+		else
+		    # source includes a line number, so add it to the one
+		    # from the backtrace element (and subtract 1, since
+		    # lines are counted from 1 not 0)
+		    e.replace(file + ":" + ($1.to_i + line - 1).to_s)
+		end
+	    end
+	}
+	exc.set_backtrace(bt)
+	return exc
     end
 end
 
@@ -50,7 +102,7 @@ class Netomata::Template::FromFile < Netomata::Template::FromString
 		raise exc.exception("template '#{filename}'\n" + exc.message)
 	    end
 	end
-	return super(@@cache[filename])
+	return super(@@cache[filename], filename)
     end
 end
 

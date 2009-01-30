@@ -183,7 +183,6 @@ Create a Node.
 	@@source_file.push(filename)
 	@@source_line.push(0)
 
-	# FIXME add file/line info to error messages
 	pstack = []
 	begin	# rescue block
 	    io.each_line { |l|
@@ -231,7 +230,10 @@ Create a Node.
 			if pn.nil? then
 			    pn = self 
 			end
-			kr = Netomata::Template::FromString.new(kr).result_from_vars({
+			kr = Netomata::Template::FromString.new(
+				kr,
+				"#{@@source_file[-1]}:#{@@source_line[-1]}"
+			     ).result_from_vars({
 				"@target" => pn,
 				"@target_key" => pn.key})
 		    end
@@ -264,10 +266,9 @@ Create a Node.
 		    raise "Unrecognized line '#{l}'"
 		end
 	    }
-	rescue
-	    $stderr.print "File #{filename}, Line #{io.lineno}: #{$!}\n" 
-	    $stderr.print(("="*79) + "\n")
-	    raise
+	rescue => exc
+	    fixup_exception(exc,filename,io.lineno)
+	    raise exc.exception
 	end
 	io.close
 	@@filestack.pop
@@ -290,11 +291,10 @@ Create a Node.
 	@@source_line.push(0)
 	actions = Array.new
 	fields = Dictionary.new
-	# FIXME add file/line info to error messages
 	begin	# rescue block
 	    io.each_line { |l|
 		@@source_line[-1] += 1
-		l.chomp!			# eliminate trailing newline
+		l.chomp!		# eliminate trailing newline
 		l.gsub!(/\s*#.*/, "")	# eliminate trailing comments
 		case l
 		when /^$/ then
@@ -367,10 +367,9 @@ Create a Node.
 		    }
 		end
 	    }
-	rescue
-	    $stderr.print "File #{filename}, Line #{io.lineno}: #{$!}\n" 
-	    $stderr.print(("="*79) + "\n")
-	    raise
+	rescue => exc
+	    fixup_exception(exc,filename,io.lineno)
+	    raise exc.exception
 	end
 	io.close
 	@@filestack.pop
@@ -401,7 +400,7 @@ Create a Node.
 	basename = File.basename(template_file, ".ncg")
 	bn = self.node(basename)
 	bn["type"] = basename
-	bn["ncg_template"] = File.expand_path(template_file)
+	bn["ncg_template"] = template_file
     end
 
     # Import a tree of templates into the current node
@@ -935,6 +934,39 @@ Create a Node.
     ###################################################################
 
     private
+
+    # :call-seq:
+    # 	fixup_exception(exception,filename,lineno) -> exception
+    #
+    # Fixes the backtrace in the passed _exception_ to include nested source
+    # files.
+    #--
+    # Because of the way exception handling works (i.e., "rescue" blocks
+    # in nested invocations of import_file/import_table get called in
+    # sequence), we should only modify the backtrace on the first (deepest)
+    # exception and call to this method.  We figure out whether this is
+    # that "first exception" by checking to see whether the filename and
+    # lineno arguments match the deepest ones on the @@source_file and
+    # @@source_line class variables.
+    #++
+    def fixup_exception(exc,filename,lineno)
+	# push all source_file / source_line onto backtrace
+	if ((@@source_file.last == filename) && 
+	    (@@source_line.last == lineno)) then
+	    # ... but only if we're at the bottom of the exception stack.
+	    # Otherwise, the whole source_file:source_line stack gets
+	    # duplicated onto the backtrace as the rescue stack unwinds
+	    st = @@source_file.zip(@@source_line).collect { |t|
+		"#{t[0]}:#{t[1]}"
+	    }
+	    st.shift	# throw away the first element
+	    bt = exc.backtrace.dup
+	    bt.shift	# throw away the first element
+	    bt = st.reverse + bt
+	    exc.set_backtrace(bt)
+	end
+	return exc
+    end
 
     # :call-seq:
     # 	metadata_fetch(req) -> string

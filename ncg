@@ -104,11 +104,22 @@ net.keys_having_key("ncg_output").each { |target_key|
     # set up shortcut "target" variable
     target = net[target_key]
 
-    r = Netomata::Template::FromFile.new(template_filename).result_from_vars({
-	"@net" => net,
-        "@target_key" => target_key,
-        "@target" => target
-    })
+    begin	# rescue block
+	r = Netomata::Template::FromFile.new(template_filename).
+		result_from_vars({
+		    "@net" => net,
+		    "@target_key" => target_key,
+		    "@target" => target
+		})
+    rescue => exc
+	bt = exc.backtrace
+	$stderr.print "ERROR(", exc.class, "): ", exc.message, "\n"
+	$stderr.print "\tat ", bt.first, "\n"
+	$stderr.print "="*79, "\n"
+	$stderr.print "BACKTRACE\n"
+	$stderr.print "---------\n"
+	raise exc.exception
+    end
 
     of = File.new(target["ncg_output"], "w")
     of.write(r)

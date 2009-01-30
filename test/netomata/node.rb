@@ -493,3 +493,21 @@ EOF
 	assert_equal n, n2
     end
 end
+
+class NodeTest_5_Exception_Backtrace < Test::Unit::TestCase
+    def test_exception_backtrace
+	bt = []
+	begin	# rescue block
+	    n = Netomata::Node.new(nil)
+	    Dir.chdir(File.join($testfiles, "node_exception_backtrace")) do
+		n.import_file("file.neto")
+	    end
+	rescue => exc
+	    bt = exc.backtrace
+	    # no raise
+	end
+	assert_equal(
+	"./a/b/c/file.neto:5\n./a/b/file.neto:12\n./a/file.neto:9\nfile.neto:6",
+		bt[0..3].join("\n"))
+    end
+end

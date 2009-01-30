@@ -25,13 +25,11 @@ class Netomata::Template::FromString
 	@erb = ERB.new(str, 0, "<>", "@erb_result")
     end
 
+    # This method shouldn't be called anywhere, because it doesn't pass
+    # in any context to the code being evaluated by ERB.  Instead, all
+    # calls should be via result_from_vars.
     def result(binding = nil)
-	begin
-	    @erb.result(binding)
-	rescue => exc
-	    fix_exception(exc)
-	    raise exc.exception
-	end
+	raise "Unexpected call to #{self.class}#result"
     end
 
     def result_from_vars(vars = nil)
@@ -39,7 +37,7 @@ class Netomata::Template::FromString
 	begin
 	    @erb.result(context.binding)
 	rescue => exc
-	    fix_exception(exc)
+	    handle_exception(exc,vars)
 	    raise exc.exception
 	end
     end
@@ -50,9 +48,9 @@ class Netomata::Template::FromString
 
     private
 
-    def fix_exception(exc = nil)
+    def handle_exception(exc = nil, vars = nil)
 	if exc.nil? then
-	    return
+	    raise "Exception not passed to #{self.class}#handle_exception"
 	end
 
 	# fix the backtrace, so it lists the filename that the exception
@@ -64,7 +62,6 @@ class Netomata::Template::FromString
 	    file = @source
 	    line = nil
 	end
-
 	bt = exc.backtrace
 	bt.each { |e|
 	    if e.match(/^\(erb\):(\d+)(:.*)?/) then
@@ -81,6 +78,32 @@ class Netomata::Template::FromString
 	    end
 	}
 	exc.set_backtrace(bt)
+
+	# if $error_dump is set, dump error and vars to that file
+	if ! $error_dump.nil? then
+	    ef = open($error_dump, "w")
+	    ef.print "ERROR(#{exc.class}): #{exc.message}\n"
+	    ef.print "---------\n"
+	    ef.print "BACKTRACE\n"
+	    ef.print "---------\n"
+	    ef.print bt.join("\n")
+	    ef.print "\n"
+	    ef.print "-------\n"
+	    ef.print "CONTEXT\n"
+	    ef.print "-------\n"
+	    vars.each { |k,v|
+		if v.is_a?(Netomata::Node) then
+		    ef.print "#{k} = {\n"
+		    v.dump(ef,1,true)
+		    ef.print "}\n"
+		else
+		    ef.print "#{k} = "
+		    PP::pp(v, ef)
+		end
+	    }
+	    ef.close
+	end
+
 	return exc
     end
 end

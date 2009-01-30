@@ -31,6 +31,11 @@ class NcgArguments < Hash
 		self[:debug] = true
 		$debug = true
 	    end
+	    opts.on('-E', '--error-dump', '=FILENAME',
+		    'specify file to dump context to, if error occurs') do |val|
+		self[:error_dump] = val
+		$error_dump = val
+	    end
 	    opts.on('-k', '--keys',
 		'dump the list of keys') do
 		self[:keys] = true

@@ -221,14 +221,17 @@ task "merge_to_trunk" => ["check_commit_update", "verify_in_branch"] do
     sh "svn update"
     sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
     sh "svn update"
+    sh "svn log --stop-on-copy #{$svn_base_url}/#{$svn_branch} | egrep -v '^--*$|^r[0-9][0-9]* \|' >! /tmp/svn_merge_log"
     puts "#"*60
     puts "####"
     puts "#### REMINDER: now working in trunk!"
     puts "####"
     puts "#"*60
     puts ""
-    puts "Examine changes, then when ready to accept, do"
-    puts "\tsvn commit -m 'Merge from #{$svn_branch} to trunk'"
+    puts "Examine changes and revise log entry in /tmp/svn_merge_log"
+    puts "\tvi /tmp/svn_merge_log"
+    puts "When ready to accept, do"
+    puts "\tsvn commit -F /tmp/svn_merge_log"
     puts "\tsvn update"
     puts ""
     puts "#"*60

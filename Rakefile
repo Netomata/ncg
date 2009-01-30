@@ -114,9 +114,9 @@ task "VERSION" do
     v = File.new("VERSION", "w")
     v.truncate(0)
     if ($svn_branch.eql?("")) then
-	v.puts("#{release}-#{$svn_revision}")
+	v.puts("#{release} (trunk@#{$svn_revision})")
     else
-	v.puts("#{release}-#{$svn_branch}-#{$svn_revision}")
+	v.puts("#{release} (#{$svn_branch}@#{$svn_revision})")
     end
     v.close
 end
@@ -189,25 +189,34 @@ task "ignore.svn" do
     sh 'cd lib/netomata ; svn ps svn:ignore version.rb .'
 end
 
-desc "Merge changes from trunk into current branch"
-task "merge_from_trunk" do
+desc "Verify we're working in a branch"
+task "verify_in_branch" do
     if $svn_branch.eql?("") then
 	fail("#"*60 + "\n" +
-	      "'merge_from_trunk' can only be done when working in a branch\n" +
+	      "Must be working in a branch!\n" +
 	      "#"*60)
     end
+end
+
+desc "Verify we're working in trunk"
+task "verify_in_trunk" do
+    if ! $svn_branch.eql?("") then
+	fail("#"*60 + "\n" +
+	      "Must be working in trunk!\n" +
+	      "Currently working in: #{$svn_branch}\n" +
+	      "#"*60)
+    end
+end
+
+desc "Merge changes from trunk into current branch"
+task "merge_from_trunk" => ["verify_in_branch"] do
     sh "svn merge --reintegrate #{$svn_trunk_url}"
     sh "svn update"
     sh "svn status"
 end
 
 desc "Merge changes from current branch into trunk"
-task "merge_to_trunk" => ["svn_check"] do
-    if $svn_branch.eql?("") then
-	fail("#"*60 + "\n" +
-	      "'merge_to_trunk' can only be done when working in a branch\n" +
-	      "#"*60)
-    end
+task "merge_to_trunk" => ["svn_check", "verify_in_branch"] do
     sh "svn switch #{$svn_trunk_url}"
     sh "svn update"
     sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
@@ -242,7 +251,7 @@ task "switch_to_branch" do
 end
 
 desc "Delete old working branch, create new branch from trunk, and switch to branch"
-task "new_branch" => ["check_svn", "delete_branch", "make_branch", "switch_to_branch"] do
+task "new_branch" => ["verify_in_branch", "check_svn", "delete_branch", "make_branch", "switch_to_branch"] do
     puts "#"*60
     puts "####"
     puts "#### Now working in #{$svn_working_branch}!"

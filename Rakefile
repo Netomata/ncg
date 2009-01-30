@@ -250,7 +250,7 @@ end
 desc "Switch from trunk to branch"
 task "switch_to_branch" do
     sh "svn switch #{$svn_base_url}/#{$svn_working_branch}"
-    sh "svn update"
+    #- sh "svn update"
 end
 
 desc "Delete old working branch, create new branch from trunk, and switch to branch"

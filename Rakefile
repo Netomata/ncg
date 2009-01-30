@@ -251,7 +251,7 @@ task "switch_to_branch" do
 end
 
 desc "Delete old working branch, create new branch from trunk, and switch to branch"
-task "new_branch" => ["verify_in_branch", "check_svn", "delete_branch", "make_branch", "switch_to_branch"] do
+task "new_branch" => ["verify_in_trunk", "check_svn", "delete_branch", "make_branch", "switch_to_branch"] do
     puts "#"*60
     puts "####"
     puts "#### Now working in #{$svn_working_branch}!"

@@ -56,8 +56,8 @@ desc "Generate test configs and diff against baseline"
 task "configs" => ["lib/netomata/version.rb"] do
     sh 'rm -f sample/configs/switch-1.config sample/configs/switch-2.config'
     sh 'ncg -v sample/sample.neto'
-    sh 'diff -u sample/configs/switch-1.baseline sample/configs/switch-1.config'
-    sh 'diff -u sample/configs/switch-2.baseline sample/configs/switch-2.config'
+    sh 'egrep -v "^!!" sample/configs/switch-1.config | diff -u sample/configs/switch-1.baseline -'
+    sh 'egrep -v "^!!" sample/configs/switch-2.config | diff -u sample/configs/switch-2.baseline -'
     puts "Success!"
 end
 
@@ -114,9 +114,9 @@ task "VERSION" do
     v = File.new("VERSION", "w")
     v.truncate(0)
     if ($svn_branch.eql?("")) then
-	v.puts("#{release} (trunk@#{$svn_revision})")
+	v.puts("#{release}-r#{$svn_revision}")
     else
-	v.puts("#{release} (#{$svn_branch}@#{$svn_revision})")
+	v.puts("#{release}-r#{$svn_revision}-#{$svn_branch.sub(/^.*\//,"")}")
     end
     v.close
 end
@@ -187,6 +187,7 @@ desc "Update svn:ignore property"
 task "ignore.svn" do
     sh 'svn ps svn:ignore -F ignore.svn .'
     sh 'cd lib/netomata ; svn ps svn:ignore version.rb .'
+    sh 'cd sample/configs ; svn ps svn:ignore -F ignore.svn .'
 end
 
 desc "Verify we're working in a branch"
@@ -250,7 +251,6 @@ end
 desc "Switch from trunk to branch"
 task "switch_to_branch" do
     sh "svn switch #{$svn_base_url}/#{$svn_working_branch}"
-    #- sh "svn update"
 end
 
 desc "Delete old working branch, create new branch from trunk, and switch to branch"

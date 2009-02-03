@@ -12,25 +12,11 @@ snmp_ip		= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.27") %>
 snmp_community	= public
 domain		= example.com
 
-table vlans
+table vlans.neto_table
 
-# template_dir templates !templates
-
-template templates/devices/routers/cisco.ncg !templates!devices!routers
-template templates/devices/routers/cisco/idioms/shutdown.ncg !templates!devices!routers!cisco!idioms
-template templates/devices/routers/cisco/idioms/vlan_ip_address.ncg !templates!devices!routers!cisco!idioms
-template templates/devices/routers/cisco/idioms/vlan_vrrp.ncg !templates!devices!routers!cisco!idioms
-template templates/devices/routers/cisco/templates/interfaces/fwext.ncg !templates!devices!routers!cisco!templates!interfaces
-template templates/devices/routers/cisco/templates/interfaces/fwvlan.ncg !templates!devices!routers!cisco!templates!interfaces
-template templates/devices/routers/cisco/templates/interfaces/host.ncg !templates!devices!routers!cisco!templates!interfaces
-template templates/devices/routers/cisco/templates/interfaces/ipmi.ncg !templates!devices!routers!cisco!templates!interfaces
-template templates/devices/routers/cisco/templates/interfaces/loadbal.ncg !templates!devices!routers!cisco!templates!interfaces
-template templates/devices/routers/cisco/templates/interfaces/mgmt.ncg !templates!devices!routers!cisco!templates!interfaces
-template templates/devices/routers/cisco/templates/interfaces/trunk.ncg !templates!devices!routers!cisco!templates!interfaces
-template templates/devices/routers/cisco/templates/interfaces/unused.ncg !templates!devices!routers!cisco!templates!interfaces
-template templates/devices/routers/cisco/templates/vlan-interfaces/admin.ncg !templates!devices!routers!cisco!templates!vlan-interfaces
-template templates/devices/routers/cisco/templates/vlan-interfaces/env.ncg !templates!devices!routers!cisco!templates!vlan-interfaces
-template templates/devices/routers/cisco/templates/vlan-interfaces/switch.ncg !templates!devices!routers!cisco!templates!vlan-interfaces
+!templates {
+    template_dir templates
+}
 
 !templates!devices!routers!cisco {
     # add to Cisco router device template
@@ -53,4 +39,4 @@ devices!(+) < !templates!devices!routers!cisco {
     ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %>
 }
 
-table interfaces
+table interfaces.neto_table

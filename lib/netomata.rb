@@ -6,12 +6,13 @@
 
 require 'rubygems'
 require 'erb'
-require 'facets'
+require 'etc'
 require 'facets/dictionary'
 require 'ipaddr'
+require 'pp'
+require 'socket'
 begin	# rescue block; no big deal if these aren't found, since
     	# they're only used for debugging
-    require 'pp'
     require 'breakpoint'
     require 'ruby-debug'
 rescue LoadError

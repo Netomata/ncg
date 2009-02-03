@@ -19,6 +19,8 @@
 # rather than being late-bound when referenced.
 
 raise "target name undefined" if (! @target.has_key?("name"))
+
+%><%= emit_header("!! ", "!!!!!!!! ", "!!!!!!!!")
 %>no service pad
 service timestamps debug datetime
 service timestamps log datetime
@@ -91,7 +93,7 @@ raise "VLAN template base not found" if (vlt_base.nil?)
 @target["(...)!vlans"].each { |key,vlan|
     raise "vlan name undefined for key '#{key}'" if (! vlan.has_key?("name"))
     raise "vlan type undefined for vlan '#{vlan["name"]}'" if (! vlan.has_key?("type"))
-    template_name = vlt_base["(type=#{vlan["type"]})!ncg_template"]
+    template_name = vlt_base["(name=#{vlan["type"]})!ncg_template"]
     raise "vlan template undefined for vlan '#{vlan["name"]}', type '#{vlan["type"]}'" if (template_name.nil?)
     r = Netomata::Template::FromFile.new(template_name).result_from_vars(
     	{"@vlan" => vlan, "@target" => @target})

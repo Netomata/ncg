@@ -8,3 +8,4 @@ dist
 rdoc
 skel
 .svn
+sample/configs/ignore.svn

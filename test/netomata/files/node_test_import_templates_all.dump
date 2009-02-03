@@ -1,0 +1,1362 @@
+templates {
+    a {
+        name = a
+        ncg_template = a.ncg
+        a {
+            name = a
+            ncg_template = a/a.ncg
+            a {
+                name = a
+                ncg_template = a/a/a.ncg
+                a {
+                    name = a
+                    ncg_template = a/a/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/a/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/a/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/a/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = a/a/b.ncg
+                a {
+                    name = a
+                    ncg_template = a/a/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/a/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/a/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/a/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = a/a/c.ncg
+                a {
+                    name = a
+                    ncg_template = a/a/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/a/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/a/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/a/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = a/a/d.ncg
+                a {
+                    name = a
+                    ncg_template = a/a/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/a/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/a/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/a/d/d.ncg
+                }
+            }
+        }
+        b {
+            name = b
+            ncg_template = a/b.ncg
+            a {
+                name = a
+                ncg_template = a/b/a.ncg
+                a {
+                    name = a
+                    ncg_template = a/b/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/b/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/b/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/b/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = a/b/b.ncg
+                a {
+                    name = a
+                    ncg_template = a/b/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/b/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/b/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/b/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = a/b/c.ncg
+                a {
+                    name = a
+                    ncg_template = a/b/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/b/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/b/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/b/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = a/b/d.ncg
+                a {
+                    name = a
+                    ncg_template = a/b/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/b/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/b/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/b/d/d.ncg
+                }
+            }
+        }
+        c {
+            name = c
+            ncg_template = a/c.ncg
+            a {
+                name = a
+                ncg_template = a/c/a.ncg
+                a {
+                    name = a
+                    ncg_template = a/c/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/c/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/c/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/c/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = a/c/b.ncg
+                a {
+                    name = a
+                    ncg_template = a/c/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/c/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/c/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/c/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = a/c/c.ncg
+                a {
+                    name = a
+                    ncg_template = a/c/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/c/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/c/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/c/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = a/c/d.ncg
+                a {
+                    name = a
+                    ncg_template = a/c/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/c/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/c/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/c/d/d.ncg
+                }
+            }
+        }
+        d {
+            name = d
+            ncg_template = a/d.ncg
+            a {
+                name = a
+                ncg_template = a/d/a.ncg
+                a {
+                    name = a
+                    ncg_template = a/d/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/d/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/d/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/d/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = a/d/b.ncg
+                a {
+                    name = a
+                    ncg_template = a/d/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/d/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/d/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/d/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = a/d/c.ncg
+                a {
+                    name = a
+                    ncg_template = a/d/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/d/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/d/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/d/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = a/d/d.ncg
+                a {
+                    name = a
+                    ncg_template = a/d/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = a/d/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = a/d/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = a/d/d/d.ncg
+                }
+            }
+        }
+    }
+    b {
+        name = b
+        ncg_template = b.ncg
+        a {
+            name = a
+            ncg_template = b/a.ncg
+            a {
+                name = a
+                ncg_template = b/a/a.ncg
+                a {
+                    name = a
+                    ncg_template = b/a/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/a/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/a/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/a/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = b/a/b.ncg
+                a {
+                    name = a
+                    ncg_template = b/a/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/a/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/a/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/a/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = b/a/c.ncg
+                a {
+                    name = a
+                    ncg_template = b/a/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/a/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/a/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/a/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = b/a/d.ncg
+                a {
+                    name = a
+                    ncg_template = b/a/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/a/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/a/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/a/d/d.ncg
+                }
+            }
+        }
+        b {
+            name = b
+            ncg_template = b/b.ncg
+            a {
+                name = a
+                ncg_template = b/b/a.ncg
+                a {
+                    name = a
+                    ncg_template = b/b/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/b/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/b/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/b/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = b/b/b.ncg
+                a {
+                    name = a
+                    ncg_template = b/b/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/b/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/b/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/b/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = b/b/c.ncg
+                a {
+                    name = a
+                    ncg_template = b/b/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/b/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/b/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/b/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = b/b/d.ncg
+                a {
+                    name = a
+                    ncg_template = b/b/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/b/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/b/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/b/d/d.ncg
+                }
+            }
+        }
+        c {
+            name = c
+            ncg_template = b/c.ncg
+            a {
+                name = a
+                ncg_template = b/c/a.ncg
+                a {
+                    name = a
+                    ncg_template = b/c/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/c/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/c/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/c/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = b/c/b.ncg
+                a {
+                    name = a
+                    ncg_template = b/c/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/c/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/c/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/c/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = b/c/c.ncg
+                a {
+                    name = a
+                    ncg_template = b/c/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/c/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/c/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/c/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = b/c/d.ncg
+                a {
+                    name = a
+                    ncg_template = b/c/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/c/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/c/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/c/d/d.ncg
+                }
+            }
+        }
+        d {
+            name = d
+            ncg_template = b/d.ncg
+            a {
+                name = a
+                ncg_template = b/d/a.ncg
+                a {
+                    name = a
+                    ncg_template = b/d/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/d/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/d/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/d/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = b/d/b.ncg
+                a {
+                    name = a
+                    ncg_template = b/d/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/d/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/d/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/d/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = b/d/c.ncg
+                a {
+                    name = a
+                    ncg_template = b/d/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/d/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/d/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/d/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = b/d/d.ncg
+                a {
+                    name = a
+                    ncg_template = b/d/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = b/d/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = b/d/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = b/d/d/d.ncg
+                }
+            }
+        }
+    }
+    c {
+        name = c
+        ncg_template = c.ncg
+        a {
+            name = a
+            ncg_template = c/a.ncg
+            a {
+                name = a
+                ncg_template = c/a/a.ncg
+                a {
+                    name = a
+                    ncg_template = c/a/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/a/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/a/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/a/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = c/a/b.ncg
+                a {
+                    name = a
+                    ncg_template = c/a/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/a/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/a/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/a/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = c/a/c.ncg
+                a {
+                    name = a
+                    ncg_template = c/a/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/a/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/a/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/a/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = c/a/d.ncg
+                a {
+                    name = a
+                    ncg_template = c/a/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/a/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/a/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/a/d/d.ncg
+                }
+            }
+        }
+        b {
+            name = b
+            ncg_template = c/b.ncg
+            a {
+                name = a
+                ncg_template = c/b/a.ncg
+                a {
+                    name = a
+                    ncg_template = c/b/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/b/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/b/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/b/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = c/b/b.ncg
+                a {
+                    name = a
+                    ncg_template = c/b/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/b/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/b/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/b/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = c/b/c.ncg
+                a {
+                    name = a
+                    ncg_template = c/b/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/b/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/b/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/b/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = c/b/d.ncg
+                a {
+                    name = a
+                    ncg_template = c/b/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/b/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/b/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/b/d/d.ncg
+                }
+            }
+        }
+        c {
+            name = c
+            ncg_template = c/c.ncg
+            a {
+                name = a
+                ncg_template = c/c/a.ncg
+                a {
+                    name = a
+                    ncg_template = c/c/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/c/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/c/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/c/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = c/c/b.ncg
+                a {
+                    name = a
+                    ncg_template = c/c/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/c/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/c/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/c/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = c/c/c.ncg
+                a {
+                    name = a
+                    ncg_template = c/c/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/c/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/c/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/c/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = c/c/d.ncg
+                a {
+                    name = a
+                    ncg_template = c/c/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/c/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/c/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/c/d/d.ncg
+                }
+            }
+        }
+        d {
+            name = d
+            ncg_template = c/d.ncg
+            a {
+                name = a
+                ncg_template = c/d/a.ncg
+                a {
+                    name = a
+                    ncg_template = c/d/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/d/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/d/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/d/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = c/d/b.ncg
+                a {
+                    name = a
+                    ncg_template = c/d/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/d/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/d/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/d/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = c/d/c.ncg
+                a {
+                    name = a
+                    ncg_template = c/d/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/d/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/d/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/d/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = c/d/d.ncg
+                a {
+                    name = a
+                    ncg_template = c/d/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = c/d/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = c/d/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = c/d/d/d.ncg
+                }
+            }
+        }
+    }
+    d {
+        name = d
+        ncg_template = d.ncg
+        a {
+            name = a
+            ncg_template = d/a.ncg
+            a {
+                name = a
+                ncg_template = d/a/a.ncg
+                a {
+                    name = a
+                    ncg_template = d/a/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/a/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/a/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/a/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = d/a/b.ncg
+                a {
+                    name = a
+                    ncg_template = d/a/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/a/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/a/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/a/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = d/a/c.ncg
+                a {
+                    name = a
+                    ncg_template = d/a/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/a/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/a/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/a/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = d/a/d.ncg
+                a {
+                    name = a
+                    ncg_template = d/a/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/a/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/a/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/a/d/d.ncg
+                }
+            }
+        }
+        b {
+            name = b
+            ncg_template = d/b.ncg
+            a {
+                name = a
+                ncg_template = d/b/a.ncg
+                a {
+                    name = a
+                    ncg_template = d/b/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/b/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/b/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/b/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = d/b/b.ncg
+                a {
+                    name = a
+                    ncg_template = d/b/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/b/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/b/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/b/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = d/b/c.ncg
+                a {
+                    name = a
+                    ncg_template = d/b/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/b/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/b/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/b/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = d/b/d.ncg
+                a {
+                    name = a
+                    ncg_template = d/b/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/b/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/b/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/b/d/d.ncg
+                }
+            }
+        }
+        c {
+            name = c
+            ncg_template = d/c.ncg
+            a {
+                name = a
+                ncg_template = d/c/a.ncg
+                a {
+                    name = a
+                    ncg_template = d/c/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/c/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/c/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/c/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = d/c/b.ncg
+                a {
+                    name = a
+                    ncg_template = d/c/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/c/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/c/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/c/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = d/c/c.ncg
+                a {
+                    name = a
+                    ncg_template = d/c/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/c/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/c/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/c/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = d/c/d.ncg
+                a {
+                    name = a
+                    ncg_template = d/c/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/c/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/c/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/c/d/d.ncg
+                }
+            }
+        }
+        d {
+            name = d
+            ncg_template = d/d.ncg
+            a {
+                name = a
+                ncg_template = d/d/a.ncg
+                a {
+                    name = a
+                    ncg_template = d/d/a/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/d/a/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/d/a/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/d/a/d.ncg
+                }
+            }
+            b {
+                name = b
+                ncg_template = d/d/b.ncg
+                a {
+                    name = a
+                    ncg_template = d/d/b/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/d/b/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/d/b/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/d/b/d.ncg
+                }
+            }
+            c {
+                name = c
+                ncg_template = d/d/c.ncg
+                a {
+                    name = a
+                    ncg_template = d/d/c/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/d/c/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/d/c/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/d/c/d.ncg
+                }
+            }
+            d {
+                name = d
+                ncg_template = d/d/d.ncg
+                a {
+                    name = a
+                    ncg_template = d/d/d/a.ncg
+                }
+                b {
+                    name = b
+                    ncg_template = d/d/d/b.ncg
+                }
+                c {
+                    name = c
+                    ncg_template = d/d/d/c.ncg
+                }
+                d {
+                    name = d
+                    ncg_template = d/d/d/d.ncg
+                }
+            }
+        }
+    }
+}

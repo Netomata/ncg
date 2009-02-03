@@ -18,7 +18,6 @@ $testfiles = File.join(cwd,"files")
 require 'netomata'
 
 require 'test/unit'
-require 'yaml'
 require 'tempfile'
 require 'stringio'
 begin	# rescue block
@@ -161,11 +160,13 @@ class NodeTest_2_General < Test::Unit::TestCase
 	@node["!n1!k_n1a3"] = "v_n1a3"
 	@node["!n1!k_common_k"] = "v_common_n1"
 	@node["!n1!k_common_kv"] = "v_common_kv"
+	@node["!n1!k_common_n!k_common_n_kv"] = "v_common_kv"
 	@node["!n2!k_n2a1"] = "v_n2a1"
 	@node["!n2!k_n2a2"] = "v_n2a2"
 	@node["!n2!k_n2a3"] = "v_n2a3"
 	@node["!n2!k_common_k"] = "v_common_n2"
 	@node["!n2!k_common_kv"] = "v_common_kv"
+	@node["!n2!k_common_n!k_common_n_kv"] = "v_common_kv"
 	@node["!n1!n11!k_n11"] = "v_n11"
 	@node["!n1!n12!k_n12"] = "v_n12"
 	@node["!n1!n13!k_n13"] = "v_n13"
@@ -347,6 +348,14 @@ class NodeTest_2_General < Test::Unit::TestCase
 	assert_equal [], @node.keys_having_key("k_uncommon_k")
 	assert_equal ["!n1", "!n2"], @node.keys_having_key("k_common_k")
     end
+
+    def test_equivalent
+	assert_equal true, @node.equivalent(@node)
+	assert_equal true, @node["n1"].equivalent(@node["n1"])
+	assert_equal false, @node.equivalent(@node["n1"])
+	assert_equal true, @node["!n1!k_common_n"].
+	    			equivalent(@node["!n2!k_common_n"])
+    end
 end
 
 class NodeTest_3_Import_Table < Test::Unit::TestCase
@@ -397,6 +406,9 @@ end
 
 class NodeTest_4_Import_File < Test::Unit::TestCase
     def setup
+
+	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
+
 	def setup_dir(bottom,*parts)
 	    Dir.mkdir(File.join(@tmpdirname,parts))
 	    f = File.new(File.join(@tmpdirname, parts,"file.neto"),"w")
@@ -430,9 +442,7 @@ EOF
 	    f.close
 	end
 
-	@tmpdirname = "/tmp/ncg_unit_test.#{$$}"
 	setup_dir(false)
-	@tmpdir = Dir.new(@tmpdirname)
 	for i1 in 'a' .. 'd' do
 	    setup_dir(false,i1)
 	    for i2 in 'a' .. 'd' do
@@ -445,7 +455,6 @@ EOF
     end
 
     def teardown
-	@tmpdir.close
 	FileUtils.rm_rf(@tmpdirname)
     end
 
@@ -509,5 +518,148 @@ class NodeTest_5_Exception_Backtrace < Test::Unit::TestCase
 	assert_equal(
 	"./a/b/c/file.neto:5\n./a/b/file.neto:12\n./a/file.neto:9\nfile.neto:6",
 		bt[0..3].join("\n"))
+    end
+end
+
+class NodeTest_6_Import_Template < Test::Unit::TestCase
+    def setup
+
+	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
+
+	def setup_template(filename)
+	    f = File.new(File.join(@tmpdirname,filename),"w")
+	    f.print("this = ", filename, "\n")
+	    f.close
+	    @templates_all.print "!templates!",
+		filename.sub(/\.ncg$/,'').gsub(File::Separator,'!')
+	    @templates_all.print <<EOF
+ {
+    template #{filename}
+}
+EOF
+	end
+
+	def setup_dir(bottom,*parts)
+	    Dir.mkdir(File.join(@tmpdirname,parts))
+	    f = File.new(File.join(@tmpdirname, parts,"templates.neto"),"w")
+	    if (parts.length == 0) then
+		# this is the top-level directory
+		@templates_all = File.open(File.join(@tmpdirname,
+						    "templates_all.neto"),"w")
+	    end
+	    for i in 'a'..'d' do
+		f.printf "#{i} {\n"
+		f.printf "    template #{i}.ncg\n"
+		if (parts.length == 0) then
+		    setup_template("#{i}.ncg")
+		else
+		    setup_template(File.join(parts,"#{i}.ncg"))
+		end
+		if (! bottom) then
+		    f.printf "    include #{i}/templates.neto\n"
+		end
+		f.printf "}\n"
+	    end
+	    f.close
+	end
+
+	setup_dir(false)
+	for i1 in 'a' .. 'd' do
+	    setup_dir(false,i1)
+	    for i2 in 'a' .. 'd' do
+		setup_dir(false,i1,i2)
+		for i3 in 'a' .. 'd' do
+		    setup_dir(true,i1,i2,i3)
+		end
+	    end
+	end
+
+	@templates_all.close
+
+	tf = File.new(File.join(@tmpdirname,"template_dir.neto"),"w")
+	tf.print <<EOF
+!templates {
+    template_dir .
+}
+EOF
+	tf.close
+
+	tf = File.new(File.join(@tmpdirname,"template_dir_deep.neto"),"w")
+	tf.print <<EOF
+!templates-aa {
+    template_dir a/a
+}
+!templates-ab {
+    template_dir a/b
+}
+!templates-bb {
+    template_dir b/b
+}
+!templates-ba {
+    template_dir b/a
+}
+!templates-cba {
+    template_dir c/b/a
+}
+!templates-abc {
+    template_dir a/b/c
+}
+EOF
+	tf.close
+
+	tf = File.new(File.join(@tmpdirname,"templates_top.neto"),"w")
+	tf.print <<EOF
+!templates {
+    include templates.neto
+}
+EOF
+	tf.close
+
+    end
+
+    def teardown
+	FileUtils.rm_rf(@tmpdirname)
+    end
+
+    def test_import_template
+	# Multiple tests are done here instead of in separate test_ methods,
+	# so that setup/teardown (which is slow, because it creates/deletes
+	# a large number of directories and files) doesn't need to be repeated.
+	
+	# check_template(template_filename) -> node
+	# 1) Creates a node, and loads it from the named template_filename
+	# 2) Checks it against the corresponding reference dump
+	# 3) returns the node
+	def check_template(template_filename)
+	    template_basename = File.basename(template_filename,".neto")
+	    n = Netomata::Node.new(nil)
+	    n.import_file(template_filename)
+	    # To re-create test data file, uncomment following line:
+	    # 	n.dump(File.new("/tmp/#{template_basename}.dump", "w"),0,false)
+	    # Examine the file, then do
+	    #   mv /tmp/#{template_basename}.dump
+	    #      test/netomata/files/node_test_import_#{tempate_basename}.dump
+	    n_expected =
+		File.new(
+		    File.join($testfiles,
+			      "node_test_import_#{template_basename}.dump")
+	        ).readlines.join
+	    n_output = StringIO.new
+	    n.dump(n_output,0,false)
+	    assert_equal n_expected, n_output.string
+	    return n
+	end
+
+	Dir.chdir(@tmpdirname) do
+	    n_templates_all = check_template("templates_all.neto")
+
+	    n_templates_top = check_template("templates_top.neto")
+	    assert n_templates_top.equivalent(n_templates_all)
+
+	    n_template_dir = check_template("template_dir.neto")
+	    assert n_template_dir.equivalent(n_templates_all)
+
+	    n_template_dir_deep = check_template("template_dir_deep.neto")
+	end
     end
 end

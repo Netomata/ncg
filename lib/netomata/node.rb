@@ -128,6 +128,38 @@ Create a Node.
     end
 
     # :call-seq:
+    # 	equivalent(node) -> true or false
+    # Returns true if _node_ is equivalent to _self_, false otherwise.
+    # "Equivalent" is defined as:
+    # 	1) Both nodes have the same set of subsidiary keys (though not
+    # 		necessarily in the same	order)
+    # 	2) The value of each corresponding key is equivalent; if the value
+    # 		is itself a Node, it is checked recursively
+    # This is different than "==", which is inherited from Dictionary (our
+    # parent class), which also checks that keys are in the same order.
+    def equivalent(n2)
+	n1 = self
+	# check that list of keys is the same (though not necessarily in
+	# same order)
+	if ! (n1.keys.sort == n2.keys.sort) then
+	    return false
+	end
+	# check each key
+	n1.each { |k,v1|
+	    v2 = n2[k]
+	    if v1.is_a?(Netomata::Node) then
+		# if value is another node, check recursively
+		return false if ! v1.equivalent(v2)
+	    else
+		# otherwise, simply check for equality
+		return false if ! (v1 == v2)
+	    end
+	}
+	# if we get this far, nodes are equivalent
+	return true
+    end
+
+    # :call-seq:
     # 	fetch(key [, default] )		-> obj
     #   fetch(key) {|key| block } 	-> obj
     #
@@ -253,15 +285,9 @@ Create a Node.
 		when /^template\s+(\S+)$/
 		    # template templates/config.ncg
 		    self[buildkey(pstack.last)].import_template(relative_filename(filename,$1))
-		when /^template\s+(\S+)\s+(\S+)$/
-		    # template templates/config.ncg !templates
-		    self[buildkey(pstack.last)].node($2).import_template(relative_filename(filename,$1))
 		when /^template_dir\s+(\S+)$/
 		    # template_dir sample/templates
 		    self[buildkey(pstack.last)].import_template_dir(relative_filename(filename,$1))
-		when /^template_dir\s+(\S+)\s+(\S+)$/
-		    # template_dir sample/templates !templates
-		    self[buildkey(pstack.last)].node($2).import_template_dir(relative_filename(filename,$1))
 		else
 		    raise "Unrecognized line '#{l}'"
 		end
@@ -346,7 +372,14 @@ Create a Node.
 			    fkn,fkk = dictionary_tuple(fk,true)
 			    raise "Unknown key #{fk}" if (fkn.nil? || fkk.nil?)
 			    ak = vsub(a,fields,d)
-			    akn,akk = dictionary_tuple(ak,false)
+			    # look for ak relative to fk (not self)
+			    if fkn.has_key?(fkk) then
+				# relative to fkn[fkk] if fkk has been defined
+				akn,akk = fkn[fkk].dictionary_tuple(ak,false)
+			    else
+				# otherwise, just relative to fkn
+				akn,akk = fkn.dictionary_tuple(ak,false)
+			    end
 			    raise "Unknown key #{ak}" if (akn.nil? || akk.nil?)
 			    if (! fkn.has_key?(fkk)) then
 				if akn[akk].nil? then
@@ -382,15 +415,20 @@ Create a Node.
     end
 
     # Import a template into the current node
-    def import_template(template_file) 
+    def import_template(template_file_orig) 
 	# template should be the name of a file ending in '*.ncg', which is
 	# recorded as a template node with the following characteristics:
-	# 	key = path to file with '/' converted to '!' and '.ncg' suffix
-	# 		stripped
+	# 	name = basename of file (i.e., filename with leading directory
+	# 		path and trailing '.ncg' suffix stripped)
 	#	ncg_template = path to file
-	# 	type = last element of key (i.e., filename with '.ncg' stripped)
 	# FIXME: also need to parse file for '#@' variables to set
 	
+	# clean up filename by removing gratuitous "." elements in path
+	template_file = template_file_orig.dup
+	template_file.gsub!((File::Separator + "." + File::Separator),
+			    	File::Separator)
+	template_file.sub!(/^\.#{File::Separator}/,"")
+
 	if (! File.file?(template_file)) then
 	    raise ArgumentError, "template_file arg must be a valid filename"
 	end
@@ -398,9 +436,8 @@ Create a Node.
 	puts "# #{self.key}.import_template(#{template_file})" if $debug
 
 	basename = File.basename(template_file, ".ncg")
-	bn = self.node(basename)
-	bn["type"] = basename
-	bn["ncg_template"] = template_file
+	self["name"] = basename
+	self["ncg_template"] = template_file
     end
 
     # Import a tree of templates into the current node
@@ -419,21 +456,22 @@ Create a Node.
 	    raise ArgumentError, "template_dir arg must be a directory name"
 	end
 
-	basename = File.basename(template_dir)
+	template_dir_base = File.basename(template_dir)
 
-	Dir.foreach(template_dir) { |filename|
-	    case filename
+	Dir.foreach(template_dir) { |dir_entry|
+	    filepath = File.join(template_dir,dir_entry)
+	    case dir_entry
 	    when "." then next
 	    when ".." then next
+	    when /^\./ then next	# skip entries beginning with "."
 	    when /^(.*)\.ncg/ then
 		# process file
-		self[template_key].import_template(filename)
+		#- self.node(dir_entry_to_key(template_dir_base)).
+		self.node($1).import_template(filepath)
 	    else
-		if (File.directory?(filename)) then
+		if File.directory?(filepath) then
 		    # process subdirectory
-		    # FIXME: relative to _what_?  template_dir gets dup'd at each level
-		    self[filename_to_key(template_dir)].import_template_dir(
-			File.join(template_dir, filename))
+		    self.node(dir_entry).import_template_dir(filepath)
 		end
 		# otherwise, skip entry
 	    end
@@ -729,7 +767,7 @@ Create a Node.
 	if (! key.include?("!")) then
 	    # key does _not_ include a "!", but still might be a "()" selector
 	    ks = selector_to_key(key)
-	    if (ks != key) then
+	    if (key.match(/^\(.*\)$/)) then
 		# key was a "()" selector, so now we need to get what it
 		# resolved to
 		return dictionary_tuple(ks, create)
@@ -854,7 +892,11 @@ Create a Node.
     # If key exists, but isn't a node, raises an error
     def node(key)
 	kn,kk = dictionary_tuple(key,true)
-	raise "Unknown key #{key}" if(kn.nil? || kk.nil?)
+	raise "Unknown key #{key}" if kn.nil?
+	if kk.nil? then
+	    # if we got back a kn, but kk is nil, then was self-reference to kn
+	    return kn
+	end
 	if kn.has_key?(kk) then
 	    # key already exists, so use it
 	    if (! kn[kk].is_a?(Netomata::Node)) then

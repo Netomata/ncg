@@ -18,15 +18,13 @@
 # as a single tab (i.e., the field separator is /\t+/), so every field must
 # have _something_ in it, even if it's just "-" or "none" or some such.
 #
-# + !devices!(name=switch-1)!interfaces!(+) < (...)!templates!interfaces!(type=%type)
-+ !devices!(name=switch-1)!interfaces!(+) < !templates!devices!routers!cisco!templates!interfaces!(type=%type)
++ !devices!(name=switch-1)!interfaces!(+) < (...)!templates!interfaces!(name=%type)
 @ name = !devices!(name=switch-1)!interfaces!(>)!name
 @ type = !devices!(name=switch-1)!interfaces!(name=%name)!type
 @ target1 = !devices!(name=switch-1)!interfaces!(name=%name)!target
 @ active1 = !devices!(name=switch-1)!interfaces!(name=%name)!active
 #
-# + !devices!(name=switch-2)!interfaces!(+) < (...)!templates!interfaces!(type=%type)
-+ !devices!(name=switch-2)!interfaces!(+) < !templates!devices!routers!cisco!templates!interfaces!(type=%type)
++ !devices!(name=switch-2)!interfaces!(+) < (...)!templates!interfaces!(name=%type)
 @ name = !devices!(name=switch-2)!interfaces!(>)!name
 @ type = !devices!(name=switch-2)!interfaces!(name=%name)!type
 @ target2 = !devices!(name=switch-2)!interfaces!(name=%name)!target

@@ -1,13 +1,11 @@
 Tasks not yet added to FogBugz
 ==============================
+In import_template, parse files for "#@" keys to add,
+or do some sort of equivalent trick with ERB
+
 DRY open/filestack/close code
 
 Create "metadata" method in utilities, and use that rather than
 metadata pseudo-keys?
 
 Prevent metadata set in node_store
-
-Unit tests for import_template and import_template_dir
-
-In import_template, parse files for "#@" keys to add,
-or do some sort of equivalent trick with ERB

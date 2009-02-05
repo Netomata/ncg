@@ -1,53 +1,96 @@
-Netomata Alpha Release Notes, 7 Nov 2008
-========================================
+          Netomata Config Generator (ncg) Release Notes
 
-Thank you for agreeing to participate in Netomata's first alpha
-release, and welcome!
+                        Version 0.9.0-rNNN
+                    Released DD February 2009
+                    =========================
 
-If you have any questions or comments, please contact me:
+Thank you for downloading the Netomata Config Generator (ncg)!
 
-	Brent Chapman <brent@netomata.com>
+If you have any questions or comments, please contact us:
+
+	support@netomata.com
 	+1 510 355 0123 (main)
 	+1 510 355 0134 (fax)
-	+1 510 355 1621 (direct)
-
-This ALPHA version of the software is provided under a
-Nondisclosure Agreement.  Please honor it.  Also, please
-keep in mind that as an alpha release, this is definitely
-_not_ suitable for production use yet.  Please play with
-it, poke around at it, and tell us how it breaks or how
-it falls short of your expectations, so that we can get
-it up to snuff before general release.
 
 Documentation is at http://www.netomata.com/docs
 Please feel free to contribute to it... ;-)
 
-Dependencies are discussed in the "Dependencies" file. 
-In a nutshell, you need Ruby 1.8.6 (it might work under
-other versions, but it hasn't been tested there), and
-the "facets" and "ruby-debug" Ruby gems.
+Requirements
+------------
+Dependencies are explained in the "Dependencies" file.  In a nutshell,
+you need Ruby 1.8.6 (it might work under other versions, but we
+haven't tested it under other versions), and the "facets" and
+"ruby-debug" Ruby gems.
+
+Installation
+------------
+1)  Unpack the distribution .tar file, and cd to the directory it creates.
+
+	$ tar xvf ncg-0.9.0-rNNN.tar
+	$ cd ncg-0.9.0-rNNN
+
+1.1) OPTIONAL: run tests to verify that everything appears to work.
+
+	$ ruby setup.rb test
+
+2)  Configure your installation.
+
+	$ ruby setup.rb config
+
+3)  Check the resulting paths in the ".config" file.  If you want to
+    change any of them, run "ruby setup.rb --help" to see what the
+    options are, and then rerun "ruby setup.rb config" with additional
+    arguments to regenerate the ".config" file.
+
+    For instance, to install the 'ncg' script in /usr/local/bin, run
+
+	$ ruby setup.rb config --prefix=/usr/local
+
+    To install the 'ncg' script in /opt/netomata/bin and the libraries
+    in /opt/netomata/lib, run
+
+	$ ruby setup.rb config --prefix=/opt/netomata --rbdir=/opt/netomata/lib
+
+    (NOTE: If you do this, and /opt/netomata/lib isn't part of your
+    Ruby installation's standard library path, you'll also need to set
+    the "NETOMATA_LIB" environment variable to "/opt/netomata/lib" or
+    pass a "-L /opt/netomata/lib" argument to every invocation of "ncg",
+    so that "ncg" will know where to find the libraries.)
+
+4)  Do a dry run to see what's going to be installed where.  If you want to
+    make any changes, go back to step 3.
+
+   	$ ruby setup.rb install --no-harm
+
+5)  When you are satisfied with the config, prepare your files for installation.
+
+	$ ruby setup.rb setup
+
+6)  Install the files (you may need to do this as root, depending on the
+    permissions of the destination directories).
+
+   	# ruby setup.rb install
 
 Try It
 ------
+1)  cd to the "sample" directory in the distribution.
 
-1)  cd to the directory where "ncg" is (at the moment, it only looks
-    for its libraries and such in the current working directory; before
-    the beta release, we'll set up environment variables for it to use
-    to find its libraries and such).
+2)  Run the following command:
+	ncg -v sample.neto
 
-2)  Run the following command (assumes that "." is in your search path):
-	ncg -v sample/sample.neto
+3)  Take a look at these files:
 
-3)  Take a look at these file:
-	sample/configs/switch-1.config
-	sample/configs/switch-2.config
-    Note that they're newly-generated, that they're complete ready-to-use
+	configs/switch-1.config
+	configs/switch-2.config
+
+    Note that they are newly generated, that they are complete ready-to-use
     Cisco config files, and that they match the "baseline" config files at:
-	sample/configs/switch-1.baseline
-	sample/configs/switch-2.baseline
 
-4)  Start experimenting by reading through sample/sample.neto, and working
-    your way out from there.
+	configs/switch-1.baseline
+	configs/switch-2.baseline
+
+4)  Start experimenting by reading through the "sample.neto" file, and
+    working your way out from there.
 
 More About the Sample Scenario
 ------------------------------
@@ -65,7 +108,7 @@ Internet-facing web service.  The rack contains:
 Currently, the "sample" directory contains a complete Netomata
 config for the pair of Cisco 4948-10G switch/routers deployed in
 an active/active configuration.  At this point, the sample setup
-is only generating the configs for the switches; before the beta
+is only generating the configs for the switches; before the next
 release, we plan to have it also generating configs for the firewalls
 and load balancers, as well as for MRTG, Nagios, and DNS.
 
@@ -74,4 +117,3 @@ and load balancers, as well as for MRTG, Nagios, and DNS.
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
-

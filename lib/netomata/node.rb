@@ -30,18 +30,16 @@ class Netomata::Node < Dictionary
     include Netomata::Utilities::ClassMethods
     include Netomata::Utilities
 
-=begin rdoc
-Create a Node. 
-
-:call-seq:
- 	new()		-> Node
- 	new(parent)	-> Node
-
-* If no _parent_ argument is passed, the Node is assumed to be the root of
-  a new tree of Nodes.
-* If a _parent_ argument (which must itself be a Node) is passed, then the
-  newly-created Node takes that as its parent
-=end
+    # :call-seq:
+    #  	new()		-> new_node
+    #  	new(parent)	-> new_node
+    # 
+    # Create a Node. 
+    # 
+    # * If no _parent_ argument is passed, the Node is assumed to be the root of
+    #   a new tree of Nodes.
+    # * If a _parent_ argument (which must itself be a Node) is passed, then the
+    #   newly-created Node takes that as its parent
     def initialize(parent=nil)
 	# It's important to call parent=() rather than setting @parent
 	# directly, because parent=() also does a recursive fixup of
@@ -71,7 +69,7 @@ Create a Node.
     end
 
     # :call-seq:
-    #	dump(io=STDOUT,level=0,show_source=true) -> nil
+    #	dump(io=STDOUT,level=0,show_source=true) -> self
     #
     # Recursively dumps the contents of the node in .neto format to the
     # _io_ handle specified (stdout by default).  
@@ -95,8 +93,11 @@ Create a Node.
 		io.print indent, "#{k} = #{v}\n"
 	    end
 	}
+	self
     end
 
+    # :call-seq:
+    # 	dup() -> new_node
     # Create a duplicate of the current Node, including recursively duplicating
     # all its children
     def dup
@@ -105,6 +106,9 @@ Create a Node.
 	n
     end
 
+    # :call-seq:
+    # 	each_r(prefix="") { |prefix,k,v| block } -> self
+    #
     # Invoke _block_ on each element of _self_ (recursively, if the element is
     # itself a Node).
     #
@@ -129,14 +133,15 @@ Create a Node.
 
     # :call-seq:
     # 	equivalent(node) -> true or false
+    #
     # Returns true if _node_ is equivalent to _self_, false otherwise.
     # "Equivalent" is defined as:
-    # 	1) Both nodes have the same set of subsidiary keys (though not
-    # 		necessarily in the same	order)
-    # 	2) The value of each corresponding key is equivalent; if the value
-    # 		is itself a Node, it is checked recursively
-    # This is different than "==", which is inherited from Dictionary (our
-    # parent class), which also checks that keys are in the same order.
+    # 1. Both nodes have the same set of subsidiary keys (though not
+    #    necessarily in the same order)
+    # 2. The value of each corresponding key is equivalent; if the value
+    #    is itself a Node, it is checked recursively
+    # This differs from "==", which is inherited from Dictionary (our
+    # parent class), and which also checks that keys are in the same order.
     def equivalent(n2)
 	n1 = self
 	# check that list of keys is the same (though not necessarily in
@@ -177,10 +182,14 @@ Create a Node.
 	node_fetch(key, default, &block)
     end
 
+    # :call-seq:
+    # 	graft(key,node) -> self[key]
+    #
     # Graft _node_ in as self[_key_]
     def graft(key,node)
 	self[key].update(node)
 	self[key].parent=(self)
+	self[key]
     end
 
     # :call-seq:
@@ -205,10 +214,13 @@ Create a Node.
 	end
     end
 
-    # Import the contents of a .neto file into the current node
-    #--
-    # FIXME: need to insert a reference to .neto file format docs
-    #++
+    # :call-seq:
+    # 	import_file(filename) -> self
+    #
+    # Import the contents of a .neto file into this node.
+    #
+    # See http://www.netomata.com/docs/formats/neto for documentation
+    # of the .neto file format
     def import_file(filename)
 	io = open(filename)
 	@@filestack.push(filename)
@@ -304,13 +316,53 @@ Create a Node.
 	if (! self.valid?) then
 	    raise "Corrupted data structure after import_file"
 	end
+	self
     end
 
-    # Import the contents of a table file into the current node
-    #--
-    # FIXME: need to insert a reference to table file format docs
-    #++
+    # :call-seq:
+    # 	import_table(filename) -> self
+    #
+    # Import the contents of a .neto_table file into this node
+    #
+    # See http://www.netomata.com/docs/formats/neto_table for documentation
+    # of the .neto_table file format.
     def import_table(filename) 
+	# :call-seq:
+	# 	var_sub(template,fields,data) -> key
+	#
+	# Used only by import_table, to do variable substitution of row data
+	# into a template of a key.
+	#
+	# _template_ is a key template, possibly including "(var=%column)"
+	#
+	# _fields_ is an array of column names.
+	#
+	# _data_ is an array holding the fields from the current row. 
+	#
+	# The number of elements in _data_ and _fields_ should be the same
+	#
+	# For example, given
+	#
+	# 	template = "(...)!templates!interfaces!(name=%type)"
+	# 	fields = ["name", "type", "target", "active"]
+	# 	data = ["Gig1/1", "host", "host-1", "yes"]
+	#
+	# then result would be
+	#
+	# 	"(...)!templates!interfaces!(name=host)"
+	#
+	def var_sub(template,fields,data)	# :nodoc:
+	    k = buildkey(template)
+	    if (m = k.match(/(\([^)]*=)%([^)]*)(\))/)) then
+		if ! fields.has_key?(m[2]) then
+		    raise "Unknown column name '#{m[2]}'"
+		end
+		k = String.new(m.pre_match + m[1] +
+			       data[fields[m[2]]] + m[3] + m.post_match)
+	    end
+	    k
+	end
+
 	io = open(filename)
 	@@filestack.push(filename)
 	@@source_file.push(filename)
@@ -365,13 +417,13 @@ Create a Node.
 		    actions.each { |t,f,a|
 			case t
 			when '@'
-			    k = vsub(a,fields,d)
+			    k = var_sub(a,fields,d)
 			    self[k] = d[fields[f]]
 			when '+'
-			    fk = vsub(f,fields,d)
+			    fk = var_sub(f,fields,d)
 			    fkn,fkk = dictionary_tuple(fk,true)
 			    raise "Unknown key #{fk}" if (fkn.nil? || fkk.nil?)
-			    ak = vsub(a,fields,d)
+			    ak = var_sub(a,fields,d)
 			    # look for ak relative to fk (not self)
 			    if fkn.has_key?(fkk) then
 				# relative to fkn[fkk] if fkk has been defined
@@ -412,25 +464,33 @@ Create a Node.
 	if (! valid?) then
 	    raise "Corrupted data structure after import_table"
 	end
+	self
     end
 
-    # Import a template into the current node
-    def import_template(template_file_orig) 
-	# template should be the name of a file ending in '*.ncg', which is
-	# recorded as a template node with the following characteristics:
-	# 	name = basename of file (i.e., filename with leading directory
-	# 		path and trailing '.ncg' suffix stripped)
-	#	ncg_template = path to file
+    # :call-seq:
+    #	import_template(filename) -> self
+    #
+    # Import a .ncg file template into this node.
+    #
+    # See http://www.netomata.com/docs/formats/ncg for documentation of the
+    # .ncg file format.
+    #
+    # _filename_ should be the name of a file ending in '*.ncg'.
+    #
+    # The following keys are added to this node:
+    # [name] basename of file (i.e., "foo" if _filename_ is "a/foo.ncg")
+    # [ncg_template] filename of the file
+    def import_template(filename) 
 	# FIXME: also need to parse file for '#@' variables to set
 	
 	# clean up filename by removing gratuitous "." elements in path
-	template_file = template_file_orig.dup
+	template_file = filename.dup
 	template_file.gsub!((File::Separator + "." + File::Separator),
 			    	File::Separator)
 	template_file.sub!(/^\.#{File::Separator}/,"")
 
 	if (! File.file?(template_file)) then
-	    raise ArgumentError, "template_file arg must be a valid filename"
+	    raise ArgumentError, "arg must be a valid filename"
 	end
 
 	puts "# #{self.key}.import_template(#{template_file})" if $debug
@@ -438,27 +498,35 @@ Create a Node.
 	basename = File.basename(template_file, ".ncg")
 	self["name"] = basename
 	self["ncg_template"] = template_file
+	self
     end
 
-    # Import a tree of templates into the current node
+    # :call-seq:
+    # 	import_template_dir(dirname) -> self
+    #
+    # Import a tree of templates into the current node.
+    #
+    # _dirname_ should be the name of a directory.
+    #
+    # Entries in that directory are added to this node as subnodes
+    # according to the following rules:
+    # 1. Directory entries with names beginning with a "." are ignored.
+    # 2. Regular files named "_filename_.ncg" cause a subnode named "_filename_"
+    #    to be added and import_template("_filename_.ncg") to be called to
+    #    populate that subnode.
+    # 3. Subdirectories named "_subdirname_" cause a subnode named
+    #    "_subdirname_" to be added, and import_template_dir("_subdirname_") 
+    #    to be called recursively to populate that subnode.
+    # 4. All other directory entries are ignored
     def import_template_dir(template_dir) 
 	# template_dir should be the name of a directory
-	# 
-	# We walk the filesystem from that directory downwards.  Any file
-	# we find named '*.ncg' is noted as a template node with the following
-	# characteristics:
-	# 	key = path to file with '/' converted to '!' and '.ncg' suffix
-	# 		stripped
-	#	ncg_template = path to file
-	# 	type = last element of key (i.e., filename with '.ncg' stripped)
-	
 	if (! File.directory?(template_dir)) then
 	    raise ArgumentError, "template_dir arg must be a directory name"
 	end
 
 	template_dir_base = File.basename(template_dir)
 
-	Dir.foreach(template_dir) { |dir_entry|
+	Dir.entries(template_dir).sort.each { |dir_entry|
 	    filepath = File.join(template_dir,dir_entry)
 	    case dir_entry
 	    when "." then next
@@ -466,7 +534,6 @@ Create a Node.
 	    when /^\./ then next	# skip entries beginning with "."
 	    when /^(.*)\.ncg/ then
 		# process file
-		#- self.node(dir_entry_to_key(template_dir_base)).
 		self.node($1).import_template(filepath)
 	    else
 		if File.directory?(filepath) then
@@ -476,6 +543,8 @@ Create a Node.
 		# otherwise, skip entry
 	    end
 	}
+
+	self
     end
 
     # :call-seq:
@@ -485,7 +554,8 @@ Create a Node.
     #--
     # Key is kept in an oddly-named variable to keep us from accidentally
     # accessing it directly via the obvious "@key" elsewere in this class.
-    # It's important to use the self.key() method because the method figures
+    # It's important to use the self.key() method, rather than accessing
+    # it directly via the @... instance variable, because the method figures
     # out what the key should be the first time it is used, and then caches
     # the result for later reuse.
     #++
@@ -526,9 +596,9 @@ Create a Node.
     end
 
     # :call-seq:
-    #   node.keys_r -> [key, ...] or []
+    #   keys_r -> [key, ...] or []
     #
-    # Returns an array the keys of all the children of _node_, recursively
+    # Returns an array of the keys of all the children of _node_, recursively
     def keys_r(prefix="")
 	ra = []
 	self.each { |k,v|
@@ -581,6 +651,7 @@ Create a Node.
 		end
 	    }
 	end
+	@hidden_parent
     end
 
     # :call-seq:
@@ -698,6 +769,8 @@ Create a Node.
     # Dictionary#fetch(), in turn, just calls Hash#fetch().
     #++
     def dictionary_fetch(*args)
+	raise ArgumentError, "must specify key" if args.length == 0
+	raise ArgumentError, "must be a simple key" unless simple_key?(args[0])
 	super_send(:fetch, *args)
     end
 
@@ -709,6 +782,8 @@ Create a Node.
     # _key_ *must* be a simple key (no "!", no "( ... )" selectors, 
     # etc.), suitable for use with Dictionary or Hash methods.
     def dictionary_has_key?(*args)
+	raise ArgumentError, "must specify key" if args.length == 0
+	raise ArgumentError, "must be a simple key" unless simple_key?(args[0])
 	super_send(:has_key?, *args)
     end
 
@@ -720,11 +795,13 @@ Create a Node.
     # _key_ *must* be a simple key (no "!", no "( ... )" selectors, 
     # etc.), suitable for use with Dictionary or Hash methods.
     def dictionary_store(*args)
+	raise ArgumentError, "must specify key" if args.length == 0
+	raise ArgumentError, "must be a simple key" unless simple_key?(args[0])
 	super_send(:store, *args)
     end
 
     # :call-seq:
-    #   node.dictionary_tuple(key, [create=false]) -> [parent_node, simple_key]
+    #   dictionary_tuple(key, [create=false]) -> [parent_node, simple_key]
     #
     # Takes a complex _key_ as argument, decodes it (including any "()"
     # selectors), and returns a tuple (a 2-element Array) of
@@ -813,7 +890,10 @@ Create a Node.
 	end
     end
 
-    # Initializes self as a copy of the _original_ node, by duplicating each
+    # :call-seq:
+    # 	initialize_copy(original) -> self
+    #
+    # Initializes self as a copy of _original_ node, by duplicating each
     # subelement of _original_ in turn. If a subelement is itself a Node, uses
     # parent=() on the copy of the subelement to fix up its parent
     # reference to point to self (rather than whatever parent
@@ -844,7 +924,7 @@ Create a Node.
     protected :initialize_copy
 
     # :call-seq:
-    #   key_reset()
+    #   key_reset() -> nil
     #
     # Resets the key of the current node. 
     #--
@@ -857,6 +937,9 @@ Create a Node.
 	@hidden_key = nil
     end
 
+    # :call-seq:
+    # 	make_valid() -> true
+    #
     # Makes this Node valid by recursively ensuring that all child nodes:
     # 1. have the correct parent (this node)
     # 2. have the correct root (same as this node)
@@ -1007,16 +1090,16 @@ Create a Node.
 	    bt = st.reverse + bt
 	    exc.set_backtrace(bt)
 	end
-	return exc
+	exc
     end
 
     # :call-seq:
     # 	metadata_fetch(req) -> string
     #
     # Returns requested metadata.  Valid requests are:
-    # 	"FILENAME":: returns name of config file currently being read
-    # 	"BASENAME":: returns basename of config file currently being read
-    # 	"DIRNAME":: returns dirname of config file currently being read
+    # [FILENAME] returns name of config file currently being read
+    # [BASENAME] returns basename of config file currently being read
+    # [DIRNAME] returns dirname of config file currently being read
     def metadata_fetch(req)
 	case req
 	when "FILENAME" then
@@ -1142,14 +1225,15 @@ Create a Node.
     #   selector_to_key(selector, [rest_of_key=nil]) -> key
     #
     # Converts a "()" key selector to the appropriate key
-    # (+):: returns successor to current max key
-    # (>):: returns current max key
-    # (<):: returns current min key
-    # (.):: returns current key
-    # (..):: returns parent of current key
-    # (...):: returns nearest ancestor of current key which has _rest_of_key_ defined
-    # (subkey=value,[subkey2=value ...]):: returns key of first subnode
-    # 		whose subkey(s) match list of subkey/value criteria
+    # * (+) returns successor to current max key
+    # * (>) returns current max key
+    # * (<) returns current min key
+    # * (.) returns current key
+    # * (..) returns parent of current key
+    # * (...) returns nearest ancestor of current key which has
+    #   _rest_of_key_ defined
+    # * (subkey=value,[subkey2=value ...]) returns key of first subnode
+    #   whose subkey(s) match list of subkey/value criteria
     def selector_to_key(s,rest_of_key=nil)
 	m = s.match(/^\((.*)\)$/)
 	if m.nil? then
@@ -1187,15 +1271,15 @@ Create a Node.
 	end
     end
 
-    # FIXME: should document what this does, if I can ever figure it out again
-    def vsub(a,fields,d)
-	k = buildkey(a)
-	if (m = k.match(/(\([^)]*=)%([^)]*)(\))/)) then
-	    if ! fields.has_key?(m[2]) then
-		raise "Unknown column name '#{m[2]}'"
-	    end
-	    k = m.pre_match + m[1] + d[fields[m[2]]] + m[3] + m.post_match
-	end
-	k
+    # :call-seq:
+    # 	simple_key?(key) -> true or false
+    #
+    # Returns true if _key_ is a simple key (i.e., suitable for passing to
+    # Dictionary methods), or false otherwise.
+    def simple_key?(k)
+	return false if ! k.is_a?(String)
+	return false if k.match(/[(){}!]/)
+	return true
     end
+
 end

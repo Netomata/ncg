@@ -10,7 +10,7 @@ SCRIPT_LINES__ = {}
 
 cwd = File.expand_path(File.dirname(__FILE__))
 if not $LOAD_PATH.include?(cwd) then $LOAD_PATH.unshift(cwd) end
-lib = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib'))
+lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end
 $testfiles = File.join(cwd,"files")
 
@@ -32,6 +32,7 @@ class Netomata::Node
     public :dictionary_tuple
     public :node_fetch
     public :selector_to_key
+    public :simple_key?
     public :valid?
 end
 
@@ -148,6 +149,18 @@ class NodeTest_1_Fundamentals < Test::Unit::TestCase
 	    @n.node_fetch("!n1!n11!n114!k1141") { "missing node block" }
 	assert_equal nil, @n.node_fetch("n1!n11!n112!k1124")	# missing leaf
 	assert_equal nil, @n.node_fetch("n1!n11!n114!k1141")	# missing node
+    end
+
+    def test_simple_key
+	assert_equal true, @n.simple_key?("a")
+	assert_equal false, @n.simple_key?("!")
+	assert_equal false, @n.simple_key?("!a")
+	assert_equal false, @n.simple_key?("a!")
+	assert_equal false, @n.simple_key?("a!b")
+	assert_equal false, @n.simple_key?("(x)")
+	assert_equal false, @n.simple_key?("{y}")
+	assert_equal false, @n.simple_key?(nil)
+	assert_equal false, @n.simple_key?(123)
     end
 end
 

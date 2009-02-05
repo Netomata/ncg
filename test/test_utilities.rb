@@ -10,7 +10,7 @@
 
 cwd = File.expand_path(File.dirname(__FILE__))
 if not $LOAD_PATH.include?(cwd) then $LOAD_PATH.unshift(cwd) end
-lib = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib'))
+lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end
 
 

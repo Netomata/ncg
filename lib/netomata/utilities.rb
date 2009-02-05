@@ -11,15 +11,31 @@ module Netomata::Utilities
 end
 
 module Netomata::Utilities::ClassMethods
+    # :call-seq:
+    # 	super_method(symbol) -> Method
+    #
+    # Get a Method handle on the named instance method from self's superclass,
+    # rather than from self's own class.  This is a way to explicitly
+    # access a superclass method even when a method by the same name has
+    # been defined in the current class.
     def super_method(sym)
 	self.class.superclass.instance_method(sym).bind(self)
     end
 
+    # :call-seq:
+    # 	super_send(symbol, *args) -> obj
+    #
+    # Invoke superclass instance method named _symbol_ with _args_. 
+    # This is a way to explicitly invoke a superclass method even when
+    # a method by the same name has been defined in the current class.
     def super_send(sym,*args)
 	super_method(sym).call(*args)
     end
     
-    # Make a key from a set of components, using "!" as a separator
+    # :call-seq:
+    # 	buildkey(*parts) -> String
+    #
+    # Make a key from an array of strings, using "!" as a separator.
     def buildkey(*a)
 	return nil if (a.nil?)
 	return nil if (a.size == 0)
@@ -38,10 +54,13 @@ module Netomata::Utilities::ClassMethods
 	r
     end
 
-    # Convert a filename name to a key, by 
-    # 	1) converting ".." elements to "(..)"
-    # 	2) converting "." elements "(.)"
-    # 	3) replacing "/" with "!"
+    # :call-seq:
+    # 	filename_to_key(filename) -> key
+    #
+    # Convert a filename to a key, by 
+    # 1. converting ".." elements to "(..)"
+    # 2. converting "." elements "(.)"
+    # 3. replacing "/" with "!"
     def filename_to_key(f)
 	# special case for "/" => "!"
 	if (f.eql?(File::Separator)) then
@@ -61,7 +80,13 @@ module Netomata::Utilities::ClassMethods
 	parts.join("!")
     end
 
-    # return the bitwise OR of two IP addresses, to merge them
+    # :call-seq:
+    # 	ip_union(ip_a, ip_b) -> ip
+    #
+    # Arguments _ip_a_ and _ip_b_, and result _ip_, are all IP
+    # addresses represented as strings
+    #
+    # Returns the bitwise OR of two IP addresses, to merge them.  For example:
     # 	ip_union("10.5.0.0", "0.0.16.34") => "10.5.16.34"
     # 	ip_union("10.5.1.0", "0.0.16.34") => "10.5.17.34"
     def ip_union(s1, s2)

@@ -260,6 +260,7 @@ task "merge_to_trunk" => ["check_commit_update", "verify_in_branch"] do
     puts "When ready to accept, do"
     puts "\tsvn commit -F /tmp/svn_merge_log"
     puts "\tsvn update"
+    puts "\trake delete_branch"
     puts ""
     puts "#"*60
 end

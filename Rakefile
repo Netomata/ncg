@@ -101,16 +101,37 @@ task "accept_baseline" => ["sample/configs/switch-1.config",
     sh 'cp -p sample/configs/switch-2.config sample/configs/switch-2.baseline'
 end
 
-dist_files_ignore = File.new("ignore.dist").readlines
-dist_files_ignore.each { |l| l.chomp! }
+dist_ignore = File.new("dev/ignore.dist").readlines
+dist_ignore.each { |l|
+    # remove trailing newline
+    l.chomp!
+    # remove comments
+    l.sub(/#.*/, "")
+}
+# remove blank lines (possibly remains of comments)
+dist_ignore.reject! { |l| l == "" }
+# divide into list of directories (i.e., entries ending with "/") and files
+dist_ignore_dirs, dist_ignore_files = dist_ignore.partition {|e| e[-1,1] == "/"}
+
 dist_files = FileList['**/*']
-dist_files.exclude {|f| (File.directory?(f) || dist_files_ignore.include?(f)) }
+dist_files.exclude { |f| 
+    if File.directory?(f) then
+	# exclude all directories (though not necessarily their contents)
+	true
+    elsif dist_ignore_files.include?(f)
+	# exclude all files specificly named in "ignore.dist"
+	true
+    else
+	# exclude contents of all directories named in "ignore.dist"
+	dist_ignore_dirs.collect { |i| f[0,i.length] == i }.any?
+    end
+}
 
 desc "Create a 'VERSION' file for distribution"
 #task "VERSION" => ["check_commit_update"] do
 task "VERSION" do
     puts "generating VERSION..."
-    release = File.new("RELEASE").readline.chomp!
+    release = File.new("dev/RELEASE").readline.chomp!
     v = File.new("VERSION", "w")
     v.truncate(0)
     if ($svn_branch.eql?("")) then
@@ -186,10 +207,13 @@ task "Versions" do
 end
 
 desc "Update svn:ignore property"
-task "ignore.svn" do
-    sh 'svn ps svn:ignore -F ignore.svn .'
-    sh 'cd lib/netomata ; svn ps svn:ignore version.rb .'
-    sh 'cd sample/configs ; svn ps svn:ignore -F ignore.svn .'
+task "svn_ignore" do
+    FileList["**/.svn.ignore"].each {|f|
+	Dir.chdir(File.dirname(f)) { |d|
+	    puts "(in #{d})"
+	    sh 'svn ps svn:ignore -F .svn.ignore .'
+	}
+    }
 end
 
 desc "Verify we're working in a branch"

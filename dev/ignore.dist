@@ -1,0 +1,16 @@
+# List of files and directories to ignore when making distros
+#
+# Directory names should end in "/"
+#
+# All file and directory names are evaluated relative to top-level directory.
+# In other words, if "RELEASE" is listed in this file but "sub/RELEASE" is
+# not, then $top/RELEASE will be ignored, but $top/sub/RELEASE will _not_.
+#
+Rakefile
+bin/pre-setup.rb
+dev/
+dist/
+rdoc/
+sample/configs/switch-1.config
+sample/configs/switch-2.config
+skel/

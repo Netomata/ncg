@@ -11,7 +11,7 @@
     raise "argument '@vlan' not defined" unless instance_variable_defined?("@vlan")
     raise "@vlan[\"id\"] not defined" if @vlan["id"].nil?
 
-%> vrrp 1 description default router for <%= @vlan["name"] %> VLAN (VLAN <%= @vlan["id"] %>)
+%> vrrp 1 description default router for <%= apply_idiom("vlan_description", @target, {"@vlan" => @vlan}) %>
  vrrp 1 ip <%=
     subnet = ip_union(@target["(...)!base_ip"], ("0.0." + @vlan["id"] + ".0"))
     addr = ip_union(subnet, "0.0.0.1")

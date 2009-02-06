@@ -16,7 +16,7 @@
     raise "vlan key 'netmask' undefined" if (! @vlan.has_key?("netmask"))
 %>interface <%= "Vlan" + @vlan["id"] %>
  <%= apply_idiom("shutdown", @target, {"@active" => @vlan["active"]}) %>
- description <%= @vlan["name"] %>: <%= @vlan["description"] %>
+ description <%= apply_idiom("vlan_description", @target, {"@vlan" => @vlan}) %>
 <%= apply_idiom("vlan_ip_address", @target, {"@vlan" => @vlan, "@target" => @target}) %>
 <%= apply_idiom("vlan_vrrp", @target, {"@vlan" => @vlan, "@target" => @target}) %>
 !

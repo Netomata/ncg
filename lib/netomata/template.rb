@@ -203,6 +203,14 @@ class Netomata::Template::Context
 	super(s,binding)
     end
 
+    # Evaluates a template from the file named by _node_["ncg_template"]
+    # in a context with instance variables specified by _vars_
+    # (a hash of ["@var" => value] tuples), and returns the result.
+    def apply_by_node(node, vars=nil)
+	filename = node["ncg_template"]
+	Netomata::Template::Context.apply_by_filename(filename, vars)
+    end
+
     # Looks for a named _idiom_ node in _node_["(...)!idioms"], evaluates
     # it with instance variables specified by _vars_
     # (a hash of ["@var" => value] tuples), and returns the result.
@@ -210,7 +218,7 @@ class Netomata::Template::Context
 	raise ArgumentError, "Not a node" if (! node.is_a?(Netomata::Node))
 	inode = node[buildkey("(...)","idioms",idiom)]
 	raise "Idiom \"#{idiom}\" not found for node #{node.key}" if inode.nil?
-	Netomata::Template::Context.apply_by_node(inode, vars)
+	apply_by_node(inode, vars)
     end
 
     # Return a string that is a multi-line header suitable for placing
@@ -301,13 +309,5 @@ EOS
     # (a hash of ["@var" => value] tuples), and returns the result.
     def self.apply_by_filename(filename, vars=nil)
 	Netomata::Template::FromFile.new(filename).result_from_vars(vars).chomp
-    end
-
-    # Evaluates a template from the file named by _node_["ncg_template"]
-    # in a context with instance variables specified by _vars_
-    # (a hash of ["@var" => value] tuples), and returns the result.
-    def self.apply_by_node(node, vars=nil)
-	filename = node["ncg_template"]
-	Netomata::Template::Context.apply_by_filename(filename, vars)
     end
 end

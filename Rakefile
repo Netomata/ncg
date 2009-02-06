@@ -38,8 +38,8 @@ $svn_revision=determine_svn_revision()
 $svn_branch=determine_svn_branch()
 $svn_working_branch="branches/brent"
 
-desc "Run all tests and generate/compare configs against baselines"
-task "default" => ["test", "configs"]
+desc "Run all tests and generate/compare sample configs against baselines"
+task "default" => ["test", "sample"]
 
 lib_dir = File.expand_path('netomata')
 
@@ -52,13 +52,15 @@ Rake::TestTask.new("do_test") do |t|
 #   t.warning = true
 end
 
-desc "Generate test configs and diff against baseline"
-task "configs" => ["lib/netomata/version.rb"] do
+desc "Generate sample configs and diff against baseline"
+task "sample" => ["lib/netomata/version.rb"] do
     sh 'rm -f sample/configs/switch-1.config sample/configs/switch-2.config'
     sh 'bin/ncg -v sample/sample.neto'
     sh 'egrep -v "^!!" sample/configs/switch-1.config | diff -u sample/configs/switch-1.baseline -'
     sh 'egrep -v "^!!" sample/configs/switch-2.config | diff -u sample/configs/switch-2.baseline -'
-    puts "Success!"
+    puts "############"
+    puts "# Success! #"
+    puts "############"
 end
 
 desc "Generate RDOC documentation"
@@ -89,16 +91,18 @@ task "check_commit_update" do
 end
 
 desc "Snapshot current SVN trunk to demo tag"
-task "tag_demo" => ["test", "configs", "check_commit_update"] do
+task "tag_demo" => ["test", "sample", "check_commit_update"] do
     sh "svn delete $svn_base_url/tags/demo -m 'Removing old demo tag'"
     sh "svn copy $svn_base_url/trunk $svn_base_url/tags/demo -m 'Setting new demo tag'"
 end
 
-desc "Accept the current generated configs as the new baseline"
-task "accept_baseline" => ["sample/configs/switch-1.config",
+desc "Accept the current generated sample configs as the new baseline"
+task "sample_accept" => ["sample/configs/switch-1.config",
 			    "sample/configs/switch-2.config"] do
-    sh 'cp -p sample/configs/switch-1.config sample/configs/switch-1.baseline'
-    sh 'cp -p sample/configs/switch-2.config sample/configs/switch-2.baseline'
+    sh "cp -p sample/configs/switch-1.config sample/configs/switch-1.baseline"
+    sh "sed -e '/^!!/d' -i '' sample/configs/switch-1.baseline"
+    sh "cp -p sample/configs/switch-2.config sample/configs/switch-2.baseline"
+    sh "sed -e '/^!!/d' -i '' sample/configs/switch-2.baseline"
 end
 
 dist_ignore = File.new("dev/ignore.dist").readlines

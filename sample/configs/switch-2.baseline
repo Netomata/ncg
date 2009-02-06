@@ -469,28 +469,28 @@ interface Vlan1
 !
 interface Vlan2
  no shutdown
- description ISP-to-Firewall
+ description ISP-FW (ISP-to-Firewall) VLAN (VLAN 2)
 ! no IP on "switch"-type VLAN; acts as switch only
  no ip address
 !
 interface Vlan3
  no shutdown
- description Firewall-to-LoadBal
+ description FW-LB (Firewall-to-LoadBal) VLAN (VLAN 3)
 ! no IP on "switch"-type VLAN; acts as switch only
  no ip address
 !
 interface Vlan4
  no shutdown
- description LB-Rtr: LoadBal-to-Router
+ description LB-Rtr (LoadBal-to-Router) VLAN (VLAN 4)
  ip address 10.5.4.3 255.255.255.0
- vrrp 1 description default router for LB-Rtr VLAN (VLAN 4)
+ vrrp 1 description default router for LB-Rtr (LoadBal-to-Router) VLAN (VLAN 4)
  vrrp 1 ip 10.5.4.1
  vrrp 1 priority 100
  vrrp 1 authentication text plugh
 !
 interface Vlan16
  no shutdown
- description Management: Management
+ description Management VLAN (VLAN 16)
  ip address 10.5.16.3 255.255.240.0
  vrrp 1 description default router for Management VLAN (VLAN 16)
  vrrp 1 ip 10.5.16.1
@@ -499,7 +499,7 @@ interface Vlan16
 !
 interface Vlan32
  no shutdown
- description Bulk: Bulk
+ description Bulk VLAN (VLAN 32)
  ip address 10.5.32.3 255.255.240.0
  vrrp 1 description default router for Bulk VLAN (VLAN 32)
  vrrp 1 ip 10.5.32.1
@@ -508,7 +508,7 @@ interface Vlan32
 !
 interface Vlan48
  no shutdown
- description IPMI: IPMI
+ description IPMI VLAN (VLAN 48)
  ip address 10.5.48.3 255.255.240.0
  vrrp 1 description default router for IPMI VLAN (VLAN 48)
  vrrp 1 ip 10.5.48.1
@@ -517,7 +517,7 @@ interface Vlan48
 !
 interface Vlan81
  no shutdown
- description Production
+ description Production VLAN (VLAN 81)
  ip address 10.5.81.3 255.255.255.0
  vrrp 1 description default router for Production VLAN (VLAN 81)
  vrrp 1 ip 10.5.81.1
@@ -544,7 +544,7 @@ vlan access-map VLAN81_MAP 30
 vlan filter VLAN81_MAP vlan-list 81
 interface Vlan82
  no shutdown
- description Pre-Prod
+ description Pre-Prod VLAN (VLAN 82)
  ip address 10.5.82.3 255.255.255.0
  vrrp 1 description default router for Pre-Prod VLAN (VLAN 82)
  vrrp 1 ip 10.5.82.1
@@ -571,7 +571,7 @@ vlan access-map VLAN82_MAP 30
 vlan filter VLAN82_MAP vlan-list 82
 interface Vlan83
  no shutdown
- description Demo
+ description Demo VLAN (VLAN 83)
  ip address 10.5.83.3 255.255.255.0
  vrrp 1 description default router for Demo VLAN (VLAN 83)
  vrrp 1 ip 10.5.83.1
@@ -598,7 +598,7 @@ vlan access-map VLAN83_MAP 30
 vlan filter VLAN83_MAP vlan-list 83
 interface Vlan84
  no shutdown
- description Dev
+ description Dev VLAN (VLAN 84)
  ip address 10.5.84.3 255.255.255.0
  vrrp 1 description default router for Dev VLAN (VLAN 84)
  vrrp 1 ip 10.5.84.1
@@ -625,7 +625,7 @@ vlan access-map VLAN84_MAP 30
 vlan filter VLAN84_MAP vlan-list 84
 interface Vlan85
  no shutdown
- description QA
+ description QA VLAN (VLAN 85)
  ip address 10.5.85.3 255.255.255.0
  vrrp 1 description default router for QA VLAN (VLAN 85)
  vrrp 1 ip 10.5.85.1
@@ -652,7 +652,7 @@ vlan access-map VLAN85_MAP 30
 vlan filter VLAN85_MAP vlan-list 85
 interface Vlan86
  no shutdown
- description Test
+ description Test VLAN (VLAN 86)
  ip address 10.5.86.3 255.255.255.0
  vrrp 1 description default router for Test VLAN (VLAN 86)
  vrrp 1 ip 10.5.86.1
@@ -679,7 +679,7 @@ vlan access-map VLAN86_MAP 30
 vlan filter VLAN86_MAP vlan-list 86
 interface Vlan128
  no shutdown
- description Corporate
+ description Corporate VLAN (VLAN 128)
 ! no IP on "switch"-type VLAN; acts as switch only
  no ip address
 !

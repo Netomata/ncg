@@ -237,7 +237,7 @@ end
 
 desc "Merge changes from trunk into current branch"
 task "merge_from_trunk" => ["verify_in_branch"] do
-    sh "svn merge --reintegrate #{$svn_trunk_url}"
+    sh "svn merge #{$svn_trunk_url}"
     sh "svn update"
     sh "svn status"
 end
@@ -248,7 +248,7 @@ task "merge_to_trunk" => ["check_commit_update", "verify_in_branch"] do
     sh "svn update"
     sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
     sh "svn update"
-    sh "svn log --stop-on-copy #{$svn_base_url}/#{$svn_branch} | egrep -v '^--*$|^r[0-9][0-9]* \|' >! /tmp/svn_merge_log"
+    sh "svn log --stop-on-copy #{$svn_base_url}/#{$svn_branch} | egrep -v '^--*$|^r[0-9][0-9]* \\|' > /tmp/svn_merge_log"
     puts "#"*60
     puts "####"
     puts "#### REMINDER: now working in trunk!"

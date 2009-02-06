@@ -267,7 +267,11 @@ end
 
 desc "Delete working branch"
 task "delete_branch" do
-    sh "svn delete #{$svn_base_url}/#{$svn_working_branch} -m 'Delete working branch'"
+    if (`svn list #{$svn_base_url}/#{File.dirname($svn_working_branch)} | grep #{File.basename($svn_working_branch)}` == "") then
+	print "#{$svn_base_url}/#{$svn_working_branch} doesn't exist\n"
+    else
+	sh "svn delete #{$svn_base_url}/#{$svn_working_branch} -m 'Delete working branch'"
+    end
 end
 
 desc "Make working branch from trunk"

@@ -12,7 +12,7 @@ cwd = File.expand_path(File.dirname(__FILE__))
 if not $LOAD_PATH.include?(cwd) then $LOAD_PATH.unshift(cwd) end
 lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end
-$testfiles = File.join(cwd,"files")
+$testfiles = File.join(cwd,"files","test_node")
 
 
 require 'netomata'
@@ -377,7 +377,7 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
 	@n["!devices!(+)!hostname"] = "switch-1"
 	@n["!devices!(+)!hostname"] = "switch-2"
 	@n.import_table(File.join($testfiles,
-				  "node_test_import_table.neto_table"
+				  "import_table.neto_table"
 				 )
 		       )
     end
@@ -386,7 +386,7 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
 	assert @n.valid?
 	output = PP::pp(@n, StringIO.new)
 	expected = File.new(File.join($testfiles, 
-				      "node_test_import_table.pp"
+				      "import_table.pp"
 				     )
 			   ).readlines.join
 	assert_equal expected, output.string
@@ -394,7 +394,7 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
 
     def test_dump_imported_table
 	# To re-create tests data file, uncomment following line:
-	# @n.dump(File.new("/tmp/node_dump_imported_table.neto", "w"),0,false)
+	# @n.dump(File.new(File.join($testfiles,"dump_imported_table.neto"), "w"),0,false)
 	
 	# dump to a file
 	t = Tempfile.new("ncg_test.dump_imported_table.neto", "/tmp")
@@ -404,7 +404,7 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
 	# check that the dumped file matches what it should
 	assert FileUtils.compare_file(t.path,
 				      File.join($testfiles,
-						"node_dump_imported_table.neto")
+						"dump_imported_table.neto")
 				     )
 
 	# import the file that was just created with dump
@@ -488,12 +488,12 @@ EOF
 	assert n.valid?
 	output = PP::pp(n, StringIO.new)
 	# To re-create test data file, uncomment following line:
-	# File.new("/tmp/node_test_import_file.pp", "w").print(output.string)
-	expected = File.new(File.join($testfiles, "node_test_import_file.pp")).readlines.join
+	# File.new(File.join($testfiles, "import_file.pp"), "w").print(output.string)
+	expected = File.new(File.join($testfiles, "import_file.pp")).readlines.join
 	assert_equal expected, output.string
 
 	# To re-create test data file, uncomment following line:
-	# n.dump(File.new("/tmp/node_dump_imported_file.neto", "w"),0,false)
+	# n.dump(File.new(File.join($testfiles,"dump_imported_file.neto"), "w"),0,false)
 	
 	# dump to a file
 	t = Tempfile.new("ncg_test.dump_imported_file.neto", "/tmp")
@@ -503,7 +503,7 @@ EOF
 	# check that the dumped file matches what it should
 	assert FileUtils.compare_file(t.path,
 				      File.join($testfiles,
-						"node_dump_imported_file.neto")
+						"dump_imported_file.neto")
 				     )
 
 	# import the file that was just created with dump
@@ -514,19 +514,22 @@ EOF
 	# as the original data structure
 	assert_equal n, n2
     end
-end
 
-class NodeTest_5_Exception_Backtrace < Test::Unit::TestCase
     def test_exception_backtrace
 	bt = []
-	begin	# rescue block
-	    n = Netomata::Node.new(nil)
-	    Dir.chdir(File.join($testfiles, "node_exception_backtrace")) do
+	# add something that will raise an exception in a/b/c/file.neto
+	f = File.open(File.join(@tmpdirname, "a", "b", "c", "file.neto"), "a")
+	f.puts 'fail = <%= raise "error in a/b/c" %>'
+	f.close
+
+	n = Netomata::Node.new(nil)
+	Dir.chdir(@tmpdirname) do
+	    begin	# rescue block
 		n.import_file("file.neto")
+	    rescue => exc
+		bt = exc.backtrace
+		# no raise
 	    end
-	rescue => exc
-	    bt = exc.backtrace
-	    # no raise
 	end
 	assert_equal(
 	"./a/b/c/file.neto:5\n./a/b/file.neto:12\n./a/file.neto:9\nfile.neto:6",
@@ -534,7 +537,7 @@ class NodeTest_5_Exception_Backtrace < Test::Unit::TestCase
     end
 end
 
-class NodeTest_6_Import_Template < Test::Unit::TestCase
+class NodeTest_5_Import_Template < Test::Unit::TestCase
     def setup
 
 	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
@@ -648,14 +651,14 @@ EOF
 	    n = Netomata::Node.new(nil)
 	    n.import_file(template_filename)
 	    # To re-create test data file, uncomment following line:
-	    # 	n.dump(File.new("/tmp/#{template_basename}.dump", "w"),0,false)
+	    # 	n.dump(File.new("/tmp/import_#{template_basename}.dump", "w"),0,false)
 	    # Examine the file, then do
-	    #   mv /tmp/#{template_basename}.dump
-	    #      test/netomata/files/node_test_import_#{tempate_basename}.dump
+	    #   mv /tmp/import_#{template_basename}.dump
+	    #      test/netomata/files/test_node/import_#{tempate_basename}.dump
 	    n_expected =
 		File.new(
 		    File.join($testfiles,
-			      "node_test_import_#{template_basename}.dump")
+			      "import_#{template_basename}.dump")
 	        ).readlines.join
 	    n_output = StringIO.new
 	    n.dump(n_output,0,false)

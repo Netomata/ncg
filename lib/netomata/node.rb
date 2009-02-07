@@ -388,7 +388,7 @@ class Netomata::Node < Dictionary
 		    end
 		when /^@/ then
 		    # per-row action line
-		    if m = l.match(/^@\s+(.*)\s+=\s+(.*)$/) then
+		    if m = l.match(/^@\s+(.*?)\s+=\s+(.*)$/) then
 			actions << ['@', m[1], m[2]]
 		    else
 			raise "Malformed '@' line"
@@ -417,7 +417,14 @@ class Netomata::Node < Dictionary
 			case t
 			when '@'
 			    k = var_sub(f,fields,d)
-			    self[k] = var_sub(a,fields,d)
+			    r = var_sub(a,fields,d)
+			    r = Netomata::Template::FromString.new(
+				    var_sub(a,fields,d),
+				    "#{@@source_file[-1]}:#{@@source_line[-1]}"
+				 ).result_from_vars({
+				    "@target" => self,
+				    "@target_key" => self.key})
+			    self[k] = r
 			when '+'
 			    fk = var_sub(f,fields,d)
 			    fkn,fkk = dictionary_tuple(fk,true)

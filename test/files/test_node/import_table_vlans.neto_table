@@ -1,8 +1,11 @@
-# $Id$
+# $Id: vlans.neto_table 247 2009-02-07 00:16:11Z brent $
 # Copyright (c) 2008 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
+#
+# !base_ip is set in the test framework 'setup' method, before this file
+# is imported.
 #
 @ !vlans!(+)!id = %{id}
 @ !vlans!(id=%{id})!active = %{active}

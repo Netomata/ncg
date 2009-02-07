@@ -374,10 +374,15 @@ end
 class NodeTest_3_Import_Table < Test::Unit::TestCase
     def setup
 	@n = Netomata::Node.new(nil)
+	@n["!base_ip"] = "10.5.0.0"
+	@n.import_table(File.join($testfiles,
+				  "import_table_vlans.neto_table"
+				 )
+		       )
 	@n["!devices!(+)!hostname"] = "switch-1"
 	@n["!devices!(+)!hostname"] = "switch-2"
 	@n.import_table(File.join($testfiles,
-				  "import_table.neto_table"
+				  "import_table_interfaces.neto_table"
 				 )
 		       )
     end
@@ -385,6 +390,8 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
     def test_import_table
 	assert @n.valid?
 	output = PP::pp(@n, StringIO.new)
+	# to re-create test data file, uncomment following line:
+	# File.new(File.join($testfiles,"import_table.pp"), "w").print output.string
 	expected = File.new(File.join($testfiles, 
 				      "import_table.pp"
 				     )
@@ -393,7 +400,7 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
     end
 
     def test_dump_imported_table
-	# To re-create tests data file, uncomment following line:
+	# To re-create test data file, uncomment following line:
 	# @n.dump(File.new(File.join($testfiles,"dump_imported_table.neto"), "w"),0,false)
 	
 	# dump to a file

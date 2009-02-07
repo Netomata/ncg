@@ -10,11 +10,11 @@
     raise "@target[\"role\"] not defined" if @target["role"].nil?
     raise "argument '@vlan' not defined" unless instance_variable_defined?("@vlan")
     raise "@vlan[\"id\"] not defined" if @vlan["id"].nil?
+    raise "@vlan[\"vlan_ip\"] not defined" if @vlan["vlan_ip"].nil?
 %> ip address <%= 
-    subnet = ip_union(@target["(...)!base_ip"], ("0.0." + @vlan["id"] + ".0"))
     case @target["role"]
-        when "primary" then addr = ip_union(subnet, "0.0.0.2")
-        when "secondary" then addr = ip_union(subnet, "0.0.0.3")
+        when "primary" then addr = ip_union(@vlan["vlan_ip"], "0.0.0.2")
+        when "secondary" then addr = ip_union(@vlan["vlan_ip"], "0.0.0.3")
 	else raise "Unknown role \"#{@target["role"]}\""
     end
     addr %> <%= @vlan["netmask"] %>

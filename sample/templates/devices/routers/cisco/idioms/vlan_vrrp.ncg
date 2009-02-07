@@ -10,11 +10,10 @@
     raise "@target[\"role\"] not defined" if @target["role"].nil?
     raise "argument '@vlan' not defined" unless instance_variable_defined?("@vlan")
     raise "@vlan[\"id\"] not defined" if @vlan["id"].nil?
-
+    raise "@vlan[\"vlan_ip\"] not defined" if @vlan["vlan_ip"].nil?
 %> vrrp 1 description default router for <%= apply_idiom("vlan_description", @target, {"@vlan" => @vlan}) %>
  vrrp 1 ip <%=
-    subnet = ip_union(@target["(...)!base_ip"], ("0.0." + @vlan["id"] + ".0"))
-    addr = ip_union(subnet, "0.0.0.1")
+    addr = ip_union(@vlan["vlan_ip"], "0.0.0.1")
     addr %>
  vrrp 1 priority <%=
      case @target["role"]

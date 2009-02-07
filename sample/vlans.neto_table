@@ -3,13 +3,13 @@
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
-
-@ c_id = !vlans!(+)!id
-@ c_activ = !vlans!(id=%c_id)!active
-@ c_type = !vlans!(id=%c_id)!type
-@ c_netmask = !vlans!(id=%c_id)!netmask
-@ c_name = !vlans!(id=%c_id)!name
-@ c_description = !vlans!(id=%c_id)!description
+#
+@ !vlans!(+)!id = %{c_id}
+@ !vlans!(id=%{c_id})!active = %{c_activ}
+@ !vlans!(id=%{c_id})!type = %{c_type}
+@ !vlans!(id=%{c_id})!netmask = %{c_netmask}
+@ !vlans!(id=%{c_id})!name = %{c_name}
+@ !vlans!(id=%{c_id})!description = %{c_description}
 #
 % c_id	c_activ	c_type	c_netmask	c_name		c_description
 # ----	-------	------	---------	------		-------------

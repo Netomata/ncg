@@ -353,12 +353,11 @@ class Netomata::Node < Dictionary
 	#
 	def var_sub(template,fields,data)	# :nodoc:
 	    k = buildkey(template)
-	    if (m = k.match(/(\([^)]*=)%([^)]*)(\))/)) then
-		if ! fields.has_key?(m[2]) then
-		    raise "Unknown column name '#{m[2]}'"
+	    while (m = k.match(/%\{([^)]*)\}/)) do
+		if ! fields.has_key?(m[1]) then
+		    raise "Unknown column name '#{m[1]}'"
 		end
-		k = String.new(m.pre_match + m[1] +
-			       data[fields[m[2]]] + m[3] + m.post_match)
+		k = String.new(m.pre_match + data[fields[m[1]]] + m.post_match)
 	    end
 	    k
 	end
@@ -389,7 +388,7 @@ class Netomata::Node < Dictionary
 		    end
 		when /^@/ then
 		    # per-row action line
-		    if m = l.match(/^@\s*([^\s=]*)\s*=\s*(.*)$/) then
+		    if m = l.match(/^@\s+(.*)\s+=\s+(.*)$/) then
 			actions << ['@', m[1], m[2]]
 		    else
 			raise "Malformed '@' line"
@@ -417,8 +416,8 @@ class Netomata::Node < Dictionary
 		    actions.each { |t,f,a|
 			case t
 			when '@'
-			    k = var_sub(a,fields,d)
-			    self[k] = d[fields[f]]
+			    k = var_sub(f,fields,d)
+			    self[k] = var_sub(a,fields,d)
 			when '+'
 			    fk = var_sub(f,fields,d)
 			    fkn,fkk = dictionary_tuple(fk,true)

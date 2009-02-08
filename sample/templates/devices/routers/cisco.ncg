@@ -20,7 +20,7 @@
 
 raise "target name undefined" if (! @target.has_key?("name"))
 
-%><%= emit_header("!! ", "!"*80, "!"*80)
+%><%= emit_header("!! ", "!"*78, "!"*78)
 %>no service pad
 service timestamps debug datetime
 service timestamps log datetime
@@ -57,12 +57,9 @@ power redundancy-mode redundant
 spanning-tree mode pvst
 spanning-tree extend system-id
 spanning-tree vlan 1-4094 priority <%=
-    raise "target role undefined" if (! @target.has_key?("role"))
-    case @target["role"]
-        when "primary" then 24576
-	when "secondary" then 28672
-	else raise("Unknown role \"#{@target["role"]}\"")
-    end %>
+    raise "target router_id undefined" if (! @target.has_key?("router_id"))
+    24576 + (4096 * (@target["router_id"].to_i - 1))
+    %>
 !
 !
 ip access-list extended MATCH_ANY

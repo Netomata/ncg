@@ -27,14 +27,22 @@ table vlans.neto_table
 
 devices!(+) < !templates!devices!routers!cisco {
     name	= switch-1
-    role	= primary
+    # router_id is used for determining VRRP priority, interface IP address,
+    #   spanning-tree priority, and so forth. 
+    # Each router should have a unique router_id. 
+    # A lower number means higher priority.
+    router_id	= 1
     # can't put this in the template, because "name" isn't defined there
     ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %>
 }
 
 devices!(+) < !templates!devices!routers!cisco {
     name	= switch-2
-    role	= secondary
+    # router_id is used for determining VRRP priority, interface IP address,
+    #   spanning-tree priority, and so forth. 
+    # Each router should have a unique router_id. 
+    # A lower number means higher priority.
+    router_id	= 2
     # can't put this in the template, because "name" isn't defined there
     ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %>
 }

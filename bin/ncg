@@ -83,52 +83,56 @@ if (args[:version]) then
     exit
 end
 
-net = Netomata::Node.new
+begin	# rescue block
 
-ARGV.each do |fn|
-    net.import_file(fn)
-end
+    net = Netomata::Node.new
 
-if (args[:keys]) then
-    puts net.keys_r.join("\n")
-    exit
-end
-
-if (args[:dump]) then
-    net.dump
-    exit
-end
-
-# get the list of targets to generate config files for
-net.keys_having_key("ncg_output").each { |target_key|
-    puts "Generating #{net[target_key]["ncg_output"]} for #{target_key}" if $verbose
-    unless template_filename = net[target_key]["ncg_template"] 
-	raise "Target '#{target_key}' has 'ncg_output' key, but no 'ncg_template' key"
+    ARGV.each do |fn|
+	net.import_file(fn)
     end
 
-    # set up shortcut "target" variable
-    target = net[target_key]
+    if (args[:keys]) then
+	puts net.keys_r.join("\n")
+	exit
+    end
 
-    begin	# rescue block
+    if (args[:dump]) then
+	net.dump
+	exit
+    end
+
+    # get the list of targets to generate config files for
+    net.keys_having_key("ncg_output").each do |target_key|
+	if $verbose then
+	    puts "Generating #{net[target_key]["ncg_output"]} for #{target_key}"
+	end
+	unless (template_filename = net[target_key]["ncg_template"])
+	    raise
+    "Target '#{target_key}' has 'ncg_output' key, but no 'ncg_template' key"
+	end
+
+	# set up shortcut "target" variable
+	target = net[target_key]
+
 	r = Netomata::Template::FromFile.new(template_filename).
 		result_from_vars({
 		    "@net" => net,
 		    "@target_key" => target_key,
 		    "@target" => target
 		})
-    rescue => exc
-	bt = exc.backtrace
-	$stderr.print "ERROR(", exc.class, "): ", exc.message, "\n"
-	$stderr.print "\tat ", bt.first, "\n"
-    	$stderr.print "\twhile generating #{net[target_key]["ncg_output"]}\n"
-	$stderr.print "\tfor #{target_key}\n"
-	$stderr.print "="*79, "\n"
-	$stderr.print "BACKTRACE\n"
-	$stderr.print "---------\n"
-	raise exc.exception
-    end
 
-    of = File.new(target["ncg_output"], "w")
-    of.write(r)
-    of.close
-}
+	of = File.new(target["ncg_output"], "w")
+	of.write(r)
+	of.close
+    end
+rescue => exc
+    bt = exc.backtrace
+    $stderr.print "ERROR(", exc.class, "): ", exc.message, "\n"
+    $stderr.print "\tat ", bt.first, "\n"
+#    $stderr.print "\twhile generating #{net[target_key]["ncg_output"]}\n"
+#    $stderr.print "\tfor #{target_key}\n"
+    $stderr.print "="*79, "\n"
+    $stderr.print "BACKTRACE\n"
+    $stderr.print "---------\n"
+    raise exc.exception
+end

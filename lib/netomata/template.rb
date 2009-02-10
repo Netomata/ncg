@@ -51,11 +51,12 @@ class Netomata::Template::FromString
     def result_from_vars(vars = nil)
 	context = Netomata::Template::Context.new(vars)
 	begin
-	    @erb.result(context.binding)
+	    r = @erb.result(context.binding)
 	rescue => exc
 	    handle_exception(exc,vars)
 	    raise exc.exception
 	end
+        r
     end
 
     #########################

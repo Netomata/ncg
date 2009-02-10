@@ -1,5 +1,12 @@
 Tasks not yet added to FogBugz
 ==============================
+In bin/ncg rescue block, need to figure out some way to re-introduce target
+context to backtrace.  Was previously printing stuff like
+	while generating #{net[target_key]["ncg_output"]}
+	for #{target_key}
+in rescue block, but those are no longer in-scope since making the rescue
+block cover more of the code.  Perhaps nested rescue blocks?
+
 In import_template, parse files for "#@" keys to add,
 or do some sort of equivalent trick with ERB
 

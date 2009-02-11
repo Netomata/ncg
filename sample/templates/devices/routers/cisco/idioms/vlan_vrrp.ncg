@@ -11,15 +11,19 @@
     raise "argument '@vlan' not defined" unless instance_variable_defined?("@vlan")
     raise "@vlan[\"id\"] not defined" if @vlan["id"].nil?
     raise "@vlan[\"vlan_ip\"] not defined" if @vlan["vlan_ip"].nil?
-%> vrrp 1 description default router for <%= apply_idiom("vlan_description", @target, {"@vlan" => @vlan}) %>
- vrrp 1 ip <%=
-    addr = ip_union(@vlan["vlan_ip"], "0.0.0.1")
+
+    vrrp_group = @target["(...)!vrrp_group"]
+    if ! (vrrp_group.nil? || vrrp_group == "0") then
+%> vrrp <%= vrrp_group %> description default router for <%= apply_idiom("vlan_description", @target, {"@vlan" => @vlan}) %>
+ vrrp <%= vrrp_group %> ip <%=
+    addr = ip_union(@vlan["vlan_ip"], ("0.0.0.#{vrrp_group}"))
     addr %>
- vrrp 1 priority <%=
+ vrrp <%= vrrp_group %> priority <%=
      vrrp_pri = 250 - (@target["router_id"].to_i * 10)
      # minimum vrrp_pri of 10
      vrrp_pri = 10 if (vrrp_pri < 0)
      vrrp_pri
  %>
- vrrp 1 authentication text plugh
+ vrrp <%= vrrp_group %> authentication text plugh
+<% end %>
 

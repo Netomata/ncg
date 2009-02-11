@@ -23,6 +23,7 @@ table vlans.neto_table
     model	= 4948-10G
     default_route = <%= ip_union(@target["(...)!base_ip"], "0.0.4.9") %>
     domain	= <%= "mgmt." + @target["(...)!domain"] %>
+    vrrp_group	= 1
 }
 
 devices!(+) < !templates!devices!routers!cisco {

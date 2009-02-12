@@ -125,7 +125,9 @@ begin	# rescue block
 	of.write(r)
 	of.close
     end
-rescue => exc
+rescue Exception => exc		# need to explicitly capture ALL Exceptions,
+				# because by default, rescue only captures
+    				# StandardError and its subclasses.
     bt = exc.backtrace
     $stderr.print "ERROR(", exc.class, "): ", exc.message, "\n"
     $stderr.print "\tat ", bt.first, "\n"

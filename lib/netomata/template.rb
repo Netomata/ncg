@@ -30,6 +30,7 @@ class Netomata::Template::FromString
 	# FIXME: should figure out what appropriate save_level is,
 	# and how to make it work
 	@erb = ERB.new(str, 0, "<>", "@erb_result")
+	@erb.filename = source
     end
 
     # <b>This method should not be invoked anywhere</b>, because it doesn't pass

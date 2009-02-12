@@ -6,6 +6,7 @@ context to backtrace.  Was previously printing stuff like
 	for #{target_key}
 in rescue block, but those are no longer in-scope since making the rescue
 block cover more of the code.  Perhaps nested rescue blocks?
+See also http://stackoverflow.com/questions/106920
 
 In import_template, parse files for "#@" keys to add,
 or do some sort of equivalent trick with ERB

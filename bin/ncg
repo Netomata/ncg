@@ -107,8 +107,8 @@ begin	# rescue block
 	    puts "Generating #{net[target_key]["ncg_output"]} for #{target_key}"
 	end
 	unless (template_filename = net[target_key]["ncg_template"])
-	    raise
-    "Target '#{target_key}' has 'ncg_output' key, but no 'ncg_template' key"
+	    raise "Target '#{target_key}' has 'ncg_output' key," +
+	    	"but no 'ncg_template' key"
 	end
 
 	# set up shortcut "target" variable
@@ -125,9 +125,13 @@ begin	# rescue block
 	of.write(r)
 	of.close
     end
-rescue Exception => exc		# need to explicitly capture ALL Exceptions,
-				# because by default, rescue only captures
-    				# StandardError and its subclasses.
+rescue SystemExit => exc
+    # Need to explicitly capture "SystemExit" exceptions, so that we don't
+    # print a backtrace whenever something does a legitimate "exit"
+    raise exc.exception
+rescue Exception => exc	
+    # Need to explicitly capture all other Exceptions, because by default,
+    # rescue only captures StandardError and its subclasses.
     bt = exc.backtrace
     $stderr.print "ERROR(", exc.class, "): ", exc.message, "\n"
     $stderr.print "\tat ", bt.first, "\n"

@@ -1,7 +1,7 @@
 # $Id$
-# Copyright (c) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
-# http://www.netomata.com/license_v1 for important notices,
+# http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
 
 class Netomata::Template
@@ -283,7 +283,7 @@ Command: #{cmd}
 Templates (but not output) are Copyright (c) 2009 Netomata, Inc.
 All Rights Reserved.
 Please review accompanying 'LICENSE' file or
-http://www.netomata.com/license_v1 for important notices,
+http://www.netomata.com/docs/licenses/ncg for important notices,
 disclaimers, and license terms.
 EOS
 

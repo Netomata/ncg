@@ -1,7 +1,7 @@
 # $Id: vlans.neto_table 247 2009-02-07 00:16:11Z brent $
-# Copyright (c) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
-# http://www.netomata.com/license_v1 for important notices,
+# http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
 #
 # !base_ip is set in the test framework 'setup' method, before this file

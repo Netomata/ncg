@@ -1,26 +1,31 @@
-Netomata Alpha License v1
-=========================
+Netomata Config Generator (ncg) License
+=======================================
 
-Copyright (c) 2008, 2009 Netomata, Inc. All Rights Reserved. 
+Copyright (C) 2008, 2009 Netomata, Inc. All Rights Reserved. 
 
-Netomata, Inc. is providing this pre-release software and documentation
-to you under the terms of a Non Disclosure Agreement.  This pre-release
-software and documentation is specifically NOT being released yet,
-and may not be incorporated into any other product or package, or
-further distributed in any way.
+Netomata Config Generator (ncg) is free software: you can redistribute
+it and/or modify it under the terms of the GNU General Public License,
+version 3, as published by the Free Software Foundation.
 
-Unless required by applicable law or agreed to in writing, this
-software distributed is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+Netomata Config Generator (ncg) is distributed in the hope that it
+will be useful, but WITHOUT ANY WARRANTY OF ANY KIND (without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE), either express or implied, unless required by applicable
+law or agreed to in writing.  See the GNU General Public License,
+version 3, for more details.
+
+You should have received a copy of the GNU General Public License,
+version 3, along with Netomata Config Generator (ncg), in the file
+named "COPYING".  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 
 For any other questions or comments, please contact us at:
 
-Netomata, Inc.
-2601C Blanding Ave., #327
-Alameda, CA 94501
-USA
+	Netomata, Inc.
+	2601C Blanding Ave., #327
+	Alameda, CA 94501
+	USA
 
-Web http://www.netomata.com/
-Phone +1 510 355 0123
-Fax +1 510 355 0134
-Email license@netomata.com
+	Web http://www.netomata.com/
+	Phone +1 510 355 0123
+	Fax +1 510 355 0134
+	Email license@netomata.com

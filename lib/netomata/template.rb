@@ -280,8 +280,8 @@ Host: #{Socket.gethostname}
 Directory: #{Dir.getwd}
 Command: #{cmd}
 --------
-Templates (but not output) are Copyright (c) 2009 Netomata, Inc.
-All Rights Reserved.
+Templates (but not output generated from templates) are
+Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
 Please review accompanying 'LICENSE' file or
 http://www.netomata.com/docs/licenses/ncg for important notices,
 disclaimers, and license terms.

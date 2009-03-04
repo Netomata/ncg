@@ -1,8 +1,8 @@
 # $Id$
-# Copyright (c) 2008 Netomata, Inc.  All Rights Reserved. 
+# Copyright (c) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/license_v1 for important notices,
-# disclaimers, and license terms (GPL v2.0 or alternative).
+# disclaimers, and license terms.
 
 class Netomata::Template
 end
@@ -284,7 +284,7 @@ Templates (but not output) are Copyright (c) 2009 Netomata, Inc.
 All Rights Reserved.
 Please review accompanying 'LICENSE' file or
 http://www.netomata.com/license_v1 for important notices,
-disclaimers, and license terms (GPL v2.0 or alternative).
+disclaimers, and license terms.
 EOS
 
 	if (! prefix.nil?) then

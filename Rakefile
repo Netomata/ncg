@@ -1,8 +1,8 @@
 # $Id$
-# Copyright (c) 2008 Netomata, Inc.  All Rights Reserved. 
+# Copyright (c) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/license_v1 for important notices,
-# disclaimers, and license terms (GPL v2.0 or alternative).
+# disclaimers, and license terms.
 
 cwd = Dir.getwd
 ENV["NETOMATA_LIB"] = File.expand_path(File.join(File.dirname(__FILE__),"lib"))

@@ -6,10 +6,11 @@
 # disclaimers, and license terms.
 
     raise "argument '@active' undefined" unless instance_variable_defined?("@active")
-%><%=
+-%>
+<%=
     if @active == "yes" then
-        "no shutdown"
+        " no shutdown"
     else
-        "shutdown"
+        " shutdown"
     end
 %>

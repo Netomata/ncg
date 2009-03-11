@@ -11,7 +11,7 @@
     raise "argument '@vlan' not defined" unless instance_variable_defined?("@vlan")
     raise "@vlan[\"id\"] not defined" if @vlan["id"].nil?
     raise "@vlan[\"vlan_ip\"] not defined" if @vlan["vlan_ip"].nil?
-%> ip address <%= 
+-%>
+ ip address <%= 
     ip_union(@vlan["vlan_ip"], "0.0.0.#{@target["router_id"].to_i + 1}")
-    %> <%= @vlan["netmask"] %>
-
+%> <%= @vlan["netmask"] %>

@@ -9,4 +9,5 @@
     raise "@vlan[\"id\"] not defined" if @vlan["id"].nil?
     raise "@vlan[\"name\"] not defined" if @vlan["name"].nil?
     raise "@vlan[\"description\"] not defined" if @vlan["description"].nil?
-%><%= @vlan["name"] %><%= ( " (" + @vlan["description"] + ")" ) unless (@vlan["description"] == @vlan["name"]) %> VLAN (VLAN <%= @vlan["id"] %>)
+-%>
+<%= @vlan["name"] %><%= ( " (" + @vlan["description"] + ")" ) unless (@vlan["description"] == @vlan["name"]) %> VLAN (VLAN <%= @vlan["id"] %>)

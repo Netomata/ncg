@@ -12,12 +12,13 @@
     raise "interface key 'name' undefined" if (! @interface.has_key?("name"))
     raise "interface key 'target' undefined" if (! @interface.has_key?("target"))
     raise "interface key 'active' undefined" if (! @interface.has_key?("active"))
-%>interface <%= @interface["name"] %>
+-%>
+interface <%= @interface["name"] %>
  description LoadBal <%= @interface["target"] %>
  switchport access vlan 16
  switchport trunk encapsulation dot1q
  switchport trunk native vlan 16
  switchport trunk allowed vlan 3,4,81-86
  switchport mode trunk
- <%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
+<%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
 !

@@ -12,7 +12,8 @@
     raise "interface key 'name' undefined" if (! @interface.has_key?("name"))
     raise "interface key 'target' undefined" if (! @interface.has_key?("target"))
     raise "interface key 'active' undefined" if (! @interface.has_key?("active"))
-%>interface <%= @interface["name"] %>
+-%>
+interface <%= @interface["name"] %>
  description <%= @interface["target"] %>
- <%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
+<%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
 !

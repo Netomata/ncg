@@ -14,7 +14,8 @@
 
     vrrp_group = @target["(...)!vrrp_group"]
     if ! (vrrp_group.nil? || vrrp_group == "0") then
-%> vrrp <%= vrrp_group %> description default router for <%= apply_idiom("vlan_description", @target, {"@vlan" => @vlan}) %>
+-%>
+ vrrp <%= vrrp_group %> description default router for <%= apply_idiom("vlan_description", @target, {"@vlan" => @vlan}) %>
  vrrp <%= vrrp_group %> ip <%=
     addr = ip_union(@vlan["vlan_ip"], ("0.0.0.#{vrrp_group}"))
     addr %>
@@ -25,5 +26,4 @@
      vrrp_pri
  %>
  vrrp <%= vrrp_group %> authentication text plugh
-<% end %>
-
+<% end -%>

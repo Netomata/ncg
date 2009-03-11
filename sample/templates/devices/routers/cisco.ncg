@@ -20,8 +20,9 @@
 
 raise "target name undefined" if (! @target.has_key?("name"))
 
-%><%= emit_header("!! ", "!"*78, "!"*78)
-%>no service pad
+-%>
+<%= emit_header("!! ", "!"*78, "!"*78) -%>
+no service pad
 service timestamps debug datetime
 service timestamps log datetime
 service password-encryption
@@ -67,11 +68,11 @@ ip access-list extended MATCH_ANY
 !
 vlan internal allocation policy ascending
 !
-<% @target["(...)!vlans"].each { |key,vlan| %>
+<% @target["(...)!vlans"].each { |key,vlan| -%>
 vlan <%= vlan["id"] %>
  name <%= vlan["name"] %>
 !
-<% } %>
+<% } -%>
 <%=
 interface_results = ""
 @target["interfaces"].each { |key,interface|
@@ -80,7 +81,8 @@ interface_results = ""
     r = Netomata::Template::FromFile.new(interface["ncg_template"]).result_from_vars({"@interface" => interface})
     interface_results << r
 }
-interface_results %>interface Vlan1
+interface_results -%>
+interface Vlan1
  description Cisco default Ethernet VLAN -- NOTHING SHOULD USE THIS
 !
 <%=
@@ -96,7 +98,8 @@ raise "VLAN template base not found" if (vlt_base.nil?)
     	{"@vlan" => vlan, "@target" => @target})
     vlan_results << r
 }
-vlan_results %>ip default-gateway <%= @target["(...)!default_route"] %>
+vlan_results -%>
+ip default-gateway <%= @target["(...)!default_route"] %>
 ip route 0.0.0.0 0.0.0.0 <%= @target["(...)!default_route"] %>
 no ip http server
 no ip http secure-server

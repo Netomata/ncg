@@ -29,7 +29,7 @@ class Netomata::Template::FromString
 	@erb_result = String.new
 	# FIXME: should figure out what appropriate save_level is,
 	# and how to make it work
-	@erb = ERB.new(str, 0, "<>", "@erb_result")
+	@erb = ERB.new(str, 0, "-", "@erb_result")
 	@erb.filename = source
     end
 

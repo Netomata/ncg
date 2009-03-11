@@ -14,8 +14,9 @@
     raise "vlan key 'id' undefined" if (! @vlan.has_key?("id"))
     raise "vlan key 'active' undefined" if (! @vlan.has_key?("active"))
     raise "vlan key 'netmask' undefined" if (! @vlan.has_key?("netmask"))
-%>interface <%= "Vlan" + @vlan["id"] %>
- <%= apply_idiom("shutdown", @target, {"@active" => @vlan["active"]}) %>
+-%>
+interface <%= "Vlan" + @vlan["id"] %>
+<%= apply_idiom("shutdown", @target, {"@active" => @vlan["active"]}) %>
  description <%= apply_idiom("vlan_description", @target, {"@vlan" => @vlan}) %>
 <%= apply_idiom("vlan_ip_address", @target, {"@vlan" => @vlan, "@target" => @target}) %>
 <%= apply_idiom("vlan_vrrp", @target, {"@vlan" => @vlan, "@target" => @target}) %>

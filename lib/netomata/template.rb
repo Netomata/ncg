@@ -209,7 +209,10 @@ class Netomata::Template::Context
     # in a context with instance variables specified by _vars_
     # (a hash of ["@var" => value] tuples), and returns the result.
     def apply_by_node(node, vars=nil)
-	filename = node["ncg_template"]
+	raise ArgumentError, "Not a node" if (! node.is_a?(Netomata::Node))
+	unless (filename = node["ncg_template"])
+	    raise "Node '#{node.key}' has no 'ncg_template_ key"
+	end
 	Netomata::Template::Context.apply_by_filename(filename, vars)
     end
 
@@ -234,7 +237,7 @@ class Netomata::Template::Context
     # It should be whatever marks the rest of the line as a comment in the
     # generated config file.
     #
-    # _before_, if defined, is used as the very first line o the generated
+    # _before_, if defined, is used as the very first line of the generated
     # header.  It should be whatever marks the beginning of a multi-line
     # comment in the generated config file.  _prefix_ is *not* applied to
     # _before_, so _before_ should include _prefix_ if necessary.
@@ -242,7 +245,7 @@ class Netomata::Template::Context
     # _after_, if defined, is used as the very last line of the generated
     # header.  It should be whatever marks the end of a multi-line
     # comment in the generated config file.  _prefix_ is *not* applied to
-    # _after_, so _before_ should include _prefix_ if necessary.
+    # _after_, so _after_ should include _prefix_ if necessary.
     #
     # For example, to generate headers suitable for a shell script,
     # you would do

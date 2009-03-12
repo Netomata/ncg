@@ -18,7 +18,8 @@
 # because this stuff is all currently early-bound when parsed into the tree,
 # rather than being late-bound when referenced.
 
-raise "target name undefined" if (! @target.has_key?("name"))
+template_arg_node_key("@target", "name")
+template_arg_node_key("@target", "(...)!domain")
 
 -%>
 <%= emit_header("!! ", "!"*78, "!"*78) -%>
@@ -58,7 +59,7 @@ power redundancy-mode redundant
 spanning-tree mode pvst
 spanning-tree extend system-id
 spanning-tree vlan 1-4094 priority <%=
-    raise "target router_id undefined" if (! @target.has_key?("router_id"))
+    template_arg_node_key("@target", "router_id")
     24576 + (4096 * (@target["router_id"].to_i - 1))
     %>
 !
@@ -68,6 +69,7 @@ ip access-list extended MATCH_ANY
 !
 vlan internal allocation policy ascending
 !
+<% template_arg_node_key("@target", "(...)!vlans", Netomata::Node) -%>
 <% @target["(...)!vlans"].each { |key,vlan| -%>
 vlan <%= vlan["id"] %>
  name <%= vlan["name"] %>
@@ -75,6 +77,7 @@ vlan <%= vlan["id"] %>
 <% } -%>
 <%=
 interface_results = ""
+template_arg_node_key("@target", "interfaces", Netomata::Node)
 @target["interfaces"].each { |key,interface|
     raise "interface name undefined for key '#{key}'" if (! interface.has_key?("name"))
     raise "interface template 'ncg_template' undefined for device '#{@target["name"]}', interface '#{interface["name"]}'" if (! interface.has_key?("ncg_template"))
@@ -87,8 +90,8 @@ interface Vlan1
 !
 <%=
 vlan_results = ""
+template_arg_node_key("@target", "(...)!templates!vlan-interfaces", Netomata::Node)
 vlt_base = @target["(...)!templates!vlan-interfaces"]
-raise "VLAN template base not found" if (vlt_base.nil?)
 @target["(...)!vlans"].each { |key,vlan|
     raise "vlan name undefined for key '#{key}'" if (! vlan.has_key?("name"))
     raise "vlan type undefined for vlan '#{vlan["name"]}'" if (! vlan.has_key?("type"))
@@ -99,19 +102,29 @@ raise "VLAN template base not found" if (vlt_base.nil?)
     vlan_results << r
 }
 vlan_results -%>
-ip default-gateway <%= @target["(...)!default_route"] %>
+ip default-gateway <%=
+    template_arg_node_key("@target", "(...)!default_route")
+    @target["(...)!default_route"] %>
 ip route 0.0.0.0 0.0.0.0 <%= @target["(...)!default_route"] %>
 no ip http server
 no ip http secure-server
 !
 !
 !
-logging facility <%= @target["(...)!syslog_facility"] %>
-logging <%= @target["(...)!syslog_ip"] %>
+logging facility <%=
+    template_arg_node_key("@target", "(...)!syslog_facility")
+    @target["(...)!syslog_facility"] %>
+logging <%=
+    template_arg_node_key("@target", "(...)!syslog_ip")
+    @target["(...)!syslog_ip"] %>
 !
 !
-snmp-server community <%= @target["(...)!snmp_community"] %> RO
-snmp-server host <%= @target["(...)!snmp_ip"] %> <%= @target["(...)!snmp_community"] %>
+snmp-server community <%=
+    template_arg_node_key("@target", "(...)!snmp_community")
+    @target["(...)!snmp_community"] %> RO
+snmp-server host <%=
+    template_arg_node_key("@target", "(...)!snmp_ip")
+    @target["(...)!snmp_ip"] %> <%= @target["(...)!snmp_community"] %>
 !
 control-plane
 !

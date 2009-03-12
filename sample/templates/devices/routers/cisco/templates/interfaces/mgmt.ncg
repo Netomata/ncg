@@ -5,13 +5,10 @@
 # http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
 
-#@ name         = REQUIRED
-#@ description  = OPTIONAL
-#@ active       = no
-
-    raise "interface key 'name' undefined" if (! @interface.has_key?("name"))
-    raise "interface key 'target' undefined" if (! @interface.has_key?("target"))
-    raise "interface key 'active' undefined" if (! @interface.has_key?("active"))
+    template_arg("@interface")
+    template_arg_node_key("@interface", "name")
+    template_arg_node_key("@interface", "target")
+    template_arg_node_key("@interface", "active")
 -%>
 interface <%= @interface["name"] %>
  description Management <%= @interface["target"] %>

@@ -115,4 +115,43 @@ module Netomata::Utilities::ClassMethods
 	basedir = File.dirname(basename)
 	return File.join(basedir,filename)
     end
+
+    # For use in template headers, to check whether needed arguments have
+    # been passed as instance variables.  Raises an ArgumentError if _name_
+    # (passed as a string) doesn't exist as an instance variable, or exists
+    # but isn't of class _expected_class_ (Netomata::Node, by default).
+    # Otherwise returns true.
+    def template_arg(name, expected_class=Netomata::Node)
+	if ! instance_variable_defined?(name) then
+	    raise ArgumentError, "argument '#{name}' expected, but not defined"
+	end
+	if (! expected_class.nil?) then
+	    if (! instance_variable_get(name).is_a?(expected_class)) then
+		raise ArgumentError, "argument '#{name}' expected to be of class '#{expected_class}', but is of class '#{instance_variable_get(name).class}'"
+	    end
+	end
+	true
+    end
+
+    # For use in template headers, to check whether needed arguments have
+    # been passed as instance variables.  Raises an ArgumentError if any
+    # of the following tests fail:
+    # 1. _name_ (passed as a string) exists as an instance variable
+    # 2. _name_ is a Netomata::Node
+    # 3. _name_[_key_] exists
+    # 4. _name_[_key_] is of class _expected_class_ (String, by default)
+    # Otherwise returns true.
+    def template_arg_node_key(name, key, expected_class=String)
+	template_arg(name, Netomata::Node)
+	if (! instance_variable_get(name).has_key?(key)) then
+	    raise ArgumentError, "argument '#{name}' expected to have key '#{key}', but does not"
+	else
+	    if (! expected_class.nil?) then
+		if (! instance_variable_get(name).fetch(key).is_a?(expected_class)) then
+		    raise ArgumentError, "argument '#{name}' key '#{key}' expected to be of class '#{expected_class}', but is of class '#{instance_variable_get(name).fetch(key).class}'"
+		end
+	    end
+	end
+	true
+    end
 end

@@ -75,33 +75,38 @@ vlan <%= vlan["id"] %>
  name <%= vlan["name"] %>
 !
 <% } -%>
-<%=
-interface_results = ""
+<%
 template_arg_node_key("@target", "interfaces", Netomata::Node)
 @target["interfaces"].each { |key,interface|
-    raise "interface name undefined for key '#{key}'" if (! interface.has_key?("name"))
-    raise "interface template 'ncg_template' undefined for device '#{@target["name"]}', interface '#{interface["name"]}'" if (! interface.has_key?("ncg_template"))
-    r = Netomata::Template::FromFile.new(interface["ncg_template"]).result_from_vars({"@interface" => interface})
-    interface_results << r
-}
-interface_results -%>
+    if (! interface.has_key?("name")) then
+	raise "interface name undefined for key '#{key}'"
+    end
+    if (! interface.has_key?("ncg_template")) then
+	raise "interface template 'ncg_template' undefined " +
+	    "for device '#{@target["name"]}', interface '#{interface["name"]}'"
+    end
+-%>
+<%=  apply_by_node(interface,{"@interface" => interface}) %>
+<% } -%>
 interface Vlan1
  description Cisco default Ethernet VLAN -- NOTHING SHOULD USE THIS
 !
-<%=
-vlan_results = ""
-template_arg_node_key("@target", "(...)!templates!vlan-interfaces", Netomata::Node)
+<%
+template_arg_node_key("@target",
+    "(...)!templates!vlan-interfaces", Netomata::Node)
 vlt_base = @target["(...)!templates!vlan-interfaces"]
 @target["(...)!vlans"].each { |key,vlan|
-    raise "vlan name undefined for key '#{key}'" if (! vlan.has_key?("name"))
-    raise "vlan type undefined for vlan '#{vlan["name"]}'" if (! vlan.has_key?("type"))
-    template_name = vlt_base["(name=#{vlan["type"]})!ncg_template"]
-    raise "vlan template undefined for vlan '#{vlan["name"]}', type '#{vlan["type"]}'" if (template_name.nil?)
-    r = Netomata::Template::FromFile.new(template_name).result_from_vars(
+    if (! vlan.has_key?("name")) then
+	raise "vlan name undefined for key '#{key}'"
+    end
+    if (! vlan.has_key?("type")) then
+	raise "vlan type undefined for vlan '#{vlan["name"]}'"
+    end
+-%>
+<%= apply_by_node(vlt_base["(name=#{vlan["type"]})"], 
     	{"@vlan" => vlan, "@target" => @target})
-    vlan_results << r
-}
-vlan_results -%>
+%>
+<% } -%>
 ip default-gateway <%=
     template_arg_node_key("@target", "(...)!default_route")
     @target["(...)!default_route"] %>

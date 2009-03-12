@@ -211,7 +211,7 @@ class Netomata::Template::Context
     def apply_by_node(node, vars=nil)
 	raise ArgumentError, "Not a node" if (! node.is_a?(Netomata::Node))
 	unless (filename = node["ncg_template"])
-	    raise "Node '#{node.key}' has no 'ncg_template_ key"
+	    raise "Node '#{node.key}' has no 'ncg_template' key"
 	end
 	Netomata::Template::Context.apply_by_filename(filename, vars)
     end

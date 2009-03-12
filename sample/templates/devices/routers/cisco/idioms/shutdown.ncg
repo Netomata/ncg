@@ -5,7 +5,7 @@
 # http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
 
-    raise "argument '@active' undefined" unless instance_variable_defined?("@active")
+    template_arg("@active", String)
 -%>
 <%=
     if @active == "yes" then

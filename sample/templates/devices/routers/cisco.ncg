@@ -5,14 +5,6 @@
 # http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
 
-#@ make = cisco
-#@ name = REQUIRED
-#@ model = OPTIONAL
-#@ ncg_target = true	# generate a config from this point in tree
-#
-# type = filename (minus ".ncg" suffix)
-# ncg_template = full path to file
-#
 # FIXME: 
 # We'd like to specify ncg_output here in parameterized form, but we can't
 # because this stuff is all currently early-bound when parsed into the tree,
@@ -78,13 +70,6 @@ vlan <%= vlan["id"] %>
 <%
 template_arg_node_key("@target", "interfaces", Netomata::Node)
 @target["interfaces"].each { |key,interface|
-    if (! interface.has_key?("name")) then
-	raise "interface name undefined for key '#{key}'"
-    end
-    if (! interface.has_key?("ncg_template")) then
-	raise "interface template 'ncg_template' undefined " +
-	    "for device '#{@target["name"]}', interface '#{interface["name"]}'"
-    end
 -%>
 <%=  apply_by_node(interface,{"@interface" => interface}) %>
 <% } -%>
@@ -96,16 +81,10 @@ template_arg_node_key("@target",
     "(...)!templates!vlan-interfaces", Netomata::Node)
 vlt_base = @target["(...)!templates!vlan-interfaces"]
 @target["(...)!vlans"].each { |key,vlan|
-    if (! vlan.has_key?("name")) then
-	raise "vlan name undefined for key '#{key}'"
-    end
-    if (! vlan.has_key?("type")) then
-	raise "vlan type undefined for vlan '#{vlan["name"]}'"
-    end
+    vlt_key = "(...)!templates!vlan-interfaces!(name=#{vlan["type"]})"
+    template_arg_node_key("@target", vlt_key, Netomata::Node)
 -%>
-<%= apply_by_node(vlt_base["(name=#{vlan["type"]})"], 
-    	{"@vlan" => vlan, "@target" => @target})
-%>
+<%= apply_by_node(@target[vlt_key], {"@vlan" => vlan, "@target" => @target}) %>
 <% } -%>
 ip default-gateway <%=
     template_arg_node_key("@target", "(...)!default_route")

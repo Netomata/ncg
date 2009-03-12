@@ -5,12 +5,12 @@
 # http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
 
-    raise "argument '@target' not defined" unless instance_variable_defined?("@target")
-    raise "@target[\"(...)!base_ip\"] not defined" if @target["(...)!base_ip"].nil?
-    raise "@target[\"router_id\"] not defined" if @target["router_id"].nil?
-    raise "argument '@vlan' not defined" unless instance_variable_defined?("@vlan")
-    raise "@vlan[\"id\"] not defined" if @vlan["id"].nil?
-    raise "@vlan[\"vlan_ip\"] not defined" if @vlan["vlan_ip"].nil?
+    template_arg("@target")
+    template_arg_node_key("@target", "router_id")
+
+    template_arg("@vlan")
+    template_arg_node_key("@vlan", "vlan_ip")
+
 -%>
  ip address <%= 
     ip_union(@vlan["vlan_ip"], "0.0.0.#{@target["router_id"].to_i + 1}")

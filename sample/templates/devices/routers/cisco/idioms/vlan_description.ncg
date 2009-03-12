@@ -5,9 +5,9 @@
 # http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
 
-    raise "argument '@vlan' not defined" unless instance_variable_defined?("@vlan")
-    raise "@vlan[\"id\"] not defined" if @vlan["id"].nil?
-    raise "@vlan[\"name\"] not defined" if @vlan["name"].nil?
-    raise "@vlan[\"description\"] not defined" if @vlan["description"].nil?
+    template_arg("@vlan")
+    template_arg_node_key("@vlan", "id")
+    template_arg_node_key("@vlan", "name")
+    template_arg_node_key("@vlan", "description")
 -%>
 <%= @vlan["name"] %><%= ( " (" + @vlan["description"] + ")" ) unless (@vlan["description"] == @vlan["name"]) %> VLAN (VLAN <%= @vlan["id"] %>)

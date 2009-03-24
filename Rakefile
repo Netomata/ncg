@@ -63,6 +63,11 @@ task "sample" => ["lib/netomata/version.rb"] do
     puts "############"
 end
 
+desc "Generate docs from Netomata web site"
+task "docs" => ["lib/netomata/version.rb"] do
+    sh 'dev/get_docs.rb'
+end
+
 desc "Generate RDOC documentation"
 task "rdoc" do
     sh 'rm -rf rdoc'
@@ -193,7 +198,7 @@ task "dist_tar_gz" => ["dist_dir", "dist_tar"] do
 end
 
 desc "Create Manifest"
-task "Manifest" do
+task "Manifest" => ["docs"]  do
     puts "generating Manifest..."
     m = File.new("Manifest", "w")
     m.truncate(0)

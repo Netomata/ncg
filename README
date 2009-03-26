@@ -1,10 +1,10 @@
-          Netomata Config Generator (ncg) Release Notes
+          Netomata Config Generator (NCG) Release Notes
 
                        Version 0.9.0-rNNN
                     Released DD February 2009
                     =========================
 
-Thank you for downloading the Netomata Config Generator (ncg)!
+Thank you for downloading the Netomata Config Generator (NCG)!
 
 If you have any questions or comments, please contact us:
 
@@ -96,21 +96,31 @@ More About the Sample Scenario
 ------------------------------
 
 The sample scenario is a small single-rack data center for an
-Internet-facing web service.  The rack contains:
+Internet-facing web service.  The scenario and associated network
+design are more fully explained in pages in the Netomata wiki:
+
+    http://www.netomata.com/wiki/web_hosting_example
+    http://www.netomata.com/wiki/web_hosting_example_network_design
+
+Briefly, the rack contains:
 
     2 Cisco 4948-10G switch/routers (48 ports of GigE and 2 of 10GigE),
 	configured largely as mirror images of each other
-    2 Cisco ASA 5510 firewalls (running as an active/standby pair)
-    2 Cisco CSS 11501 load balancers (running as an active/standby pair)
-    12 (of a planned total of 24) real servers running RedHat and Xen
-	(several dozen Xen virtual RedHat servers run on those real servers)
+    2 firewalls (make/model not yet specified) running in a redundant
+	configuration
+    2 load balancers (make/model not yet specified) running in a
+    	redundant configuration
+    12 (of a planned total of 24) 1U servers running Linux and Xen
+	(with several Xen virtual Linux servers running on each of
+	those real servers)
 
 Currently, the "sample" directory contains a complete Netomata
 config for the pair of Cisco 4948-10G switch/routers deployed in
 an active/active configuration.  At this point, the sample setup
-is only generating the configs for the switches; before the next
-release, we plan to have it also generating configs for the firewalls
-and load balancers, as well as for MRTG, Nagios, and DNS.
+is only generating the configs for the switches; in future releases,
+we plan to extend the sample so that it is also generating configs
+for the firewalls and load balancers, as well as for DNS, SNMP
+monitoring (i.e., Nagios), and SNMP trending (i.e., MRTG).
 
 # $Id$
 # Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 

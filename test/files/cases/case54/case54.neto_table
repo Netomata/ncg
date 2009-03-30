@@ -1,0 +1,17 @@
+# Per Case 54 (https://netomata.fogbugz.com/default.asp?54)
++ devices!(hostname=switch-1)!interfaces!(+)
+@ devices!(hostname=switch-1)!interfaces!(>)!name = %{name}
+@ devices!(hostname=switch-1)!interfaces!(name=%{name})!type = %{type}
+@ devices!(hostname=switch-1)!interfaces!(name=%{name})!target = %{target1}
+@ devices!(hostname=switch-1)!interfaces!(name=%{name})!active = %{active1}
+#
+@ devices!(hostname=switch-2)!interfaces!(+)!name = %{name}
+@ devices!(hostname=switch-2)!interfaces!(name=%{name})!type = %{type}
+@ devices!(hostname=switch-2)!interfaces!(name=%{name})!target = %{target2}
+@ devices!(hostname=switch-2)!interfaces!(name=%{name})!active = %{active2}
+#
+% name	type	target1	active1	target2	active2
+# ----	----	------	-------	------	-------
+Gig1/1	host	host-1	yes	host-1	yes
+Gig1/2	host	host-2	yes	host-2	yes
+Gig1/3	host	host-3	yes	host-3	yes

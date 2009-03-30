@@ -8,7 +8,10 @@
 # http://blog.nanorails.com/articles/2006/07/14/a-better-rails-debugger-ruby-debug
 # SCRIPT_LINES__ = {}
 
-cwd = File.expand_path(File.dirname(__FILE__))
+def cwd 
+    File.expand_path(File.dirname(__FILE__))
+end
+
 if not $LOAD_PATH.include?(cwd) then $LOAD_PATH.unshift(cwd) end
 lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end

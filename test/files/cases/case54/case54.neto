@@ -1,0 +1,9 @@
+devices!(+) {
+    hostname	= switch-1
+}
+
+devices!(+) {
+    hostname	= switch-2
+}
+
+table case54.neto_table

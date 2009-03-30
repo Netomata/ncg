@@ -1,0 +1,48 @@
+devices {
+    @000000001 {
+        hostname = switch-1
+        interfaces {
+            @000000001 {
+                name = Gig1/1
+                type = host
+                target = host-1
+                active = yes
+            }
+            @000000002 {
+                name = Gig1/2
+                type = host
+                target = host-2
+                active = yes
+            }
+            @000000003 {
+                name = Gig1/3
+                type = host
+                target = host-3
+                active = yes
+            }
+        }
+    }
+    @000000002 {
+        hostname = switch-2
+        interfaces {
+            @000000001 {
+                name = Gig1/1
+                type = host
+                target = host-1
+                active = yes
+            }
+            @000000002 {
+                name = Gig1/2
+                type = host
+                target = host-2
+                active = yes
+            }
+            @000000003 {
+                name = Gig1/3
+                type = host
+                target = host-3
+                active = yes
+            }
+        }
+    }
+}

@@ -8,11 +8,13 @@
 # http://blog.nanorails.com/articles/2006/07/14/a-better-rails-debugger-ruby-debug
 SCRIPT_LINES__ = {}
 
-cwd = File.expand_path(File.dirname(__FILE__))
+def cwd 
+    File.expand_path(File.dirname(__FILE__))
+end
+
 if not $LOAD_PATH.include?(cwd) then $LOAD_PATH.unshift(cwd) end
 lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end
-$testfiles = File.join(cwd,"files","test_node")
 
 
 require 'netomata'
@@ -373,15 +375,17 @@ end
 
 class NodeTest_3_Import_Table < Test::Unit::TestCase
     def setup
+	@testfiles = File.join(cwd,"files","test_node")
+
 	@n = Netomata::Node.new(nil)
 	@n["!base_ip"] = "10.5.0.0"
-	@n.import_table(File.join($testfiles,
+	@n.import_table(File.join(@testfiles,
 				  "import_table_vlans.neto_table"
 				 )
 		       )
 	@n["!devices!(+)!hostname"] = "switch-1"
 	@n["!devices!(+)!hostname"] = "switch-2"
-	@n.import_table(File.join($testfiles,
+	@n.import_table(File.join(@testfiles,
 				  "import_table_interfaces.neto_table"
 				 )
 		       )
@@ -391,8 +395,8 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
 	assert @n.valid?
 	output = PP::pp(@n, StringIO.new)
 	# to re-create test data file, uncomment following line:
-	# File.new(File.join($testfiles,"import_table.pp"), "w").print output.string
-	expected = File.new(File.join($testfiles, 
+	# File.new(File.join(@testfiles,"import_table.pp"), "w").print output.string
+	expected = File.new(File.join(@testfiles, 
 				      "import_table.pp"
 				     )
 			   ).readlines.join
@@ -401,7 +405,7 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
 
     def test_dump_imported_table
 	# To re-create test data file, uncomment following line:
-	# @n.dump(File.new(File.join($testfiles,"dump_imported_table.neto"), "w"),0,false)
+	# @n.dump(File.new(File.join(@testfiles,"dump_imported_table.neto"), "w"),0,false)
 	
 	# dump to a file
 	t = Tempfile.new("ncg_test.dump_imported_table.neto", "/tmp")
@@ -410,7 +414,7 @@ class NodeTest_3_Import_Table < Test::Unit::TestCase
 
 	# check that the dumped file matches what it should
 	assert FileUtils.compare_file(t.path,
-				      File.join($testfiles,
+				      File.join(@testfiles,
 						"dump_imported_table.neto")
 				     )
 
@@ -426,6 +430,7 @@ end
 
 class NodeTest_4_Import_File < Test::Unit::TestCase
     def setup
+	@testfiles = File.join(cwd,"files","test_node")
 
 	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
 
@@ -495,12 +500,12 @@ EOF
 	assert n.valid?
 	output = PP::pp(n, StringIO.new)
 	# To re-create test data file, uncomment following line:
-	# File.new(File.join($testfiles, "import_file.pp"), "w").print(output.string)
-	expected = File.new(File.join($testfiles, "import_file.pp")).readlines.join
+	# File.new(File.join(@testfiles, "import_file.pp"), "w").print(output.string)
+	expected = File.new(File.join(@testfiles, "import_file.pp")).readlines.join
 	assert_equal expected, output.string
 
 	# To re-create test data file, uncomment following line:
-	# n.dump(File.new(File.join($testfiles,"dump_imported_file.neto"), "w"),0,false)
+	# n.dump(File.new(File.join(@testfiles,"dump_imported_file.neto"), "w"),0,false)
 	
 	# dump to a file
 	t = Tempfile.new("ncg_test.dump_imported_file.neto", "/tmp")
@@ -509,7 +514,7 @@ EOF
 
 	# check that the dumped file matches what it should
 	assert FileUtils.compare_file(t.path,
-				      File.join($testfiles,
+				      File.join(@testfiles,
 						"dump_imported_file.neto")
 				     )
 
@@ -546,7 +551,7 @@ end
 
 class NodeTest_5_Import_Template < Test::Unit::TestCase
     def setup
-
+	@testfiles = File.join(cwd,"files","test_node")
 	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
 
 	def setup_template(filename)
@@ -664,7 +669,7 @@ EOF
 	    #      test/netomata/files/test_node/import_#{tempate_basename}.dump
 	    n_expected =
 		File.new(
-		    File.join($testfiles,
+		    File.join(@testfiles,
 			      "import_#{template_basename}.dump")
 	        ).readlines.join
 	    n_output = StringIO.new

@@ -429,28 +429,24 @@ class Netomata::Node < Dictionary
 			    fk = var_sub(f,fields,d)
 			    fkn,fkk = dictionary_tuple(fk,true)
 			    raise "Unknown key #{fk}" if (fkn.nil? || fkk.nil?)
-			    ak = var_sub(a,fields,d)
-			    # look for ak relative to fk (not self)
-			    if fkn.has_key?(fkk) then
-				# relative to fkn[fkk] if fkk has been defined
-				akn,akk = fkn[fkk].dictionary_tuple(ak,false)
-			    else
-				# otherwise, just relative to fkn
-				akn,akk = fkn.dictionary_tuple(ak,false)
-			    end
-			    raise "Unknown key #{ak}" if (akn.nil? || akk.nil?)
 			    if (! fkn.has_key?(fkk)) then
-				if akn[akk].nil? then
-				    raise RuntimeError, "Key #{ak} not found"
-				end
 				fkn[fkk] = Netomata::Node.new(fkn)
-				fkn.graft(fkk, akn[akk])
-				# we don't want to use self[fk] again, because
-				# fk might include a "(+)" or other selector,
-				# and would lead to a different (or nonexistant)
-				# node now that self[fk] has been instantiated.
-			    else 
+			    end
+			    if (! a.nil?) then
+				# if _a_ is defined, it is a key to a source
+				# node that the new node should be a copy of
+				ak = var_sub(a,fields,d)
+				# look for ak relative to fkn[fkk] (not self)
+				akn,akk = fkn[fkk].dictionary_tuple(ak,false)
+				if (akn.nil? || akk.nil? || akn[akk].nil?) then
+				    raise RuntimeError, "Unknown key #{ak}"
+				end
 				fkn.graft(fkk,akn[akk])
+				# we don't want to use self[fk] again,
+				# because fk might include a "(+)" or
+				# other selector, and would lead to a
+				# different (or nonexistant) node now
+				# that self[fk] has been instantiated.
 			    end
 			else
 			    raise "Unknown action '#{t}'"
@@ -1125,6 +1121,7 @@ class Netomata::Node < Dictionary
     #
     # Returns the value associated with a given _key_.
     #
+    # * If _key_ is nil, returns nil
     # * If _key_ can be found, returns the value associated with it
     # * If _key_ cannot be found, then
     #   * If called with an optional block, then returns the yield of the block
@@ -1134,6 +1131,9 @@ class Netomata::Node < Dictionary
     # You should *not* specify *both* a _default_ argument and a block; if
     # you do, you'll get a warning.
     def node_fetch(key, default=nil, &default_block)
+	if (key.nil?) then
+	    return nil
+	end
 	if (key.match(/^\{(.*)\}$/)) then
 	    # key is a "{foo}" metadata request, so return that
 	    return metadata_fetch($1)

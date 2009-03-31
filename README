@@ -13,26 +13,18 @@ config files for network devices and services from a common
 light-weight model of your network.  Because these config files are
 generated programmatically (rather than by hand), and generated
 from a shared model (rather than being managed separately for each
-device or service), they are consistent and complete.
+device or service), they are more likely to be consistent and complete,
+which makes your network more reliable, easier to troubleshoot, and
+easier to expand in both size and functionality.
 
-For more information about the philosophy behind Netomata and NCG, see
+For more information about Netomata and the philosophy behind NCG, see
 
 	http://www.netomata.com/blog/brent_chapman/2008/10/31/7
 
 The inputs to NCG are a model describing your network (.neto and
-.neto_table files), and templates (.ncg files) for the various devices
-and services that you want to generate config files for.  Over time,
-we expect that a robust set of templates will be developed to cover
-a broad spectrum of network devices and services; we anticipate that
-these templates will either be shipped with the product, or made
-available through the Community forums (wiki and mailing lists)
-that are described below.
-
-We also anticipate developing a suite of tools beyond NCG, which will
-all rely on the model you build of your network (the .neto and .neto_table
-files) but will perform functions beyond simply generating config files;
-for example, we're contemplating tools that will help you do capacity
-planning and failure analysis.
+.neto_table files), and templates (.ncg files) for the config files
+of the various devices and services that you want to generate
+config files for.  
 
 Status
 ------
@@ -63,6 +55,22 @@ and a set of mailing lists for the community; please see
 
 Please join the community, so that together we can all get the most out of
 this!
+
+Future
+------
+Over time, we expect that a robust set of templates will be developed
+to cover a broad range of network devices and services.  Initially,
+as they are developed and refined both by Netomata and our user community,
+these templates will be made available through the community forums
+(wiki and mailing lists) that are described above.  Eventually, as
+these templates evolve and stabilize, we'll probably start including
+the best of them with future distributions.
+
+We also anticipate developing a suite of tools beyond NCG, which will
+all rely on the model you build of your network (the .neto and .neto_table
+files) but will perform functions beyond simply generating config files;
+for example, we're contemplating tools that will help you do capacity
+planning and failure analysis.
 
 License
 -------

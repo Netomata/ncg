@@ -1,0 +1,19 @@
+vlans {
+    @000000001 {
+        id = 1
+        name = VLAN1
+    }
+    @000000002 {
+        id = 2
+        name = VLAN2
+    }
+    @000000003 {
+        id = 3
+        name = VLAN3
+        vlan_ip = 172.24.1.0
+    }
+    @000000004 {
+        id = 4
+        name = VLAN4
+    }
+}

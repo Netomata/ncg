@@ -263,7 +263,7 @@ class Netomata::Node < Dictionary
 			kn.graft(kk,sn[sk])
 		    end
 		    pstack.push(kb)
-		when /^([^=\s]*)\s*=\s*(.*)$/
+		when /^([^\s]*)\s+=\s+(.*)$/
 		    # make = cisco
 		    # admin_ip = <%= @target["(...)!base_ip"] + "|0.0.16.0" %>
 		    kl = $1

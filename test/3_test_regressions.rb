@@ -48,4 +48,34 @@ class Regressions_Test < Test::Unit::TestCase
 						"case54/case54.dump")
 				     )
     end
+
+    # https://netomata.fogbugz.com/default.asp?48
+    #
+    # Statements like this in .neto files:
+    #
+    #     !vlans!(id=3)!vlan_ip = 172.24.1.0
+    #
+    # don't work; you get
+    #
+    #     ERROR(ArgumentError): must be a simple key at testbed.neto:17
+
+    def test_case48
+	@n.import_file(File.join(@testfiles, "case48/case48.neto"))
+	
+	# dump to a file. 
+	#
+	# To recreate baseline file, use following
+	# line instead of Tempfile line:
+	# t = File.new("/tmp/case48.dump", "w")
+	t = Tempfile.new("ncg_test.case48.neto", "/tmp")
+	@n.dump(t,0,false)
+	t.close
+
+	# check that the dumped file matches what it should
+	assert FileUtils.compare_file(t.path,
+				      File.join(@testfiles,
+						"case48/case48.dump")
+				     )
+    end
+    
 end

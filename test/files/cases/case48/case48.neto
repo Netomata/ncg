@@ -1,0 +1,21 @@
+!vlans!(+) {
+    id		= 1
+    name	= VLAN1
+}
+
+!vlans!(+) {
+    id		= 2
+    name	= VLAN2
+}
+
+!vlans!(+) {
+    id		= 3
+    name	= VLAN3
+}
+
+!vlans!(+) {
+    id		= 4
+    name	= VLAN4
+}
+
+!vlans!(id=3)!vlan_ip = 172.24.1.0

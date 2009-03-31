@@ -362,6 +362,9 @@ class NodeTest_2_General < Test::Unit::TestCase
     def test_keys_having_key
 	assert_equal [], @node.keys_having_key("k_uncommon_k")
 	assert_equal ["!n1", "!n2"], @node.keys_having_key("k_common_k")
+
+	@node["!k_common_k"] = "v_common_root"
+	assert_equal ["!", "!n1", "!n2"], @node.keys_having_key("k_common_k")
     end
 
     def test_equivalent

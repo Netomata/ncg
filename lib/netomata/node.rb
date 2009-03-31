@@ -483,8 +483,6 @@ class Netomata::Node < Dictionary
     # [name] basename of file (i.e., "foo" if _filename_ is "a/foo.ncg")
     # [ncg_template] filename of the file
     def import_template(filename) 
-	# FIXME: also need to parse file for '#@' variables to set
-	
 	# clean up filename by removing gratuitous "." elements in path
 	template_file = filename.dup
 	template_file.gsub!((File::Separator + "." + File::Separator),
@@ -584,17 +582,19 @@ class Netomata::Node < Dictionary
     # :call-seq:
     #   keys_having_key(_key_) -> [key, ...] or []
     #
-    # Recursively checks Node's children for Nodes having _key_
+    # Recursively checks Node and Node's children for Nodes having _key_
     # defined, and returns an array of the keys of matching Nodes
-    #--
-    # FIXME: Shouldn't it check the Node itself, too?
-    #++
     #
     # Returns an empty array if there are no Nodes with matching _key_ defined
     def keys_having_key(key)
-	select_r { |p,k,v|
+	r = []
+	if self.has_key?(key) then
+	    r << self.key
+	end
+	r += select_r { |p,k,v|
 	    v.is_a?(Netomata::Node) && v.has_key?(key)
 	}.collect { |a| a.first }
+	r
     end
 
     # :call-seq:
@@ -834,9 +834,8 @@ class Netomata::Node < Dictionary
 	    return nil
 	end
 	if (key == "!") then
-	    # FIXME: not sure this is correct.
-	    # 	Maybe should return something like [self.root, "(.)"]?
-	    # 	But "(.)" won't work as key to Dictionary methods...
+	    # Perhaps should return something like [self.root, "(.)"],
+	    # 	but "(.)" won't work as key to Dictionary methods...
 	    return [self.root, nil]
 	end
 	if (key[-1..-1] == "!") then

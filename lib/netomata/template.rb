@@ -27,8 +27,8 @@ class Netomata::Template::FromString
 	# make a private @erb_result variable, to keep ERB from overwriting
 	# global _erbout (which is what it does by default)
 	@erb_result = String.new
-	# FIXME: should figure out what appropriate save_level is,
-	# and how to make it work
+	# FIXME: should figure out what appropriate safe_level is,
+	# and how to make it work (https://netomata.fogbugz.com/default.asp?66)
 	@erb = ERB.new(str, 0, "-", "@erb_result")
 	@erb.filename = source
     end

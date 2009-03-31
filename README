@@ -1,33 +1,89 @@
           Netomata Config Generator (NCG) Release Notes
 
-                       Version 0.9.0-rNNN
-                    Released DD February 2009
-                    =========================
+                        Version 0.9.1
+                    Released 31 March 2009
+                    ======================
 
 Thank you for downloading the Netomata Config Generator (NCG)!
 
-If you have any questions or comments, please contact us:
+Description
+-----------
+Netomata Config Generator (NCG) creates complete, ready-to-install
+config files for network devices and services from a common
+light-weight model of your network.  Because these config files are
+generated programmatically (rather than by hand), and generated
+from a shared model (rather than being managed separately for each
+device or service), they are consistent and complete.
 
-	support@netomata.com
-	+1 510 355 0123 (main)
-	+1 510 355 0134 (fax)
+For more information about the philosophy behind Netomata and NCG, see
 
-Documentation is at http://www.netomata.com/docs
-Please feel free to contribute to it... ;-)
+	http://www.netomata.com/blog/brent_chapman/2008/10/31/7
+
+The inputs to NCG are a model describing your network (.neto and
+.neto_table files), and templates (.ncg files) for the various devices
+and services that you want to generate config files for.  Over time,
+we expect that a robust set of templates will be developed to cover
+a broad spectrum of network devices and services; we anticipate that
+these templates will either be shipped with the product, or made
+available through the Community forums (wiki and mailing lists)
+that are described below.
+
+We also anticipate developing a suite of tools beyond NCG, which will
+all rely on the model you build of your network (the .neto and .neto_table
+files) but will perform functions beyond simply generating config files;
+for example, we're contemplating tools that will help you do capacity
+planning and failure analysis.
+
+Status
+------
+This release should definitely be considered experimental in nature.
+Commands and file formats are all subject to change, as we work out
+what paradigms work best and figure out how to get the most out of these
+tools.  We'll try to limit future changes that break backwards compatibility,
+but we can't promise that at this stage; right now, we believe that it's
+more important to experiment with how best to build and use this tool,
+rather than to carve anything in stone.
+
+Documentation
+-------------
+Program and file format documentation is online at
+
+	http://www.netomata.com/docs
+
+A snapshot of this documentation is in the "docs" subdirectory
+of the release.
+
+Community
+---------
+We're trying to build a community around NCG to share experiences, tips,
+techniques, tricks, tools, and so forth.  We have established both a wiki
+and a set of mailing lists for the community; please see 
+
+	http://www.netomata.com/community
+
+Please join the community, so that together we can all get the most out of
+this!
+
+License
+-------
+Netomata Config Generator (NCG) is being released under the terms of the
+GNU General Public License, version 3.  See the LICENSE file in the
+distribution for full details.
 
 Requirements
 ------------
 Dependencies are explained in the "Dependencies" file.  In a nutshell,
 you need Ruby 1.8.6 (it might work under other versions, but we
-haven't tested it under other versions), and the "facets" and
-"ruby-debug" Ruby gems.
+haven't tested it under other versions), and the "facets" Ruby gem.
+We've also found the "ruby-debug" gem to be very useful for debugging,
+but it is optional.
 
 Installation
 ------------
 1)  Unpack the distribution .tar file, and cd to the directory it creates.
 
-	$ tar xvf ncg-0.9.0-rNNN.tar
-	$ cd ncg-0.9.0-rNNN
+	$ tar xvf ncg-0.9.1-rNNN.tar
+	$ cd ncg-0.9.1-rNNN
 
 1.1) OPTIONAL: run tests to verify that everything appears to work.
 
@@ -121,6 +177,15 @@ is only generating the configs for the switches; in future releases,
 we plan to extend the sample so that it is also generating configs
 for the firewalls and load balancers, as well as for DNS, SNMP
 monitoring (i.e., Nagios), and SNMP trending (i.e., MRTG).
+
+Support
+-------
+If you have any questions or comments, or to report bugs, please contact us:
+
+	support@netomata.com
+
+	+1 510 355 0123 (main)
+	+1 510 355 0134 (fax)
 
 # $Id$
 # Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 

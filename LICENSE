@@ -1,13 +1,13 @@
-Netomata Config Generator (ncg) License
+Netomata Config Generator (NCG) License
 =======================================
 
 Copyright (C) 2008, 2009 Netomata, Inc. All Rights Reserved. 
 
-Netomata Config Generator (ncg) is free software: you can redistribute
+Netomata Config Generator (NCG) is free software: you can redistribute
 it and/or modify it under the terms of the GNU General Public License,
 version 3, as published by the Free Software Foundation.
 
-Netomata Config Generator (ncg) is distributed in the hope that it
+Netomata Config Generator (NCG) is distributed in the hope that it
 will be useful, but WITHOUT ANY WARRANTY OF ANY KIND (without even
 the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE), either express or implied, unless required by applicable
@@ -15,7 +15,7 @@ law or agreed to in writing.  See the GNU General Public License,
 version 3, for more details.
 
 You should have received a copy of the GNU General Public License,
-version 3, along with Netomata Config Generator (ncg), in the file
+version 3, along with Netomata Config Generator (NCG), in the file
 named "COPYING".  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 
 For any other questions or comments, please contact us at:

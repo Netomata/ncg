@@ -1,0 +1,31 @@
+<%
+# $Id: header.rb 260 2009-03-04 21:38:53Z brent $
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+
+    template_arg("@target")
+    template_arg_node_key("@target", "(...)!base_ip")
+    template_arg_node_key("@target", "router_id")
+
+    template_arg("@vli")
+    template_arg_node_key("@vli", "id")
+    template_arg_node_key("@vli", "vlan_ip")
+
+    hsrp_group = @vli["(...)!hsrp_group"]
+    if ! (hsrp_group.nil? || hsrp_group == "0") then
+-%>
+ standby <%= hsrp_group %> ip <%=
+    addr = ip_union(@vli["vlan_ip"], ("0.0.0.#{hsrp_group}"))
+    addr %>
+ standby <%= hsrp_group %> priority <%=
+     hsrp_pri = 250 - (@target["router_id"].to_i * 10)
+     # minimum hsrp_pri of 10
+     hsrp_pri = 10 if (hsrp_pri < 0)
+     hsrp_pri
+ %>
+ standby <%= hsrp_group %> authentication text plugh
+ standby <%= hsrp_group %> preempt
+<% end %>
+

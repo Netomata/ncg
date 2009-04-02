@@ -1,0 +1,148 @@
+<%
+# $Id: header.rb 260 2009-03-04 21:38:53Z brent $
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+
+template_arg_node_key("@target", "name")
+
+-%>
+<%= emit_header("!! ", "!"*78, "!"*78) -%>
+no service pad
+service timestamps debug datetime
+service timestamps log datetime
+service password-encryption
+service compress-config
+!
+hostname <%= @target["name"] %>
+!
+enable secret 5 $1$8/oz$8HWCm85LdMzCieQnh8.n5/
+!
+username access password 7 0803405B0C5627180A
+aaa new-model
+!
+!
+aaa authentication login default local
+!
+!
+!
+aaa session-id common
+clock timezone PST -8
+clock summer-time PDT recurring
+ip subnet-zero
+ip routing
+<%
+    template_arg_node_key("@target", "(...)!domain")
+    template_arg_node_key("@target", "(...)!dns_ip")
+-%>
+ip domain-name <%= @target["(...)!domain"] %>
+ip name-server <%= @target["(...)!dns_ip"] %>
+!
+vtp mode transparent
+no cluster run
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority <%=
+    template_arg_node_key("@target", "router_id")
+    24576 + (4096 * (@target["router_id"].to_i - 1))
+    %>
+!
+!
+ip access-list extended MATCH_ANY
+  permit ip any any
+!
+vlan internal allocation policy ascending
+!
+<% @target["(...)!vlans"].each { |key,vlan| %>
+vlan <%= vlan["id"] %>
+ name <%= vlan["name"] %>
+!
+<% } %>
+ip ssh time-out 60
+ip ssh source-interface Vlan3
+ip ssh logging events
+ip ssh version 2
+!
+!
+!
+!
+!
+<%=
+interface_results = ""
+@target["interfaces"].each { |key,interface|
+    raise "interface name undefined for key '#{key}'" if (! interface.has_key?("name"))
+    raise "interface template 'ncg_template' undefined for device '#{@target["name"]}', interface '#{interface["name"]}'" if (! interface.has_key?("ncg_template"))
+    r = Netomata::Template::FromFile.new(interface["ncg_template"]).result_from_vars({"@interface" => interface})
+    interface_results << r
+}
+interface_results %>
+!
+<%=
+vli_results = ""
+vlt_base = @target["(...)!templates!vlan-interfaces"]
+@target["vlan-interfaces"].each { |key,vli|
+    raise "vlan-interface name undefined for key '#{key}'" if (! vli.has_key?("name"))
+    raise "vlan-interface type undefined for vlan-interface '#{vli["name"]}'" if (! vli.has_key?("type"))
+    template_name = vlt_base["(name=#{vli["type"]})!ncg_template"]
+    raise "vlan template undefined for vlan '#{vli["name"]}', type '#{vli["type"]}'" if (template_name.nil?)
+    r = Netomata::Template::FromFile.new(template_name).result_from_vars(
+    	{"@vli" => vli, "@target" => @target})
+    vli_results << r
+}
+vli_results
+-%>
+ip default-gateway <%=
+    template_arg_node_key("@target", "(...)!default_route")
+    @target["(...)!default_route"]
+%>
+ip classless
+ip route 0.0.0.0 0.0.0.0 <%= @target["(...)!default_route"] %>
+no ip http server
+no ip http secure-server
+!
+!
+!
+logging facility <%=
+    template_arg_node_key("@target", "(...)!syslog_facility")
+    @target["(...)!syslog_facility"]
+%>
+logging <%=
+    template_arg_node_key("@target", "(...)!syslog_ip")
+    @target["(...)!syslog_ip"]
+%>
+!
+!
+snmp-server community <%=
+    template_arg_node_key("@target", "(...)!snmp_community")
+    @target["(...)!snmp_community"]
+%> RO
+snmp-server host <%=
+    template_arg_node_key("@target", "(...)!snmp_ip")
+    @target["(...)!snmp_ip"]
+%> <%= @target["(...)!snmp_community"] %>
+!
+control-plane
+!
+!
+line con 0
+ session-timeout 0
+ exec-timeout 0 0
+line vty 0 4
+ session-timeout 60
+ exec-timeout 60 0
+ transport input ssh
+line vty 5 15
+ transport input none
+!
+ntp server <%=
+    template_arg_node_key("@target", "(...)!ntp_ip")
+    @target["(...)!ntp_ip"]
+%>
+end

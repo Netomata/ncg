@@ -1,0 +1,79 @@
+<%
+# $Id: header.rb 260 2009-03-04 21:38:53Z brent $
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+-%>
+<%= emit_header("## ", "#"*78, "#"*78) -%>
+
+WorkDir: /var/www/mrtg
+Options[_]: growright, bits
+# Default MaxBytes = 10 Gb/s converted to Bytes/s
+MaxBytes[_]: 1250000000
+EnableIPv6: no
+
+<%
+@target["!devices"].each { |devkey,dev|
+    dev["interfaces"].each { |intkey,int|
+	next if (int["active"] != "yes")
+    	mrtg_key = dev["name"] + "_" + int["name"]
+	mrtg_key.gsub!(/[^A-Za-z0-9]/, "_")
+	mrtg_desc = "#{int["name"]} @ #{dev["name"]} -- #{int["target"]} [type #{int["type"]}]"
+-%>
+Target[<%= mrtg_key %>]: \<%= int["name"] %>:<%= dev["(...)!snmp_community"] %>@<%= dev["management_ip"] %>
+SetEnv[<%= mrtg_key %>]: MRTG_INT_IP="" MRTG_INT_DESCR="<%= int["name"] %>"
+MaxBytes[<%= mrtg_key %>]: <%=
+    case int["name"]
+    when /^Ethernet/ then
+    	(10_000_000 / 8)	# 10 Mb/s, converted to MB/s
+    when /^FastEthernet/ then
+    	(100_000_000 / 8)	# 100 Mb/s, converted to MB/s
+    when /^GigabitEthernet/ then
+    	(1_000_000_000 / 8)	# 1 Gb/s, converted to GB/s
+    when /^TenGigabitEthernet/ then
+    	(10_000_000_000 / 8)	# 10 Gb/s, converted to GB/s
+    else
+    	(10_000_000_000 / 8)	# default to 10 Gb/s, converted to GB/s
+    end
+%>
+Title[<%= mrtg_key %>]: <%= mrtg_desc %>
+PageTop[<%= mrtg_key %>]: <h1><%= mrtg_desc %></h1>
+    <div id="sysdetails">
+    	<table>
+	    <tr><td>System:</td><td><%= dev["name"] %></td></tr>
+	    <tr><td>Interface Name:</td><td><%= int["name"] %></td></tr>
+	    <tr><td>Interface Type:</td><td><%= int["type"] %></td></tr>
+	    <tr><td>Interface Target:</td><td><%= int["target"] %></td></tr>
+	</table>
+    </div>
+
+<%
+    }
+
+    dev["vlan-interfaces"].each { |vlikey,vli|
+	next if (vli["active"] != "yes")
+	vli_name = "Vlan#{vli["id"]}"
+    	mrtg_key = dev["name"] + "_" + vli_name
+	mrtg_key.gsub!(/[^A-Za-z0-9]/, "_")
+	mrtg_desc = "#{vli_name} @ #{dev["name"]} -- #{vli["description"]} VLAN [type #{vli["type"]}]"
+-%>
+Target[<%= mrtg_key %>]: \<%= vli_name %>:<%= dev["(...)!snmp_community"] %>@<%= dev["management_ip"] %>
+SetEnv[<%= mrtg_key %>]: MRTG_INT_IP="<%= vli["ip"] || "" %>" MRTG_INT_DESCR="<%= vli["description"] %>"
+Title[<%= mrtg_key %>]: <%= mrtg_desc %>
+PageTop[<%= mrtg_key %>]: <h1><%= mrtg_desc %></h1>
+    <div id="sysdetails">
+    	<table>
+	    <tr><td>System:</td><td><%= dev["name"] %></td></tr>
+	    <tr><td>VLAN ID:</td><td><%= vli["id"] %></td></tr>
+	    <tr><td>VLAN Name:</td><td><%= vli["name"] %></td></tr>
+	    <tr><td>VLAN Description:</td><td><%= vli["description"] %></td></tr>
+	    <tr><td>VLAN Type:</td><td><%= vli["type"] %></td></tr>
+	    <tr><td>VLAN IP/Netmask:</td><td><%= vli["vlan_ip"] %> / <%= vli["netmask"] %></td></tr>
+	</table>
+    </div>
+
+<%
+    }
+}
+-%>

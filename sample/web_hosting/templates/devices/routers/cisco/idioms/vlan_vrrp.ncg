@@ -1,0 +1,30 @@
+<%
+# $Id: header.rb 260 2009-03-04 21:38:53Z brent $
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+
+    template_arg("@vli")
+    template_arg_node_key("@vli", "(...)!vrrp_group")
+    template_arg_node_key("@vli", "vlan_ip")
+
+    template_arg("@target")
+    template_arg_node_key("@target", "router_id")
+
+    vrrp_group = @vli["(...)!vrrp_group"]
+    if ! (vrrp_group.nil? || vrrp_group == "0") then
+-%>
+ vrrp <%= vrrp_group %> description default router for <%= apply_idiom("vlan_description", @target, {"@vlan" => @vli}) %>
+ vrrp <%= vrrp_group %> ip <%=
+    addr = ip_union(@vli["vlan_ip"], ("0.0.0.#{vrrp_group}"))
+    addr %>
+ vrrp <%= vrrp_group %> priority <%=
+     vrrp_pri = 250 - (@target["router_id"].to_i * 10)
+     # minimum vrrp_pri of 10
+     vrrp_pri = 10 if (vrrp_pri < 0)
+     vrrp_pri
+%>
+ vrrp <%= vrrp_group %> authentication text plugh
+<% end %>
+

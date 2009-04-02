@@ -1,0 +1,96 @@
+# $Id: interfaces.neto_table 247 2009-02-07 00:16:11Z brent $
+# Copyright (c) 2008 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/license_v1 for important notices,
+# disclaimers, and license terms (GPL v2.0 or alternative).
+
+# name: interface name (It's important to use the full Cisco name here (i.e.,
+# 		"FastEthernet0/1"), rather than abbreviations such as "Fa0/1",
+# 		because some things (SNMP interface checks, for example) only
+# 		understand the full names, not the abbreviations.)
+# type: type of interface
+# target1: name of device that's connected to this interface on cisco1
+# active1: whether interface is active on cisco1 (default "no", not active)
+# target2: name of device that's connected to this interface on cisco2
+# active2: whether interface is active on cisco2 (default "no", not active)
+#
+# Note that fields in each row are tab-separated; number of fields must
+# match (i.e., each row must have the right number of fields), even if the
+# columns don't line up perfectly (because some names are longer than 8
+# characters, for instance).  Multiple adjacent tabs are treated the same
+# as a single tab (i.e., the field separator is /\t+/), so every field must
+# have _something_ in it, even if it's just "-" or "none" or some such.
+#
++ !devices!(name=cisco1)!interfaces!(+) < (...)!templates!interfaces!(name=%{type})
+@ !devices!(name=cisco1)!interfaces!(>)!name = %{name}
+@ !devices!(name=cisco1)!interfaces!(name=%{name})!type = %{type}
+@ !devices!(name=cisco1)!interfaces!(name=%{name})!target = %{target1}
+@ !devices!(name=cisco1)!interfaces!(name=%{name})!active = %{active1}
+#
++ !devices!(name=cisco2)!interfaces!(+) < (...)!templates!interfaces!(name=%{type})
+@ !devices!(name=cisco2)!interfaces!(>)!name = %{name}
+@ !devices!(name=cisco2)!interfaces!(name=%{name})!type = %{type}
+@ !devices!(name=cisco2)!interfaces!(name=%{name})!target = %{target2}
+@ !devices!(name=cisco2)!interfaces!(name=%{name})!active = %{active2}
+#
+% name			type	target1		active1	target2		active2
+# ----			----	------		-------	------		-------
+FastEthernet0/1		host	host-1		yes	host-1		yes
+FastEthernet0/2		host	host-2		yes	host-2		yes
+FastEthernet0/3		host	host-3		yes	host-3		yes
+FastEthernet0/4		host	host-4		no	host-4		no
+FastEthernet0/5		host	host-5		no	host-5		no
+FastEthernet0/6		host	host-6		no	host-6		no
+FastEthernet0/7		host	host-7		no	host-7		no
+FastEthernet0/8		host	host-8		no	host-8		no
+FastEthernet0/9		host	host-9		no	host-9		no
+FastEthernet0/10	host	host-10		no	host-10		no
+FastEthernet0/11	host	host-11		no	host-11		no
+FastEthernet0/12	host	host-12		no	host-12		no
+FastEthernet0/13	host	host-13		no	host-13		no
+FastEthernet0/14	host	host-14		no	host-14		no
+FastEthernet0/15	host	host-15		no	host-15		no
+FastEthernet0/16	host	host-16		no	host-16		no
+FastEthernet0/17	host	host-17		no	host-17		no
+FastEthernet0/18	host	host-18		no	host-18		no
+FastEthernet0/19	host	host-19		no	host-19		no
+FastEthernet0/20	host	host-20		no	host-20		no
+FastEthernet0/21	host	host-21		no	host-21		no
+FastEthernet0/22	host	host-22		no	host-22		no
+FastEthernet0/23	host	host-23		no	host-23		no
+FastEthernet0/24	host	host-24		no	host-24		no
+FastEthernet0/25	ipmi	host-1		no	host-2		no
+FastEthernet0/26	ipmi	host-3		no	host-4		no
+FastEthernet0/27	ipmi	host-5		no	host-6		no
+FastEthernet0/28	ipmi	host-7		no	host-8		no
+FastEthernet0/29	ipmi	host-9		no	host-10		no
+FastEthernet0/30	ipmi	host-11		no	host-12		no
+FastEthernet0/31	ipmi	host-13		no	host-14		no
+FastEthernet0/32	ipmi	host-15		no	host-16		no
+FastEthernet0/33	ipmi	host-17		no	host-18		no
+FastEthernet0/34	ipmi	host-19		no	host-20		no
+FastEthernet0/35	ipmi	host-21		no	host-22		no
+FastEthernet0/36	ipmi	host-23		no	host-24		no
+#FastEthernet0/37	fwvlan	firewall-1	yes	firewall-2	yes
+#FastEthernet0/38	fwext	isp-1		yes	isp-2		yes
+#FastEthernet0/39	loadbal	loadbal-1	yes	loadbal-1	yes
+#FastEthernet0/40	loadbal	loadbal-2	yes	loadbal-2	yes
+#FastEthernet0/41	mgmt	firewall-1	yes	firewall-2	yes
+#FastEthernet0/42	mgmt	loadbal-1	yes	loadbal-2	yes
+#FastEthernet0/43	mgmt	console		yes	console		yes
+#FastEthernet0/44	mgmt	pdu-1		yes	pdu-2		yes
+#FastEthernet0/45	fwvlan	firewall-2	yes	firewall-1	yes
+FastEthernet0/37	unused	unused	no	unused	no
+FastEthernet0/38	unused	unused	no	unused	no
+FastEthernet0/39	unused	unused	no	unused	no
+FastEthernet0/40	unused	unused	no	unused	no
+FastEthernet0/41	unused	unused	no	unused	no
+FastEthernet0/42	unused	unused	no	unused	no
+FastEthernet0/43	unused	unused	no	unused	no
+FastEthernet0/44	unused	unused	no	unused	no
+FastEthernet0/45	unused	unused	no	unused	no
+FastEthernet0/46	unused	unused	no	unused	no
+FastEthernet0/47	unused	unused	no	unused	no
+FastEthernet0/48	trunk	cisco0	yes	cisco0	yes
+GigabitEthernet0/1	trunk	cisco2	yes	cisco1	yes
+GigabitEthernet0/2	trunk	cisco2	yes	cisco1	yes

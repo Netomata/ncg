@@ -1,0 +1,12 @@
+Have ht.neto mkdir_p necessary config subdirectories
+
+Define/use "management_fqdn"?
+
+Clean up ht.neto; organize into parts by service?
+
+Rename template files from, i.e., mrtg.ncg to mrtg.cfg.ncg ?
+
+Reconcile difference in meaning between !devices!*!
+	interface["name"] => interface name, something like "FastEthernet0/1"
+	vlan-interface["name"] => VLAN name, something like "Management"
+    Then clean up everywhere that VLAN name is constructed as "Vlan#{vli[id]}"

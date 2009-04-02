@@ -53,11 +53,14 @@ Rake::TestTask.new("do_test") do |t|
 end
 
 desc "Generate sample configs and diff against baseline"
+task "sample" => ["sample/switches"]
+
+desc "Generate sample/switches configs and diff against baseline"
 task "sample" => ["lib/netomata/version.rb"] do
-    sh 'rm -f sample/configs/switch-1.config sample/configs/switch-2.config'
-    sh 'bin/ncg -v sample/sample.neto'
-    sh 'egrep -v "^!!" sample/configs/switch-1.config | diff -u sample/configs/switch-1.baseline -'
-    sh 'egrep -v "^!!" sample/configs/switch-2.config | diff -u sample/configs/switch-2.baseline -'
+    sh 'rm -f sample/switches/configs/switch-1.config sample/switches/configs/switch-2.config'
+    sh 'bin/ncg -v sample/switches/switches.neto'
+    sh 'egrep -v "^!!" sample/switches/configs/switch-1.config | diff -u sample/switches/configs/switch-1.baseline -'
+    sh 'egrep -v "^!!" sample/switches/configs/switch-2.config | diff -u sample/switches/configs/switch-2.baseline -'
     puts "############"
     puts "# Success! #"
     puts "############"

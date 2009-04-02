@@ -15,7 +15,7 @@
 % id	active	type	netmask		name		description
 # --	------	----	-------		----		-----------
 1	yes	admin	255.255.255.0	default		default
-# note that in testbed.neto file, after this table is imported,
+# note that in web_hosting.neto file, after this table is imported,
 # vlan_ip for VLAN 3 (Lab) is fixed to what it should be (172.24.1.0)
 3	yes	admin	255.255.255.0	Lab		Lab Backbone
 16	yes	admin	255.255.240.0	Management	Management

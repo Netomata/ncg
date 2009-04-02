@@ -40,11 +40,15 @@ devices!(+) < !templates!devices!routers!cisco {
     # A lower number means higher priority.
     router_id	= 1
     # can't put this in the template, because "name" isn't defined there
-    ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %>
+    ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+    			"configs", \
+			(@target["name"] + ".config")) %>
     services!nagios < !templates!services!nagios!cisco {
         # need to override the inherited template name with the device name
         name = <%= @target["(..)!(...)!name"] %>
-        ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs/nagios/", (@target["(...)!name"] + ".cfg")) %>
+        ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+				"configs/nagios/", \
+				(@target["(...)!name"] + ".cfg")) %>
     }
 }
 
@@ -57,11 +61,14 @@ devices!(+) < !templates!devices!routers!cisco {
     # A lower number means higher priority.
     router_id	= 2
     # can't put this in the template, because "name" isn't defined there
-    ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %>
+    ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+    			"configs", (@target["name"] + ".config")) %>
     services!nagios < !templates!services!nagios!cisco {
         # need to override the inherited template name with the device name
         name = <%= @target["(..)!(...)!name"] %>
-        ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs/nagios/", (@target["(...)!name"] + ".cfg")) %>
+        ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+				"configs/nagios/", \
+				(@target["(...)!name"] + ".cfg")) %>
     }
 }
 
@@ -80,16 +87,27 @@ devices!(name=cisco2)!vlan-interfaces < !vlans {
 
 services!mrtg {
     config {
-	ncg_template = <%= File.join(@target["{DIRNAME}"], "templates/services/mrtg/mrtg.cfg.ncg") %>
-	ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs/mrtg/mrtg.cfg") %>
+	ncg_template = <%= File.join(@target["{DIRNAME}"], \
+				"templates/services/mrtg/mrtg.cfg.ncg") %>
+	ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+				"configs/mrtg/mrtg.cfg") %>
     }
     index {
-	ncg_template = <%= File.join(@target["{DIRNAME}"], "templates/services/mrtg/index.html.ncg") %>
-	ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs/mrtg/index.html") %>
+	ncg_template = <%= File.join(@target["{DIRNAME}"], \
+				"templates/services/mrtg/index.html.ncg") %>
+	ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+				"configs/mrtg/index.html") %>
     }
     files!(+) {
-	source = <%= File.join(@target["{DIRNAME}"], "templates/services/mrtg/netomata.logo.160x80.jpg") %>
-	target = <%= fn = File.join(@target["{DIRNAME}"], "configs/mrtg/netomata.logo.160x80.jpg") ; FileUtils.mkdir_p(File.dirname(fn)) ; FileUtils.cp(@target["source"], fn) ; fn %>
+	source = <%= File.join(@target["{DIRNAME}"], \
+			"templates/services/mrtg/netomata.logo.160x80.jpg") %>
+	target = <%= \
+		    fn = File.join(@target["{DIRNAME}"], \
+				"configs/mrtg/netomata.logo.160x80.jpg") ; \
+		    FileUtils.mkdir_p(File.dirname(fn)) ; \
+		    FileUtils.cp(@target["source"], fn) ; \
+		    fn \
+		%>
     }
 }
 
@@ -97,7 +115,14 @@ services!mrtg {
 # to generated config directory
 services!nagios {
     files!(+) {
-	source = <%= File.join(@target["{DIRNAME}"], "templates/services/nagios/COMMON.cfg") %>
-	target = <%= fn = File.join(@target["{DIRNAME}"], "configs/nagios/COMMON.cfg") ; FileUtils.mkdir_p(File.dirname(fn)) ; FileUtils.cp(@target["source"], fn) ; fn %>
+	source = <%= File.join(@target["{DIRNAME}"], \
+			"templates/services/nagios/COMMON.cfg") %>
+	target = <%= \
+		    fn = File.join(@target["{DIRNAME}"], \
+			    "configs/nagios/COMMON.cfg") ; \
+		    FileUtils.mkdir_p(File.dirname(fn)) ; \
+		    FileUtils.cp(@target["source"], fn) ; \
+		    fn \
+		%>
     }
 }

@@ -5,6 +5,34 @@
 # disclaimers, and license terms.
 # add methods to the Dictionary class, so that pp() works
 
+# Open the IO class, and add a method to transparently handle
+# continuation lines (lines ending in "\") in input
+#
+# Kudos to
+# http://markmail.org/message/4qnc4rd7oowvlc7g
+
+class IO
+    def each_line_cont (sep = $/)
+	hold = ''
+	skip = 0
+	each_line (sep) { |x|
+	    if x =~ /\\#{sep}/ then
+		hold << x.chomp("\\#{sep}")
+		self.lineno=(self.lineno - 1)
+		skip += 1
+	    elsif hold.empty? 
+		yield(x)
+	    else
+		yield(hold+x)
+		self.lineno=(self.lineno + skip)
+		skip = 0
+		hold = ''
+	    end
+	}
+    end
+end     
+
+# Open the Dictionary class, and add a couple of methods so that pp() works
 class Dictionary
 
     # add pretty_print method to the Dictionary class, so that pp() works
@@ -229,8 +257,8 @@ class Netomata::Node < Dictionary
 
 	pstack = []
 	begin	# rescue block
-	    io.each_line { |l|
-		@@source_line[-1] += 1
+	    io.each_line_cont { |l|
+		@@source_line[-1] = io.lineno
 		l.chomp!			# eliminate trailing newline
 		l.gsub!(/#.*$/, "")		# eliminate trailing comments
 		l.gsub!(/\s*$/, "")		# eliminate trailing whitespace
@@ -369,8 +397,8 @@ class Netomata::Node < Dictionary
 	actions = Array.new
 	fields = Dictionary.new
 	begin	# rescue block
-	    io.each_line { |l|
-		@@source_line[-1] += 1
+	    io.each_line_cont { |l|
+		@@source_line[-1] = io.lineno
 		l.chomp!		# eliminate trailing newline
 		l.gsub!(/\s*#.*/, "")	# eliminate trailing comments
 		case l

@@ -49,6 +49,7 @@ def get(url)
     $got.push(url)	# push early, in case page refers to itself
 
     pathname = url.sub(/^http:\/\/[^\/]*\//,"")
+    pathname.sub!("docs", "doc")
     dirname, filename = File.split(pathname)
     FileUtils.mkdir_p(dirname)
 

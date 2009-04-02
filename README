@@ -42,7 +42,7 @@ Program and file format documentation is online at
 
 	http://www.netomata.com/docs
 
-A snapshot of this documentation is in the "docs" subdirectory
+A snapshot of this documentation is in the "doc" subdirectory
 of the release.
 
 Community
@@ -137,10 +137,15 @@ Installation
 
 Try It
 ------
-1)  cd to the "sample" directory in the distribution.
+In the sample/switches directory of the distribution, there is a fairly
+simple sample configuration that generates config files for a pair of
+Cisco router/switches providing active-active redundancy for a single-rack
+web hosting environment.
+
+1)  cd to the "sample/switches" directory in the distribution.
 
 2)  Run the following command:
-	ncg -v sample.neto
+	ncg -v switches.neto
 
 3)  Take a look at these files:
 
@@ -153,38 +158,46 @@ Try It
 	configs/switch-1.baseline
 	configs/switch-2.baseline
 
-4)  Start experimenting by reading through the "sample.neto" file, and
+4)  Start experimenting by reading through the "switches.neto" file, and
     working your way out from there.
 
-More About the Sample Scenario
+A More Complex Sample Scenario
 ------------------------------
+The sample/web_hosting directory contains a more complex set of NCG
+files and templates to generate a complete set of switch/router,
+Nagios, and MRTG configs for a small single-rack data center for
+an Internet-facing web service.  
 
-The sample scenario is a small single-rack data center for an
-Internet-facing web service.  The scenario and associated network
-design are more fully explained in pages in the Netomata wiki:
+The scenario and associated network design are more fully explained
+in pages in the Netomata wiki:
 
     http://www.netomata.com/wiki/web_hosting_example
     http://www.netomata.com/wiki/web_hosting_example_network_design
 
 Briefly, the rack contains:
 
-    2 Cisco 4948-10G switch/routers (48 ports of GigE and 2 of 10GigE),
-	configured largely as mirror images of each other
+    2 Cisco 3550-48 switch/routers (48 ports of FastE and 2 of GigE),
+	configured largely as mirror images of each other to provide 
+	active-active redundancy
     2 firewalls (make/model not yet specified) running in a redundant
 	configuration
     2 load balancers (make/model not yet specified) running in a
     	redundant configuration
-    12 (of a planned total of 24) 1U servers running Linux and Xen
+    3 (of a planned total of 24) 1U servers running Linux and Xen
 	(with several Xen virtual Linux servers running on each of
 	those real servers)
 
-Currently, the "sample" directory contains a complete Netomata
-config for the pair of Cisco 4948-10G switch/routers deployed in
-an active/active configuration.  At this point, the sample setup
-is only generating the configs for the switches; in future releases,
-we plan to extend the sample so that it is also generating configs
-for the firewalls and load balancers, as well as for DNS, SNMP
-monitoring (i.e., Nagios), and SNMP trending (i.e., MRTG).
+Currently, the "sample/web_hosting" directory contains a complete
+Netomata config that generates configs for:
+
+    * the pair of Cisco 3550-48 switch/routers 
+    * Nagios status monitoring via SNMP
+    * MRTG performance montioring via SNMP
+
+In future releases, we plan to extend this sample so that it is
+also generating configs for the firewalls, load balancers, DNS,
+Xen, and the various other devices and services involved in the
+web hosting environment that we're modelling.
 
 Support
 -------

@@ -11,6 +11,7 @@ require 'facets/dictionary'
 require 'ipaddr'
 require 'pp'
 require 'socket'
+require 'fileutils'
 begin	# rescue block; no big deal if these aren't found, since
     	# they're only used for debugging
     require 'breakpoint'

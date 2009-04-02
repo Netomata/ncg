@@ -53,17 +53,34 @@ Rake::TestTask.new("do_test") do |t|
 end
 
 desc "Generate sample configs and diff against baseline"
-task "sample" => ["sample/switches"]
+task "sample" => ["sample/switches", "sample/web_hosting"]
 
 desc "Generate sample/switches configs and diff against baseline"
-task "sample" => ["lib/netomata/version.rb"] do
+task "sample/switches" => ["lib/netomata/version.rb"] do
     sh 'rm -f sample/switches/configs/switch-1.config sample/switches/configs/switch-2.config'
     sh 'bin/ncg -v sample/switches/switches.neto'
     sh 'egrep -v "^!!" sample/switches/configs/switch-1.config | diff -u sample/switches/configs/switch-1.baseline -'
     sh 'egrep -v "^!!" sample/switches/configs/switch-2.config | diff -u sample/switches/configs/switch-2.baseline -'
-    puts "############"
-    puts "# Success! #"
-    puts "############"
+    puts "#######################"
+    puts "# sample/switches OK! #"
+    puts "#######################"
+end
+
+desc "Generate sample/web_hosting configs and diff against baseline"
+task "sample/web_hosting" => ["lib/netomata/version.rb"] do
+    sh 'rm -rf sample/web_hosting/configs'
+    sh 'bin/ncg -v sample/web_hosting/web_hosting.neto'
+    sh 'egrep -v "^!!" sample/web_hosting/configs/cisco1.config | diff -u sample/web_hosting/configs-baseline/cisco1.config -'
+    sh 'egrep -v "^!!" sample/web_hosting/configs/cisco2.config | diff -u sample/web_hosting/configs-baseline/cisco2.config -'
+    sh 'egrep -v "^##" sample/web_hosting/configs/mrtg/mrtg.cfg | diff -u sample/web_hosting/configs-baseline/mrtg/mrtg.cfg -'
+    sh "egrep -v '^\\$Id: |^ *Date: |Expires' sample/web_hosting/configs/mrtg/index.html | diff -u sample/web_hosting/configs-baseline/mrtg/index.html -"
+    sh 'cmp sample/web_hosting/configs-baseline/mrtg/netomata.logo.160x80.jpg sample/web_hosting/configs/mrtg/netomata.logo.160x80.jpg'
+    sh 'cmp sample/web_hosting/configs-baseline/nagios/COMMON.cfg sample/web_hosting/configs/nagios/COMMON.cfg'
+    sh 'cmp sample/web_hosting/configs-baseline/nagios/cisco1.cfg sample/web_hosting/configs/nagios/cisco1.cfg'
+    sh 'cmp sample/web_hosting/configs-baseline/nagios/cisco2.cfg sample/web_hosting/configs/nagios/cisco2.cfg'
+    puts "##########################"
+    puts "# sample/web_hosting OK! #"
+    puts "##########################"
 end
 
 desc "Generate docs from Netomata web site"

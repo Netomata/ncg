@@ -88,16 +88,16 @@ services!mrtg {
 	ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs/mrtg/index.html") %>
     }
     files!(+) {
-	ncg_template = <%= File.join(@target["{DIRNAME}"], "templates/services/mrtg/netomata.logo.160x80.jpg") %>
-	ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs/mrtg/netomata.logo.160x80.jpg") %>
+	source = <%= File.join(@target["{DIRNAME}"], "templates/services/mrtg/netomata.logo.160x80.jpg") %>
+	target = <%= fn = File.join(@target["{DIRNAME}"], "configs/mrtg/netomata.logo.160x80.jpg") ; FileUtils.mkdir_p(File.dirname(fn)) ; FileUtils.cp(@target["source"], fn) ; fn %>
     }
 }
 
 # this will cause templates/services/nagios/COMMON.cfg to be copied
 # to generated config directory
 services!nagios {
-    shared_files!(+) {
+    files!(+) {
 	source = <%= File.join(@target["{DIRNAME}"], "templates/services/nagios/COMMON.cfg") %>
-	target = <%= fn = File.join(@target["{DIRNAME}"], "configs/nagios/COMMON.cfg") ; FileUtils.cp(@target["source"], fn) ; fn %>
+	target = <%= fn = File.join(@target["{DIRNAME}"], "configs/nagios/COMMON.cfg") ; FileUtils.mkdir_p(File.dirname(fn)) ; FileUtils.cp(@target["source"], fn) ; fn %>
     }
 }

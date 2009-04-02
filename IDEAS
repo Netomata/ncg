@@ -1,4 +1,0 @@
-Change selector format from "!(a=foo,b=bar)!" to "!((a==foo) && (b==bar))!" ?
-	Longer, but more flexible
-
-Build net["!templates"] tree automatically from templates/... files

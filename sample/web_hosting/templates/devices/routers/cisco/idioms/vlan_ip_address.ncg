@@ -16,4 +16,3 @@
     @vli["ip"] || 
 	    ip_union(@vli["vlan_ip"], "0.0.0.#{@target["router_id"].to_i + 1}")
     %> <%= @vli["netmask"] %>
-

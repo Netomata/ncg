@@ -26,5 +26,4 @@
      vrrp_pri
 %>
  vrrp <%= vrrp_group %> authentication text plugh
-<% end %>
-
+<% end -%>

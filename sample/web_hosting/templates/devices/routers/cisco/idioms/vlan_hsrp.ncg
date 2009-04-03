@@ -14,6 +14,7 @@
     template_arg_node_key("@vli", "vlan_ip")
 
     hsrp_group = @vli["(...)!hsrp_group"]
+
     if ! (hsrp_group.nil? || hsrp_group == "0") then
 -%>
  standby <%= hsrp_group %> ip <%=
@@ -27,5 +28,6 @@
  %>
  standby <%= hsrp_group %> authentication text plugh
  standby <%= hsrp_group %> preempt
-<% end %>
-
+<% else -%>
+! no HSRP on this interface
+<% end -%>

@@ -73,7 +73,7 @@ task "sample/web_hosting" => ["lib/netomata/version.rb"] do
     sh 'egrep -v "^!!" sample/web_hosting/configs/cisco1.config | diff -u sample/web_hosting/configs-baseline/cisco1.config -'
     sh 'egrep -v "^!!" sample/web_hosting/configs/cisco2.config | diff -u sample/web_hosting/configs-baseline/cisco2.config -'
     sh 'egrep -v "^##" sample/web_hosting/configs/mrtg/mrtg.cfg | diff -u sample/web_hosting/configs-baseline/mrtg/mrtg.cfg -'
-    sh "egrep -v '^\\$Id: |^ *Date: |Expires' sample/web_hosting/configs/mrtg/index.html | diff -u sample/web_hosting/configs-baseline/mrtg/index.html -"
+    sh "egrep -v '^\\$Id: |^ *Date: |^ *User: |^ *Host: |^ *Directory: |Expires' sample/web_hosting/configs/mrtg/index.html | diff -u sample/web_hosting/configs-baseline/mrtg/index.html -"
     sh 'cmp sample/web_hosting/configs-baseline/mrtg/netomata.logo.160x80.jpg sample/web_hosting/configs/mrtg/netomata.logo.160x80.jpg'
     sh 'cmp sample/web_hosting/configs-baseline/nagios/COMMON.cfg sample/web_hosting/configs/nagios/COMMON.cfg'
     sh 'cmp sample/web_hosting/configs-baseline/nagios/cisco1.cfg sample/web_hosting/configs/nagios/cisco1.cfg'

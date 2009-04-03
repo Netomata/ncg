@@ -197,7 +197,7 @@ Netomata config that generates configs for:
 In future releases, we plan to extend this sample so that it is
 also generating configs for the firewalls, load balancers, DNS,
 Xen, and the various other devices and services involved in the
-web hosting environment that we're modelling.
+web hosting environment that we're modeling.
 
 Support
 -------

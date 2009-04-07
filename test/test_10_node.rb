@@ -194,6 +194,10 @@ class NodeTest_2_General < Test::Unit::TestCase
 	@node["!n1!n11!n113!k1131"] = "v1131"
 	@node["!n1!n11!n113!k1132"] = "v1132"
 	@node["!n1!n11!n113!k1133"] = "v1133"
+	@node["!n3!(+)"] = "first"
+	@node["!n3!(+)"] = "second"
+	@node["!n3!(+)"] = "third"
+	@node["!n3!(+)"] = "last"
     end
 
     def test_fetch
@@ -283,15 +287,15 @@ class NodeTest_2_General < Test::Unit::TestCase
     end
 
     def test_selector_plus
-	assert_equal nil, @node["!n1!(+)"]
+	assert_equal nil, @node["!n3!(+)"]
     end
 
     def test_selector_min
-	assert_equal "v_common_n1", @node["!n1!(<)"]
+	assert_equal "first", @node["!n3!(<)"]
     end
 
     def test_selector_max
-	assert_same @node["!n1!n13"], @node["!n1!(>)"]
+	assert_equal "last", @node["!n3!(>)"]
     end
 
     def test_selector_dot
@@ -312,9 +316,11 @@ class NodeTest_2_General < Test::Unit::TestCase
     end
 
     def test_selector_to_key
-	assert_equal "n1", @node.selector_to_key("(<)")
-	assert_equal "n2", @node.selector_to_key("(>)")
-	assert_equal "n3", @node.selector_to_key("(+)")
+	assert_equal "@000000001", @node["!n3"].selector_to_key("(<)")
+	assert_equal "@000000004", @node["!n3"].selector_to_key("(>)")
+	assert_equal "@000000005", @node["!n3"].selector_to_key("(+)")
+	assert_equal "!n1!n11", @node["!n1!n11"].selector_to_key("(.)")
+	assert_equal "!n1!n11!n111", @node["!n1!n11!n111"].selector_to_key("(.)")
 	assert_equal "!n1", @node["!n1!n11"].selector_to_key("(..)")
 	assert_equal "!n1!n11", @node["!n1!n11!n111"].selector_to_key("(..)")
     end
@@ -446,9 +452,9 @@ class NodeTest_4_Import_File < Test::Unit::TestCase
 		f.print("loc = top\n")
 	    end
 	    f.print <<EOF
-filename = <%= @target["{FILENAME}"] %>
-basename = <%= @target["{BASENAME}"] %>
-dirname = <%= @target["{DIRNAME}"] %>
+filename = [%= @target["{FILENAME}"] %]
+basename = [%= @target["{BASENAME}"] %]
+dirname = [%= @target["{DIRNAME}"] %]
 EOF
 
 	    if (! bottom) then
@@ -534,7 +540,7 @@ EOF
 	bt = []
 	# add something that will raise an exception in a/b/c/file.neto
 	f = File.open(File.join(@tmpdirname, "a", "b", "c", "file.neto"), "a")
-	f.puts 'fail = <%= raise "error in a/b/c" %>'
+	f.puts 'fail = [%= raise "error in a/b/c" %]'
 	f.close
 
 	n = Netomata::Node.new(nil)

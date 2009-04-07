@@ -76,8 +76,8 @@ task "sample/web_hosting" => ["lib/netomata/version.rb"] do
     sh "egrep -v '^\\$Id: |^ *Date: |^ *User: |^ *Host: |^ *Directory: |Expires' sample/web_hosting/configs/mrtg/index.html | diff -u sample/web_hosting/configs-baseline/mrtg/index.html -"
     sh 'cmp sample/web_hosting/configs-baseline/mrtg/netomata.logo.160x80.jpg sample/web_hosting/configs/mrtg/netomata.logo.160x80.jpg'
     sh 'cmp sample/web_hosting/configs-baseline/nagios/COMMON.cfg sample/web_hosting/configs/nagios/COMMON.cfg'
-    sh 'cmp sample/web_hosting/configs-baseline/nagios/cisco1.cfg sample/web_hosting/configs/nagios/cisco1.cfg'
-    sh 'cmp sample/web_hosting/configs-baseline/nagios/cisco2.cfg sample/web_hosting/configs/nagios/cisco2.cfg'
+    sh 'diff -u sample/web_hosting/configs-baseline/nagios/cisco1.cfg sample/web_hosting/configs/nagios/cisco1.cfg'
+    sh 'diff -u sample/web_hosting/configs-baseline/nagios/cisco2.cfg sample/web_hosting/configs/nagios/cisco2.cfg'
     puts "##########################"
     puts "# sample/web_hosting OK! #"
     puts "##########################"
@@ -122,12 +122,21 @@ task "tag_demo" => ["test", "sample", "check_commit_update"] do
 end
 
 desc "Accept the current generated sample configs as the new baseline"
-task "sample_accept" => ["sample/configs/switch-1.config",
-			    "sample/configs/switch-2.config"] do
-    sh "cp -p sample/configs/switch-1.config sample/configs/switch-1.baseline"
-    sh "sed -e '/^!!/d' -i '' sample/configs/switch-1.baseline"
-    sh "cp -p sample/configs/switch-2.config sample/configs/switch-2.baseline"
-    sh "sed -e '/^!!/d' -i '' sample/configs/switch-2.baseline"
+task "sample_accept" do
+    # fix sample/switches baselines
+    sh "cp -p sample/switches/configs/switch-1.config sample/switches/configs/switch-1.baseline"
+    sh "sed -e '/^!!/d' -i '' sample/switches/configs/switch-1.baseline"
+    sh "cp -p sample/switches/configs/switch-2.config sample/switches/configs/switch-2.baseline"
+    sh "sed -e '/^!!/d' -i '' sample/switches/configs/switch-2.baseline"
+    # fix sample/web_hosting baselines
+    sh 'egrep -v "^!!" sample/web_hosting/configs/cisco1.config > sample/web_hosting/configs-baseline/cisco1.config'
+    sh 'egrep -v "^!!" sample/web_hosting/configs/cisco2.config > sample/web_hosting/configs-baseline/cisco2.config'
+    sh 'egrep -v "^##" sample/web_hosting/configs/mrtg/mrtg.cfg > sample/web_hosting/configs-baseline/mrtg/mrtg.cfg'
+    sh "egrep -v '^\\$Id: |^ *Date: |^ *User: |^ *Host: |^ *Directory: |Expires' sample/web_hosting/configs/mrtg/index.html > sample/web_hosting/configs-baseline/mrtg/index.html"
+    sh 'cp sample/web_hosting/configs/mrtg/netomata.logo.160x80.jpg sample/web_hosting/configs-baseline/mrtg/netomata.logo.160x80.jpg'
+    sh 'cp sample/web_hosting/configs/nagios/COMMON.cfg sample/web_hosting/configs-baseline/nagios/COMMON.cfg'
+    sh 'cp sample/web_hosting/configs/nagios/cisco1.cfg sample/web_hosting/configs-baseline/nagios/cisco1.cfg'
+    sh 'cp sample/web_hosting/configs/nagios/cisco2.cfg sample/web_hosting/configs-baseline/nagios/cisco2.cfg'
 end
 
 dist_ignore = File.new("dev/ignore.dist").readlines
@@ -243,6 +252,12 @@ task "svn_ignore" do
 	    sh 'svn ps svn:ignore -F .svn.ignore .'
 	}
     }
+end
+
+desc "Update svn:keywords property"
+task "svn_keywords" do
+    sh 'svn ps svn:keywords Id -R .'
+    sh 'svn pd svn:keywords dev/setup-3.4.1-LGPL\ License\ Interpretation.pdf sample/web_hosting/configs-baseline/mrtg/netomata.logo.160x80.jpg sample/web_hosting/templates/services/mrtg/netomata.logo.160x80.jpg skel/*'
 end
 
 desc "Verify we're working in a branch"

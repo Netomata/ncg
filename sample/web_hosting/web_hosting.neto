@@ -1,4 +1,4 @@
-# $Id: sample.neto 255 2009-02-11 00:53:34Z brent $
+# $Id$
 # Copyright (c) 2008 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/license_v1 for important notices,
@@ -6,13 +6,13 @@
 
 base_ip		= 10.5.0.0
 admin_ip	= 172.24.1.0
-syslog_ip	= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.14") %>
+syslog_ip	= [%= ip_union(@target["(...)!admin_ip"], "0.0.0.14") %]
 syslog_facility = local5
-snmp_ip		= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.15") %>
+snmp_ip		= [%= ip_union(@target["(...)!admin_ip"], "0.0.0.15") %]
 snmp_community	= public
 domain		= ht.netomata.com
-dns_ip          = <%= ip_union(@target["(...)!admin_ip"], "0.0.0.11") %>
-ntp_ip          = <%= ip_union(@target["(...)!admin_ip"], "0.0.0.10") %>
+dns_ip          = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.11") %]
+ntp_ip          = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.10") %]
 
 table vlans.neto_table
 
@@ -23,15 +23,15 @@ table vlans.neto_table
     template_dir templates
 }
 
-!templates!devices!routers!cisco {
+!templates!devices!routers!_cisco {
     # add to Cisco router device template
     model	= 3550-48
-    default_route = <%= ip_union(@target["(...)!admin_ip"], "0.0.0.1") %>
-    domain	= <%= "mgmt." + @target["(...)!domain"] %>
+    default_route = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.1") %]
+    domain	= [%= "mgmt." + @target["(...)!domain"] %]
     hsrp_group	= 1
 }
 
-devices!(+) < !templates!devices!routers!cisco {
+devices!(+) < !templates!devices!routers!_cisco {
     name	= cisco1
     management_ip = 172.24.1.21
     # router_id is used for determining VRRP priority, interface IP address,
@@ -40,19 +40,19 @@ devices!(+) < !templates!devices!routers!cisco {
     # A lower number means higher priority.
     router_id	= 1
     # can't put this in the template, because "name" isn't defined there
-    ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+    ncg_output  = [%= File.join(@target["{DIRNAME}"], \
     			"configs", \
-			(@target["name"] + ".config")) %>
+			(@target["name"] + ".config")) %]
     services!nagios < !templates!services!nagios!cisco {
         # need to override the inherited template name with the device name
-        name = <%= @target["(..)!(...)!name"] %>
-        ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+        name = [%= @target["(..)!(...)!name"] %]
+        ncg_output  = [%= File.join(@target["{DIRNAME}"], \
 				"configs/nagios/", \
-				(@target["(...)!name"] + ".cfg")) %>
+				(@target["(...)!name"] + ".cfg")) %]
     }
 }
 
-devices!(+) < !templates!devices!routers!cisco {
+devices!(+) < !templates!devices!routers!_cisco {
     name	= cisco2
     management_ip = 172.24.1.22
     # router_id is used for determining VRRP priority, interface IP address,
@@ -61,53 +61,64 @@ devices!(+) < !templates!devices!routers!cisco {
     # A lower number means higher priority.
     router_id	= 2
     # can't put this in the template, because "name" isn't defined there
-    ncg_output  = <%= File.join(@target["{DIRNAME}"], \
-    			"configs", (@target["name"] + ".config")) %>
+    ncg_output  = [%= File.join(@target["{DIRNAME}"], \
+    			"configs", (@target["name"] + ".config")) %]
     services!nagios < !templates!services!nagios!cisco {
         # need to override the inherited template name with the device name
-        name = <%= @target["(..)!(...)!name"] %>
-        ncg_output  = <%= File.join(@target["{DIRNAME}"], \
+        name = [%= @target["(..)!(...)!name"] %]
+        ncg_output  = [%= File.join(@target["{DIRNAME}"], \
 				"configs/nagios/", \
-				(@target["(...)!name"] + ".cfg")) %>
+				(@target["(...)!name"] + ".cfg")) %]
     }
 }
 
 table interfaces.neto_table
 
-devices!(name=cisco1)!vlan-interfaces < !vlans {
-    (id=3) {
-	ip = 172.24.1.21
-    }
+
+devices!(name=cisco1)!interfaces {
+    table vlan-interfaces.neto_table
 }
-devices!(name=cisco2)!vlan-interfaces < !vlans {
-    (id=3) {
-	ip = 172.24.1.22
-    }
+
+devices!(name=cisco2)!interfaces {
+    table vlan-interfaces.neto_table
+}
+
+# On Vlan3 interfaces, override IP address assignments and disable HSRP
+devices!(name=cisco1)!interfaces!(vlan_id=3) {
+    ip = 172.24.1.21
+    netmask = 255.255.255.0
+    hsrp_group = 0
+}
+
+devices!(name=cisco2)!interfaces!(vlan_id=3) {
+    ip = 172.24.1.22
+    netmask = 255.255.255.0
+    hsrp_group = 0
 }
 
 services!mrtg {
     config {
-	ncg_template = <%= File.join(@target["{DIRNAME}"], \
-				"templates/services/mrtg/mrtg.cfg.ncg") %>
-	ncg_output  = <%= File.join(@target["{DIRNAME}"], \
-				"configs/mrtg/mrtg.cfg") %>
+	ncg_template = [%= File.join(@target["{DIRNAME}"], \
+				"templates/services/mrtg/mrtg.cfg.ncg") %]
+	ncg_output  = [%= File.join(@target["{DIRNAME}"], \
+				"configs/mrtg/mrtg.cfg") %]
     }
     index {
-	ncg_template = <%= File.join(@target["{DIRNAME}"], \
-				"templates/services/mrtg/index.html.ncg") %>
-	ncg_output  = <%= File.join(@target["{DIRNAME}"], \
-				"configs/mrtg/index.html") %>
+	ncg_template = [%= File.join(@target["{DIRNAME}"], \
+				"templates/services/mrtg/index.html.ncg") %]
+	ncg_output  = [%= File.join(@target["{DIRNAME}"], \
+				"configs/mrtg/index.html") %]
     }
     files!(+) {
-	source = <%= File.join(@target["{DIRNAME}"], \
-			"templates/services/mrtg/netomata.logo.160x80.jpg") %>
-	target = <%= \
+	source = [%= File.join(@target["{DIRNAME}"], \
+			"templates/services/mrtg/netomata.logo.160x80.jpg") %]
+	target = [%= \
 		    fn = File.join(@target["{DIRNAME}"], \
 				"configs/mrtg/netomata.logo.160x80.jpg") ; \
 		    FileUtils.mkdir_p(File.dirname(fn)) ; \
 		    FileUtils.cp(@target["source"], fn) ; \
 		    fn \
-		%>
+		%]
     }
 }
 
@@ -115,14 +126,14 @@ services!mrtg {
 # to generated config directory
 services!nagios {
     files!(+) {
-	source = <%= File.join(@target["{DIRNAME}"], \
-			"templates/services/nagios/COMMON.cfg") %>
-	target = <%= \
+	source = [%= File.join(@target["{DIRNAME}"], \
+			"templates/services/nagios/COMMON.cfg") %]
+	target = [%= \
 		    fn = File.join(@target["{DIRNAME}"], \
 			    "configs/nagios/COMMON.cfg") ; \
 		    FileUtils.mkdir_p(File.dirname(fn)) ; \
 		    FileUtils.cp(@target["source"], fn) ; \
 		    fn \
-		%>
+		%]
     }
 }

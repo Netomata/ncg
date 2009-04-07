@@ -1,3 +1,6 @@
+Update .neto docs to explain numbered keys ("@000000001", ...), and clarify
+that "(+)", "(<)", and "(>)" only apply to numbered keys.
+
 Have ht.neto mkdir_p necessary config subdirectories
 
 Define/use "management_fqdn"?
@@ -10,3 +13,86 @@ Reconcile difference in meaning between !devices!*!
 	interface["name"] => interface name, something like "FastEthernet0/1"
 	vlan-interface["name"] => VLAN name, something like "Management"
     Then clean up everywhere that VLAN name is constructed as "Vlan#{vli[id]}"
+
+===============================================================================
+
+Modify import_template_dir to react to .neto files as well as .ncg files and
+subdirectories?
+
+-------------------------------------------------------------------------------
+
+templates
+    devices
+	routers
+	    _cisco
+		interfaces
+		    null0
+		    management0_0
+		    _p_host
+		    _p_ipmi
+		    _p_mgmt
+		    _p_trunk
+		    _p_unused
+		    _v_admin
+		    _v_env
+		    _v_switch
+
+devices!(+) < !templates!devices!routers!_cisco {
+    ncg_template = ...
+    interfaces {
+	null0 {
+	    # fill this with a "null0.neto" file next to the "null0.ncg" file?
+	}
+	management0_0 {
+	    # fill this with a ".neto" file next to the ".ncg" file?
+	}
+	_p_host {
+	    ncg_template =  ...
+	}
+	_p_ipmi {
+	    ncg_template =  ...
+	}
+	...
+	_v_admin {
+	    ncg_template =  ...
+	}
+	_v_env {
+	    ncg_template =  ...
+	}
+    }
+}
+
+# Via interfaces.neto_table file:
+!devices!(name=cisco1)!interfaces!(+) < (...)!interfaces!_p_%{type} {
+    name = FastEthernet0/1
+    type = host
+    ...
+}
+
+# Via vlans.neto_table file, with different header:
+!devices!(name=cisco1)!interfaces!(+) < (...)!interfaces!_v_%{type} {
+    name = Vlan1
+    type = admin
+    hsrp_group = 1
+    ...
+}
+
+--------
+
+<% @target["interfaces"].reject { |k,v| v["name"].match(/^_/) }.each { |k,v| -%>
+<%= ... %>
+<% } -%>
+
+<% @target["interfaces"].select { |k,v| v.is_instance? }.each { |k,v| -%>
+<%= ... %>
+<% } -%>
+
+<% @target["interfaces"].each_instance { |k,v| -%>
+<%= ... %>
+<% } -%>
+
+# What if we make Netomata::Node#each skip nodes where key begins with "_"?
+# And add a corresponding "each_every" method?  Or each_skipped and each_all?
+# Problem is, that might break internals in libraries, for things like copying
+# trees.  Probably safer to make "each_instance" and "each_template" pair.
+# Code would be:

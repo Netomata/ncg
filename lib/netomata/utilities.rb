@@ -89,11 +89,15 @@ module Netomata::Utilities::ClassMethods
     # Returns the bitwise OR of two IP addresses, to merge them.  For example:
     # 	ip_union("10.5.0.0", "0.0.16.34") => "10.5.16.34"
     # 	ip_union("10.5.1.0", "0.0.16.34") => "10.5.17.34"
-    def ip_union(s1, s2)
-	ip1 = IPAddr.new(s1)
-	ip2 = IPAddr.new(s2)
-	ipr = ip1 | ip2
-	return ipr.to_s
+    def ip_union(s1, s2, *rest)
+	if (rest.size > 0) then
+	    return ip_union(ip_union(s1, s2), rest[0], *rest[1..-1])
+	else
+	    ip1 = IPAddr.new(s1)
+	    ip2 = IPAddr.new(s2)
+	    ipr = ip1 | ip2
+	    return ipr.to_s
+	end
     end
 
     # :call-seq:

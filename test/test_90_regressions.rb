@@ -1,4 +1,4 @@
-# $Id: test_utilities.rb 260 2009-03-04 21:38:53Z brent $
+# $Id$
 # Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/docs/licenses/ncg for important notices,

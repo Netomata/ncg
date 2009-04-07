@@ -158,26 +158,17 @@ define service{
 	}
 
 # Monitor status of each interface individually
-<% @target["(...)!interfaces"].each { |key,interface|
-if (interface["active"] == "yes") then -%>
+<%
+@target["(...)!interfaces"].each { |key,interface|
+    next if (key[0..0] == "_")	# skip templates
+    if (interface["active"] == "yes") then -%>
 define service{
 	use			generic-service	; Inherit values from a template
 	host_name		<%= @target["(...)!name"] %>
-	service_description	Interface <%= interface["name"] %> [<%= interface["target"] %>]
+	service_description	Interface <%= interface["name"] %>
+	display_name		Interface <%= interface["name"] %> [%<= interface["description"] %>]
 	check_command		check_ifoperstatus!-C <%= interface["(...)!snmp_community"] %> -v 2 -I -d <%= interface["name"] %>
 	}
 
-<% end
-} -%>
-
-<% @target["!vlans"].each { |key,vlan|
-if (vlan["active"] == "yes") then -%>
-define service{
-	use			generic-service	; Inherit values from a template
-	host_name		<%= @target["(...)!name"] %>
-	service_description	Interface Vlan<%= vlan["id"] %> [<%= vlan["name"] %>]
-	check_command		check_ifoperstatus!-C <%= vlan["(...)!snmp_community"] %> -v 2 -I -d Vlan<%= vlan["id"] %>
-	}
-
-<% end
+<%  end
 } -%>

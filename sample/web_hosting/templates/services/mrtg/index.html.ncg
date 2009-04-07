@@ -1,14 +1,14 @@
+<%
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+-%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<!--
-$Id: header.html 260 2009-03-04 21:38:53Z brent $
-Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
-Please review accompanying 'LICENSE' file or
-http://www.netomata.com/docs/licenses/ncg for important notices,
-disclaimers, and license terms.
--->
 <HTML>
 <HEAD>
-    <TITLE>MRTG Index Page</TITLE>
+    <TITLE>MRTG: <%= @target["(...)!domain"] %></TITLE>
 <%= emit_header("         ", "    <!--", "      -->") -%>
     <meta http-equiv="content-type" content="text/html; charset=iso-8859-15" >
     <META HTTP-EQUIV="Refresh" CONTENT="300" >
@@ -23,24 +23,81 @@ disclaimers, and license terms.
 
 <BODY bgcolor="#ffffff" text="#000000" link="#000000" vlink="#000000" alink="#000000">
 
-<H1>MRTG Index Page</H1>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=10 WIDTH=1040>
+  <TR>
+    <TD VALIGN="MIDDLE">
+      <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
+        <TR>
+          <TD WIDTH=63><A
+            HREF="http://oss.oetiker.ch/mrtg/"><IMG
+            BORDER=0 SRC="mrtg-l.png" WIDTH=63 HEIGHT=25 ALT="MRTG"></A>
+          </TD>
+          <TD WIDTH=25><A
+            HREF="http://oss.oetiker.ch/mrtg/"><IMG
+            BORDER=0 SRC="mrtg-m.png" WIDTH=25 HEIGHT=25 ALT=""></A>
+          </TD>
+          <TD WIDTH=388><A
+            HREF="http://oss.oetiker.ch/mrtg/"><IMG
+            BORDER=0 SRC="mrtg-r.png" WIDTH=388 HEIGHT=25
+            ALT="Multi Router Traffic Grapher"></A>
+          </TD>
+        </TR>
+      </TABLE>
+      <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
+        <TR VALIGN=top>
+          <TD WIDTH=88 ALIGN=RIGHT>
+            <FONT FACE="Arial,Helvetica" SIZE=2>
+            <!-- MRTG version -->
+            </FONT>
+          </TD>
+          <TD WIDTH=388 ALIGN=RIGHT>
+            <FONT FACE="Arial,Helvetica" SIZE=2>
+              <A HREF="http://tobi.oetiker.ch/">Tobias Oetiker</A>
+              <A HREF="mailto:tobi+mrtglink@oetiker.ch">&lt;tobi@oetiker.ch&gt;</A>
+              and&nbsp;<A HREF="http://www.bungi.com/">Dave&nbsp;Rand</A>&nbsp;<A
+              HREF="mailto:dlr@bungi.com">&lt;dlr@bungi.com&gt;</A>
+            </FONT>
+          </TD>
+        </TR>
+      </TABLE>
+    </TD>
+    <TD>
+      &nbsp;
+    </TD>
+    <TD ALIGN="RIGHT">
+      <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
+        <TR>
+          <TD ALIGN="CENTER">
+            <FONT FACE="Arial,Helvetica" SIZE=5>
+              Configuration by
+            </FONT>
+          </TD>
+        </TR>
+        <TR>
+          <TD ALIGN="CENTER">
+            <A HREF="http://www.netomata.com/products/ncg"><IMG
+            SRC="netomata.logo.160x80.jpg" ALT="Netomata logo"></A>
+            </TD>
+        </TR>
+      </TABLE>
+    </TD>
+  </TR>
+</TABLE>
+
+<H1>MRTG: <%= @target["(...)!domain"] %></H1>
 
 <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=10>
 <%
     # build a list of all interface names across all devices
     interfaces = []
-    vlan_interfaces = []
     @target["!devices"].each { |devkey,dev|
 	dev["interfaces"].each { |intkey,int|
+	    next if (intkey[0..0] == "_")	# skip templates
 	    interfaces << int["name"]
-	}
-	dev["vlan-interfaces"].each { |vlikey,vli|
-	    vlan_interfaces << vli["id"]
 	}
     }
     # then remove duplicate interface names
     interfaces.uniq!
-    vlan_interfaces.uniq!
 -%>
 <!--
   <TR>
@@ -58,6 +115,21 @@ disclaimers, and license terms.
 -->
 <%
     interfaces.each { |iname|
+    	# By default, skip rows (interfaces) where the interface isn't
+	# active on any device.  Comment out this block of code if you
+	# _don't_ want to skip those undefined/inactive interfaces, and
+	# would rather have a "Interface not defined" or "Interface not active"
+	# message printed for each.
+	row_blank = true
+	@target["!devices"].each { |devkey,dev|
+	    int = dev["interfaces!(name=#{iname})"] 
+	    next if int.nil?
+	    next if (int["active"] != "yes")
+	    row_blank = false
+	}
+	next if (row_blank);
+	# Comment out through here, to include all undefined/inactive
+	# interfaces.
 -%>
   <TR>
 <!--<TD><%= iname %></TD> -->
@@ -80,49 +152,7 @@ disclaimers, and license terms.
 	      mrtg_key.gsub!(/[^A-Za-z0-9]/, "_")
 	      mrtg_key.downcase!
 -%>
-      <DIV><B><%= "#{int["name"]} @ #{dev["name"]} -- #{int["target"]} [type #{int["type"]}]" %></B></DIV>
-      <DIV>
-        <A HREF="<%= mrtg_key %>.html">
-	  <IMG BORDER=1 ALT="<%= mrtg_key %> Traffic Graph" SRC="<%= mrtg_key %>-day.png">
-	</A><BR>
-        <SMALL><!--#flastmod file="<%= mrtg_key %>.html" --></SMALL>
-      </DIV>
-
-<%
-	    end
--%>
-    </TD>
-<%
-	}
--%>
-  </TR>
-<%  } -%>
-<%
-    vlan_interfaces.each { |vid|
-	vname = "Vlan#{vid}"
--%>
-  <TR>
-<!--<TD><%= vname %></TD> -->
-<%
-        @target["!devices"].each { |devkey,dev|
--%>
-    <TD>
-<%
-	    int = dev["vlan-interfaces!(id=#{vid})"] 
-	    if int.nil? then
--%>
-      No such interface <%= vname %> on device <%= dev["name"] %>
-<%
-	    elsif (int["active"] != "yes") then
--%>
-      Interface <%= vname %> not active on device <%= dev["name"] %>
-<%
-	    else
-	      mrtg_key = "#{dev["name"]}_#{vname}"
-	      mrtg_key.gsub!(/[^A-Za-z0-9]/, "_")
-	      mrtg_key.downcase!
--%>
-      <DIV><B><%= "#{vname} @ #{dev["name"]} -- #{int["name"]} [type #{int["type"]}]" %></B></DIV>
+      <DIV><B><%= "#{int["name"]} @ #{dev["name"]} -- #{int["description"]}" %></B></DIV>
       <DIV>
         <A HREF="<%= mrtg_key %>.html">
 	  <IMG BORDER=1 ALT="<%= mrtg_key %> Traffic Graph" SRC="<%= mrtg_key %>-day.png">
@@ -140,60 +170,5 @@ disclaimers, and license terms.
   </TR>
 <%  } -%>
 </TABLE>
-
-<BR>
-<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
-  <TR>
-  <TD>
-  <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
-    <TR>
-      <TD WIDTH=63><A
-      HREF="http://oss.oetiker.ch/mrtg/"><IMG
-      BORDER=0 SRC="mrtg-l.png" WIDTH=63 HEIGHT=25 ALT="MRTG"></A></TD>
-      <TD WIDTH=25><A
-      HREF="http://oss.oetiker.ch/mrtg/"><IMG
-      BORDER=0 SRC="mrtg-m.png" WIDTH=25 HEIGHT=25 ALT=""></A></TD>
-      <TD WIDTH=388><A
-      HREF="http://oss.oetiker.ch/mrtg/"><IMG
-      BORDER=0 SRC="mrtg-r.png" WIDTH=388 HEIGHT=25
-      ALT="Multi Router Traffic Grapher"></A></TD>
-    </TR>
-  </TABLE>
-  <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
-    <TR VALIGN=top>
-    <TD WIDTH=88 ALIGN=RIGHT>
-    <FONT FACE="Arial,Helvetica" SIZE=2>
-    </FONT></TD>
-    <TD WIDTH=388 ALIGN=RIGHT><FONT FACE="Arial,Helvetica" SIZE=2>
-    <A HREF="http://tobi.oetiker.ch/">Tobias Oetiker</A>
-    <A HREF="mailto:tobi+mrtglink@oetiker.ch">&lt;tobi@oetiker.ch&gt;</A>
-    and&nbsp;<A HREF="http://www.bungi.com/">Dave&nbsp;Rand</A>&nbsp;<A HREF="mailto:dlr@bungi.com">&lt;dlr@bungi.com&gt;</A></FONT>
-    </TD>
-  </TR>
-  </TABLE>
-  </TD>
-  </TR>
-  <TR>
-  <TD>
-  &nbsp;
-  </TD>
-  </TR>
-  <TR>
-  <TD>
-    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
-    <TR>
-    <TD><IMG SRC="netomata.logo.160x80.jpg" ALT="Netomata logo"></TD>
-    <TD VALIGN="MIDDLE">
-      <FONT FACE="Arial,Helvetica" SIZE=2>
-	MRTG config generated by<br>
-	<a href="http://www.netomata.com/products/ncg">Netomata
-	Config Generator (NCG)</a>
-      </FONT>
-    </TD>
-    </TR>
-    </TABLE>
-  </TD>
-  </TR>
-  </TABLE>
-
+</BODY>
 </HTML>

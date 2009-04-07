@@ -1,4 +1,4 @@
-# $Id: vlans.neto_table 247 2009-02-07 00:16:11Z brent $
+# $Id$
 # Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/docs/licenses/ncg for important notices,
@@ -10,7 +10,7 @@
 @ !vlans!(+)!id = %{id}
 @ !vlans!(id=%{id})!active = %{active}
 @ !vlans!(id=%{id})!type = %{type}
-@ !vlans!(id=%{id})!vlan_ip = <%= ip_union(@target["(...)!base_ip"], "0.0.%{id}.0") %>
+@ !vlans!(id=%{id})!vlan_ip = [%= ip_union(@target["(...)!base_ip"], "0.0.%{id}.0") %]
 @ !vlans!(id=%{id})!netmask = %{netmask}
 @ !vlans!(id=%{id})!name = %{name}
 @ !vlans!(id=%{id})!description = %{description}

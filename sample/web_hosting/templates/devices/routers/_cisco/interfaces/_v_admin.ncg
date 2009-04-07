@@ -1,0 +1,18 @@
+<%
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+
+    template_arg("@interface")
+    template_arg_node_key("@interface", "name")
+    template_arg_node_key("@interface", "description")
+    template_arg_node_key("@interface", "ip")
+-%>
+interface <%= @interface["name"] %>
+ <%= apply_idiom("shutdown", @interface, {"@active" => @interface["active"]}) %>
+ description <%= @interface["description"] %>
+ ip address <%= @interface["ip"] %> <%= @interface["netmask"] %>
+<%= apply_idiom("vlan_hsrp", @interface, {"@interface" => @interface}) %>
+!

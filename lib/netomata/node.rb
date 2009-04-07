@@ -260,7 +260,8 @@ class Netomata::Node < Dictionary
 	    io.each_line_cont { |l|
 		@@source_line[-1] = io.lineno
 		l.chomp!			# eliminate trailing newline
-		l.gsub!(/#.*$/, "")		# eliminate trailing comments
+		l.gsub!(/#.*$/, "") unless 	# eliminate trailing comments,
+		    l.match(/\[%.*#.*%\]/)	#   but only if not in [% ... %]
 		l.gsub!(/\s*$/, "")		# eliminate trailing whitespace
 		l.gsub!(/^\s*/, "")		# eliminate leading whitespace
 		case l
@@ -293,17 +294,17 @@ class Netomata::Node < Dictionary
 		    pstack.push(kb)
 		when /^([^\s]*)\s+=\s+(.*)$/
 		    # make = cisco
-		    # admin_ip = <%= @target["(...)!base_ip"] + "|0.0.16.0" %>
+		    # admin_ip = [%= @target["(...)!base_ip"] + "|0.0.16.0" %]
 		    kl = $1
 		    kr = $2
-		    if (kr.match(/<%.*%>/)) then
+		    if (kr.match(/\[%.*%\]/)) then
 			# kr contains an ERB template
 			pn = self[buildkey(pstack.last)]
 			if pn.nil? then
 			    pn = self 
 			end
 			kr = Netomata::Template::FromString.new(
-				kr,
+				kr.gsub(/\[%(.*)%\]/, '<%\1%>'),
 				"#{@@source_file[-1]}:#{@@source_line[-1]}"
 			     ).result_from_vars({
 				"@target" => pn,
@@ -381,7 +382,7 @@ class Netomata::Node < Dictionary
 	#
 	def var_sub(template,fields,data)	# :nodoc:
 	    k = buildkey(template)
-	    while (m = k.match(/%\{([^)]*)\}/)) do
+	    while (m = k.match(/%\{([^}]*)\}/)) do
 		if ! fields.has_key?(m[1]) then
 		    raise "Unknown column name '#{m[1]}'"
 		end
@@ -399,8 +400,9 @@ class Netomata::Node < Dictionary
 	begin	# rescue block
 	    io.each_line_cont { |l|
 		@@source_line[-1] = io.lineno
-		l.chomp!		# eliminate trailing newline
-		l.gsub!(/\s*#.*/, "")	# eliminate trailing comments
+		l.chomp!			# eliminate trailing newline
+		l.gsub!(/\s*#.*/, "") unless	# eliminate trailing comments,
+			l.match(/\[%.*#.*%\]/)	#   but only if not in [% ... %]
 		case l
 		when /^$/ then
 		    # blank line
@@ -447,7 +449,8 @@ class Netomata::Node < Dictionary
 			    k = var_sub(f,fields,d)
 			    r = var_sub(a,fields,d)
 			    r = Netomata::Template::FromString.new(
-				    var_sub(a,fields,d),
+				    var_sub(a,fields,d).
+				    	gsub(/\[%(.*)%\]/, '<%\1%>'),
 				    "#{@@source_file[-1]}:#{@@source_line[-1]}"
 				 ).result_from_vars({
 				    "@target" => self,
@@ -1275,11 +1278,11 @@ class Netomata::Node < Dictionary
 	else
 	    case m[1]
 	    when ">"
-		return self.keys.max
+		return self.keys.select {|k| k[0..0] == "@"}.max
 	    when "<"
-		return self.keys.min
+		return self.keys.select {|k| k[0..0] == "@"}.min
 	    when "+"
-	    	r = self.keys.max
+	    	r = self.keys.select {|k| k[0..0] == "@" }.max
 		if (r.nil?) then
 		    return "@000000001"
 		else

@@ -61,6 +61,10 @@ class UtilitiesTest < Test::Unit::TestCase
     def test_ip_union
 	assert_equal "10.5.16.34", @n.ip_union("10.5.0.0", "0.0.16.34")
 	assert_equal "10.5.17.34", @n.ip_union("10.5.1.0", "0.0.16.34")
+	assert_equal "10.5.17.34",
+	    @n.ip_union("10.5.0.0", "0.0.17.0", "0.0.0.34")
+	assert_equal "10.5.17.34",
+	    @n.ip_union("10.0.0.0", "0.5.0.0", "0.0.17.0", "0.0.0.34")
     end
 
     def test_relative_filename

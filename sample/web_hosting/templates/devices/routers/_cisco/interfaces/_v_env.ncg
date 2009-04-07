@@ -1,0 +1,38 @@
+<%=
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+
+    template_arg("@interface")
+    template_arg_node_key("@interface", "vlan_id")
+    template_arg_node_key("@interface", "vlan_ip")
+
+    vlan_id = @interface["vlan_id"]
+    vlan_ip = @interface["vlan_ip"]
+
+    # An 'env' VLAN is just like an 'admin' VLAN, but with some extra ACLs
+    # applied to prevent traffic from going from one 'env' VLAN to another 
+    #
+    # So, start by generating everything that we would for an 'admin' VLAN.
+    apply_by_node(@interface["(...)!interfaces!_v_admin"], {"@interface" => @interface})
+%>
+ip access-list extended MATCH_SUBNET_<%= vlan_id %>
+  permit ip <%= vlan_ip %> 0.0.0.255 any
+!
+! add this VLAN to the "MATCH_SUBNET_ALL_ENV" access-list, which should already
+! have other env subnets on it as well.
+ip access-list extended MATCH_SUBNET_ALL_ENV
+  permit ip <%= vlan_ip %> 0.0.0.255 any
+!
+vlan access-map VLAN<%= vlan_id %>_MAP 10
+  match ip address MATCH_SUBNET_<%= vlan_id %>
+  action forward
+vlan access-map VLAN<%= vlan_id %>_MAP 20
+  match ip address MATCH_SUBNET_ALL_ENV
+  action drop
+vlan access-map VLAN<%= vlan_id %>_MAP 30
+  match ip address MATCH_ANY
+  action forward
+vlan filter VLAN<%= vlan_id %>_MAP vlan-list <%= vlan_id %>

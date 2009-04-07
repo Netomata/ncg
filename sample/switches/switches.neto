@@ -5,10 +5,10 @@
 # disclaimers, and license terms.
 
 base_ip		= 10.5.0.0
-admin_ip	= <%= ip_union(@target["(...)!base_ip"], "0.0.16.0") %>
-syslog_ip	= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.26") %>
+admin_ip	= [%= ip_union(@target["(...)!base_ip"], "0.0.16.0") %]
+syslog_ip	= [%= ip_union(@target["(...)!admin_ip"], "0.0.0.26") %]
 syslog_facility = local5
-snmp_ip		= <%= ip_union(@target["(...)!admin_ip"], "0.0.0.27") %>
+snmp_ip		= [%= ip_union(@target["(...)!admin_ip"], "0.0.0.27") %]
 snmp_community	= public
 domain		= example.com
 
@@ -21,8 +21,8 @@ table vlans.neto_table
 !templates!devices!routers!cisco {
     # add to Cisco router device template
     model	= 4948-10G
-    default_route = <%= ip_union(@target["(...)!base_ip"], "0.0.4.9") %>
-    domain	= <%= "mgmt." + @target["(...)!domain"] %>
+    default_route = [%= ip_union(@target["(...)!base_ip"], "0.0.4.9") %]
+    domain	= [%= "mgmt." + @target["(...)!domain"] %]
     vrrp_group	= 1
 }
 
@@ -34,7 +34,7 @@ devices!(+) < !templates!devices!routers!cisco {
     # A lower number means higher priority.
     router_id	= 1
     # can't put this in the template, because "name" isn't defined there
-    ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %>
+    ncg_output  = [%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %]
 }
 
 devices!(+) < !templates!devices!routers!cisco {
@@ -45,7 +45,7 @@ devices!(+) < !templates!devices!routers!cisco {
     # A lower number means higher priority.
     router_id	= 2
     # can't put this in the template, because "name" isn't defined there
-    ncg_output  = <%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %>
+    ncg_output  = [%= File.join(@target["{DIRNAME}"], "configs", (@target["name"] + ".config")) %]
 }
 
 table interfaces.neto_table

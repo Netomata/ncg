@@ -288,6 +288,9 @@ end
 
 desc "Merge changes from current branch into trunk"
 task "merge_to_trunk" => ["check_commit_update", "verify_in_branch"] do
+    sh "svn pd -R svn:mergeinfo ."
+    sh "svn commit -m 'Deleted svn:mergeinfo'"
+    sh "svn update"
     sh "svn switch #{$svn_trunk_url}"
     sh "svn update"
     sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"

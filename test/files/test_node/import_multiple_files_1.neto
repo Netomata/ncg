@@ -1,0 +1,3 @@
+# nodes should appear in tree in order [a, b, c, d]
+
+include import_multiple_files/*.neto

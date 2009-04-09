@@ -1,14 +1,3 @@
-# !base_ip is set in the test framework 'setup' method, before this file
-# is imported.
-#
-@ !vlans!(+)!id = %{id}
-@ !vlans!(id=%{id})!active = %{active}
-@ !vlans!(id=%{id})!type = %{type}
-@ !vlans!(id=%{id})!vlan_ip = [%= ip_union(@target["(...)!base_ip"], "0.0.%{id}.0") %]
-@ !vlans!(id=%{id})!netmask = %{netmask}
-@ !vlans!(id=%{id})!name = %{name}
-@ !vlans!(id=%{id})!description = %{description}
-#
 % id	active	type	netmask		name		description
 # --	------	----	-------		----		-----------
 2	yes	switch	255.255.255.0	ISP-FW		ISP-to-Firewall

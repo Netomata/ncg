@@ -87,9 +87,7 @@ begin	# rescue block
 
     net = Netomata::Node.new
 
-    ARGV.each do |fn|
-	net.import_file(fn)
-    end
+    net.import_file(ARGV)
 
     if (args[:keys]) then
 	puts net.keys_r.join("\n")

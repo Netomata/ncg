@@ -1,0 +1,4 @@
+base_ip = 10.5.0.0
+
+# read a multi-part table when parts are named by wildcard
+table import_multipart_table/vlans.*.neto_table

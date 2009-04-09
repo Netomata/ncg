@@ -1,0 +1,5 @@
+d {
+    filename = [%= @target["{FILENAME}"] %]
+    basename = [%= @target["{BASENAME}"] %]
+    dirname = [%= @target["{DIRNAME}"] %]
+}

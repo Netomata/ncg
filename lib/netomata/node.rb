@@ -5,33 +5,6 @@
 # disclaimers, and license terms.
 # add methods to the Dictionary class, so that pp() works
 
-# Open the IO class, and add a method to transparently handle
-# continuation lines (lines ending in "\") in input
-#
-# Kudos to
-# http://markmail.org/message/4qnc4rd7oowvlc7g
-
-class IO
-    def each_line_cont (sep = $/)
-	hold = ''
-	skip = 0
-	each_line (sep) { |x|
-	    if x =~ /\\#{sep}/ then
-		hold << x.chomp("\\#{sep}")
-		self.lineno=(self.lineno - 1)
-		skip += 1
-	    elsif hold.empty? 
-		yield(x)
-	    else
-		yield(hold+x)
-		self.lineno=(self.lineno + skip)
-		skip = 0
-		hold = ''
-	    end
-	}
-    end
-end     
-
 # Open the Dictionary class, and add a couple of methods so that pp() works
 class Dictionary
 
@@ -46,17 +19,23 @@ class Dictionary
     end
 end
 
-class Netomata::Node < Dictionary
+# Yes, we're missing an indent level here...  We can't simply open this
+# as "class Netomata::Node", because if we do then we're unable to define
+# class method Netomata::Node.reset()
 
-    @@filestack = []
+class Netomata
+class Node < Dictionary
 
-    @@source_file = ["<root>"]
-    @@source_line = [0]
+    @@iostack = []
 
     attr_reader :source
 
     include Netomata::Utilities::ClassMethods
     include Netomata::Utilities
+
+    def Node.reset() 	# :nodoc:
+	@@iostack = []
+    end
 
     # :call-seq:
     #  	new()		-> new_node
@@ -75,7 +54,12 @@ class Netomata::Node < Dictionary
 	self.parent=(parent)
 	# unset key (will be figured out and cached first time key() is called)
 	self.key_reset
-	@source = "#{@@source_file.last}:#{@@source_line.last}"
+	# record where this node was created from
+	if (@@iostack.empty?) then
+	    @source = "<root>:0"
+	else
+	    @source = "#{@@iostack.last.filename}:#{@@iostack.last.lineno}"
+	end
 	# invoke super()
 	super()
     end
@@ -249,16 +233,13 @@ class Netomata::Node < Dictionary
     #
     # See http://www.netomata.com/docs/formats/neto for documentation
     # of the .neto file format
-    def import_file(filename)
-	io = open(filename)
-	@@filestack.push(filename)
-	@@source_file.push(filename)
-	@@source_line.push(0)
+    def import_file(filenames)
+	io = Netomata::FileSet.new(filenames)
+	@@iostack.push(io)
 
 	pstack = []
 	begin	# rescue block
 	    io.each_line_cont { |l|
-		@@source_line[-1] = io.lineno
 		l.chomp!			# eliminate trailing newline
 		l.gsub!(/#.*$/, "") unless 	# eliminate trailing comments,
 		    l.match(/\[%.*#.*%\]/)	#   but only if not in [% ... %]
@@ -305,7 +286,7 @@ class Netomata::Node < Dictionary
 			end
 			kr = Netomata::Template::FromString.new(
 				kr.gsub(/\[%(.*)%\]/, '<%\1%>'),
-				"#{@@source_file[-1]}:#{@@source_line[-1]}"
+				"#{@@iostack.last.filename}:#{@@iostack.last.lineno}"
 			     ).result_from_vars({
 				"@target" => pn,
 				"@target_key" => pn.key})
@@ -317,33 +298,39 @@ class Netomata::Node < Dictionary
 			raise "Unmatched '}'"
 		    end
 		    pstack.pop
-		when /^include\s+(\S+)$/
+		when /^include\s+(.+)$/
 		    # include sample.templates.neto
-		    self[buildkey(pstack.last)].import_file(relative_filename(filename,$1))
-		when /^table\s+(\S+)$/
+		    self[buildkey(pstack.last)].import_file(
+			$1.split(" ").collect { |e|
+			    relative_filename(io.filename,e)
+			}
+		    )
+		when /^table\s+(.+)$/
 		    # table interfaces
-		    self[buildkey(pstack.last)].import_table(relative_filename(filename,$1))
+		    self[buildkey(pstack.last)].import_table(
+			$1.split(" ").collect { |e|
+			    relative_filename(io.filename,e)
+			}
+		    )
 		when /^template\s+(\S+)$/
 		    # template templates/config.ncg
-		    self[buildkey(pstack.last)].import_template(relative_filename(filename,$1))
+		    self[buildkey(pstack.last)].import_template(relative_filename(io.filename,$1))
 		when /^template_dir\s+(\S+)$/
 		    # template_dir sample/templates
-		    self[buildkey(pstack.last)].import_template_dir(relative_filename(filename,$1))
+		    self[buildkey(pstack.last)].import_template_dir(relative_filename(io.filename,$1))
 		else
 		    raise "Unrecognized line '#{l}'"
 		end
 	    }
 	rescue => exc
-	    fixup_exception(exc,filename,io.lineno)
+	    fixup_exception(exc,io.filename,io.lineno)
 	    raise exc.exception
 	end
 	io.close
-	@@filestack.pop
-	@@source_file.pop
-	@@source_line.pop
+	@@iostack.pop
 	make_valid
 	if (! self.valid?) then
-	    raise "Corrupted data structure after import_file"
+	    raise "Corrupted data structure after import_file('%{filenames}')"
 	end
 	self
     end
@@ -355,7 +342,7 @@ class Netomata::Node < Dictionary
     #
     # See http://www.netomata.com/docs/formats/neto_table for documentation
     # of the .neto_table file format.
-    def import_table(filename) 
+    def import_table(filenames) 
 	# :call-seq:
 	# 	var_sub(template,fields,data) -> key
 	#
@@ -391,15 +378,12 @@ class Netomata::Node < Dictionary
 	    k
 	end
 
-	io = open(filename)
-	@@filestack.push(filename)
-	@@source_file.push(filename)
-	@@source_line.push(0)
+	io = Netomata::FileSet.new(filenames)
+	@@iostack.push(io)
 	actions = Array.new
 	fields = Dictionary.new
 	begin	# rescue block
 	    io.each_line_cont { |l|
-		@@source_line[-1] = io.lineno
 		l.chomp!			# eliminate trailing newline
 		l.gsub!(/\s*#.*/, "") unless	# eliminate trailing comments,
 			l.match(/\[%.*#.*%\]/)	#   but only if not in [% ... %]
@@ -451,7 +435,7 @@ class Netomata::Node < Dictionary
 			    r = Netomata::Template::FromString.new(
 				    var_sub(a,fields,d).
 				    	gsub(/\[%(.*)%\]/, '<%\1%>'),
-				    "#{@@source_file[-1]}:#{@@source_line[-1]}"
+				    "#{@@iostack.last.filename}:#{@@iostack.last.lineno}"
 				 ).result_from_vars({
 				    "@target" => self,
 				    "@target_key" => self.key})
@@ -486,13 +470,11 @@ class Netomata::Node < Dictionary
 		end
 	    }
 	rescue => exc
-	    fixup_exception(exc,filename,io.lineno)
+	    fixup_exception(exc,io.filename,io.lineno)
 	    raise exc.exception
 	end
 	io.close
-	@@filestack.pop
-	@@source_file.pop
-	@@source_line.pop
+	@@iostack.pop
 	make_valid
 	if (! valid?) then
 	    raise "Corrupted data structure after import_table"
@@ -1103,20 +1085,20 @@ class Netomata::Node < Dictionary
     # sequence), we should only modify the backtrace on the first (deepest)
     # exception and call to this method.  We figure out whether this is
     # that "first exception" by checking to see whether the filename and
-    # lineno arguments match the deepest ones on the @@source_file and
-    # @@source_line class variables.
+    # lineno arguments match those of the deepest entry on the @@iostack 
+    # class variable.
     #++
     def fixup_exception(exc,filename,lineno)
-	# push all source_file / source_line onto backtrace
-	if ((@@source_file.last == filename) && 
-	    (@@source_line.last == lineno)) then
+	# push all file:line onto backtrace
+	if ((! @@iostack.empty?) &&
+	      (@@iostack.last.filename == filename) &&
+	      (@@iostack.last.lineno == lineno)) then
 	    # ... but only if we're at the bottom of the exception stack.
-	    # Otherwise, the whole source_file:source_line stack gets
+	    # Otherwise, the whole file:line stack gets
 	    # duplicated onto the backtrace as the rescue stack unwinds
-	    st = @@source_file.zip(@@source_line).collect { |t|
-		"#{t[0]}:#{t[1]}"
+	    st = @@iostack.collect { |t|
+		"#{t.filename}:#{t.lineno}"
 	    }
-	    st.shift	# throw away the first element
 	    bt = exc.backtrace.dup
 	    bt.shift	# throw away the first element
 	    bt = st.reverse + bt
@@ -1135,11 +1117,11 @@ class Netomata::Node < Dictionary
     def metadata_fetch(req)
 	case req
 	when "FILENAME" then
-	    return @@filestack.last
+	    return @@iostack.last.filename
 	when "BASENAME" then
-	    return File.basename(@@filestack.last)
+	    return File.basename(@@iostack.last.filename)
 	when "DIRNAME" then
-	    return File.dirname(@@filestack.last)
+	    return File.dirname(@@iostack.last.filename)
 	else
 	    raise ArgumentError, "Unknown metadata request '{#{req}}'"
 	end
@@ -1318,4 +1300,5 @@ class Netomata::Node < Dictionary
 	return true
     end
 
-end
+end	# class Node
+end	# class Netomata

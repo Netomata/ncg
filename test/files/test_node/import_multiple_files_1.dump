@@ -1,0 +1,25 @@
+# <root>:0
+a {
+    # ./import_multiple_files/a.neto:1
+    filename = ./import_multiple_files/a.neto
+    basename = a.neto
+    dirname = ./import_multiple_files
+}
+b {
+    # ./import_multiple_files/b.neto:1
+    filename = ./import_multiple_files/b.neto
+    basename = b.neto
+    dirname = ./import_multiple_files
+}
+c {
+    # ./import_multiple_files/c.neto:1
+    filename = ./import_multiple_files/c.neto
+    basename = c.neto
+    dirname = ./import_multiple_files
+}
+d {
+    # ./import_multiple_files/d.neto:1
+    filename = ./import_multiple_files/d.neto
+    basename = d.neto
+    dirname = ./import_multiple_files
+}

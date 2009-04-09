@@ -1,0 +1,7 @@
+# <root>:0
+a {
+    # ./import_multiple_files_override/a.neto:1
+    filename = ./import_multiple_files_override/d.neto
+    basename = d.neto
+    dirname = ./import_multiple_files_override
+}

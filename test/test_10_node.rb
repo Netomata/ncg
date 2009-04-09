@@ -555,6 +555,90 @@ EOF
 	assert_equal(
 	"./a/b/c/file.neto:5\n./a/b/file.neto:12\n./a/file.neto:9\nfile.neto:6",
 		bt[0..3].join("\n"))
+
+	# reset the @@iostack, which gets screwed up by the rescue
+	Netomata::Node.reset
+    end
+end
+
+class NodeTest_4a_Import_Multiple_Files < Test::Unit::TestCase
+    def setup
+	@testfiles = File.join(cwd,"files","test_node")
+	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
+    end
+
+    def teardown
+	# FileUtils.rm_rf(@tmpdirname)
+    end
+
+    # creates a new node, imports <<filename>>.neto,
+    # dumps to <<filename>>.dump, and compares to expected dump
+    def import_dump_compare(filename)
+	n = Netomata::Node.new(nil)
+	Dir.chdir(@testfiles) do
+	    n.import_file("#{filename}.neto")
+	    # dump to a file
+	    t = Tempfile.new("ncg_test.#{filename}.dump", "/tmp")
+	    n.dump(t,0,true)
+	    t.close
+
+	    # check that the dumped file matches what it should
+	    assert FileUtils.compare_file(t.path, "#{filename}.dump")
+	end
+    end
+
+    # tests import of multiple files via wildcard in 'include' directive
+    def test_import_multiple_files_1
+	import_dump_compare("import_multiple_files_1")
+    end
+
+    # tests import of multiple files listed explicitly in
+    #	'include' directive
+    def test_import_multiple_files_2
+	import_dump_compare("import_multiple_files_2")
+    end
+
+    # tests import of multiple files that override values set in
+    # previously-imported files
+    def test_multiple_files_override_1
+	import_dump_compare("import_multiple_files_override_1")
+    end
+end
+
+class NodeTest_4b_Import_Multipart_Table < Test::Unit::TestCase
+    def setup
+	@testfiles = File.join(cwd,"files","test_node")
+	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
+    end
+
+    def teardown
+	# FileUtils.rm_rf(@tmpdirname)
+    end
+
+    # creates a new node, imports <<filename>>.neto,
+    # dumps to <<filename>>.dump, and compares to expected dump
+    def import_dump_compare(filename)
+	n = Netomata::Node.new(nil)
+	Dir.chdir(@testfiles) do
+	    n.import_file("#{filename}.neto")
+	    # dump to a file
+	    t = Tempfile.new("ncg_test.#{filename}.dump", "/tmp")
+	    n.dump(t,0,true)
+	    t.close
+
+	    # check that the dumped file matches what it should
+	    assert FileUtils.compare_file(t.path, "#{filename}.dump")
+	end
+    end
+
+    # tests import of multipart tables where parts are named explicitly
+    def test_import_multipart_table_1
+	import_dump_compare("import_multipart_table_1")
+    end
+
+    # tests import of multipart table where parts are named via wildcard
+    def test_import_multipart_table_2
+	import_dump_compare("import_multipart_table_2")
     end
 end
 

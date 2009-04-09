@@ -4,14 +4,6 @@
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
 #
-@ !vlans!(+)!id = %{id}
-@ !vlans!(id=%{id})!active = %{active}
-@ !vlans!(id=%{id})!type = %{type}
-@ !vlans!(id=%{id})!vlan_ip = [%= ip_union(@target["(...)!base_ip"], "0.0.%{id}.0") %]
-@ !vlans!(id=%{id})!netmask = %{netmask}
-@ !vlans!(id=%{id})!name = %{name}
-@ !vlans!(id=%{id})!description = %{description}
-#
 % id	active	type	netmask		name		description
 # --	------	----	-------		----		-----------
 1	yes	admin	255.255.255.0	default		default

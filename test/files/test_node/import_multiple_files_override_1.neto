@@ -1,0 +1,3 @@
+# Should wind up with just 'a' node, but with values from 'd.neto' file
+
+include import_multiple_files_override/*.neto

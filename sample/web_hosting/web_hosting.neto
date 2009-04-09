@@ -14,7 +14,16 @@ domain		= ht.netomata.com
 dns_ip          = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.11") %]
 ntp_ip          = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.10") %]
 
-table vlans.neto_table
+# Populate the "!vlans" part of the tree by reading the
+# "vlans.neto_table_hdr" file (which contains the neto_table directives that
+# tell how to process each data line in order to actually populate the tree)
+# in conjunction with the "vlans.neto_table" file (which contains the actual
+# data lines).
+#
+# Elsewhere, below, a different header is used in conjunction with the same
+# "vlans.neto_table" file, in order to populate the vlan interfaces for each
+# router.
+table vlans.neto_table_hdr vlans.neto_table
 
 !vlans!(id=3)!vlan_ip = 172.24.1.0
 !vlans!(id=3)!hsrp_group = 0
@@ -74,13 +83,12 @@ devices!(+) < !templates!devices!routers!_cisco {
 
 table interfaces.neto_table
 
-
 devices!(name=cisco1)!interfaces {
-    table vlan-interfaces.neto_table
+    table vlan-interfaces.neto_table_hdr vlans.neto_table
 }
 
 devices!(name=cisco2)!interfaces {
-    table vlan-interfaces.neto_table
+    table vlan-interfaces.neto_table_hdr vlans.neto_table
 }
 
 # On Vlan3 interfaces, override IP address assignments and disable HSRP

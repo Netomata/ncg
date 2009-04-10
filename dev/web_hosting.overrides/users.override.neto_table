@@ -1,0 +1,10 @@
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+#
+# Override the username/password set in the standard users.neto_table file
+#
+# username	password
+access		7 0803405B0C5627180A

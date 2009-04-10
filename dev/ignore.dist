@@ -14,6 +14,8 @@ dist/
 rdoc/
 sample/switches/configs/switch-1.config
 sample/switches/configs/switch-2.config
-sample/web_hosting/configs/
 sample/web_hosting/TODO
+sample/web_hosting/configs/
+sample/web_hosting/secrets.netomata.neto
+sample/web_hosting/users.netomata.neto_table
 skel/

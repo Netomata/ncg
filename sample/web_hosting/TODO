@@ -1,3 +1,6 @@
+Resolve disagreement between "cisco1" and "switch-1" as specified in design doc
+	Update diagrams for that, and VLAN 2->252, 3->253, 4->254
+
 Update .neto docs to explain numbered keys ("@000000001", ...), and clarify
 that "(+)", "(<)", and "(>)" only apply to numbered keys.
 

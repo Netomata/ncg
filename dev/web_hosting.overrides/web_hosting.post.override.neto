@@ -1,0 +1,49 @@
+# Override all sorts of stuff related to the Lab Backbone VLAN and interfaces
+
+!default_route = 172.24.1.1
+
+!domain		= ht.netomata.com
+
+!vlans!(+) {
+    id = 3
+    active = yes
+    type = admin
+    vlan_ip = 172.24.1.0
+    netmask = 255.255.255.0
+    hsrp_group = 0
+    name = Lab
+    description = Lab Backbone
+}
+
+devices!(name=cisco1) {
+    management_ip = 172.24.1.21
+}
+
+devices!(name=cisco2) {
+    management_ip = 172.24.1.22
+}
+
+# On Vlan3 interfaces, override IP address assignments and disable HSRP
+!devices!(name=cisco1)!interfaces!(+) < !devices!(name=cisco1)!interfaces!(name=_v_admin) {
+    vlan_id = 3
+    vlan_ip = 172.24.1.0
+    name = Vlan3
+    active = yes
+    type = admin
+    ip = 172.24.1.21
+    netmask = 255.255.255.0
+    hsrp_group = 0
+    description = Lab (Lab Backbone) VLAN [admin]
+}
+
+!devices!(name=cisco2)!interfaces!(+) < !devices!(name=cisco2)!interfaces!(name=_v_admin) {
+    vlan_id = 3
+    vlan_ip = 172.24.1.0
+    name = Vlan3
+    active = yes
+    type = admin
+    ip = 172.24.1.22
+    netmask = 255.255.255.0
+    hsrp_group = 0
+    description = Lab (Lab Backbone) VLAN [admin]
+}

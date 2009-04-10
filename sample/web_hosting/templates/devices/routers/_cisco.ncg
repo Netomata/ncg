@@ -17,9 +17,15 @@ service compress-config
 !
 hostname <%= @target["name"] %>
 !
-enable secret 5 $1$8/oz$8HWCm85LdMzCieQnh8.n5/
+<% template_arg_node_key("@target", "(...)!enable_secret") -%>
+enable secret <%= @target["(...)!enable_secret"] %>
 !
-username access password 7 0803405B0C5627180A
+<% 
+    template_arg_node_key("@target", "users", Netomata::Node)
+    @target["users"].each { |key,user|
+-%>
+username <%= key %> password <%= user["password"] %>
+<%  } -%>
 aaa new-model
 !
 !

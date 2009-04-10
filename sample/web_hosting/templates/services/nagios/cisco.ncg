@@ -166,7 +166,7 @@ define service{
 	use			generic-service	; Inherit values from a template
 	host_name		<%= @target["(...)!name"] %>
 	service_description	Interface <%= interface["name"] %>
-	display_name		Interface <%= interface["name"] %> [%<= interface["description"] %>]
+	display_name		Interface <%= interface["name"] %> [<%= interface["description"] %>]
 	check_command		check_ifoperstatus!-C <%= interface["(...)!snmp_community"] %> -v 2 -I -d <%= interface["name"] %>
 	}
 

@@ -4,15 +4,20 @@
 # http://www.netomata.com/license_v1 for important notices,
 # disclaimers, and license terms (GPL v2.0 or alternative).
 
+include web_hosting.pre*.neto
+
 base_ip		= 10.5.0.0
-admin_ip	= 172.24.1.0
+# admin_ip might already be set in one of the pre* files, so don't override
+admin_ip	= [%= @target["!admin_ip"] || \
+			ip_union(@target["(...)!base_ip"], "0.0.16.0") %]
 syslog_ip	= [%= ip_union(@target["(...)!admin_ip"], "0.0.0.14") %]
 syslog_facility = local5
 snmp_ip		= [%= ip_union(@target["(...)!admin_ip"], "0.0.0.15") %]
 snmp_community	= public
-domain		= ht.netomata.com
+domain		= example.com
 dns_ip          = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.11") %]
 ntp_ip          = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.10") %]
+default_route	= [%= ip_union(@target["(...)!base_ip"], "0.0.254.9") %]
 
 # Populate the "!vlans" part of the tree by reading the
 # "vlans.neto_table_hdr" file (which contains the neto_table directives that
@@ -20,13 +25,10 @@ ntp_ip          = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.10") %]
 # in conjunction with the "vlans.neto_table" file (which contains the actual
 # data lines).
 #
-# Elsewhere, below, a different header is used in conjunction with the same
+# Elsewhere below, a different header is used in conjunction with the same
 # "vlans.neto_table" file, in order to populate the vlan interfaces for each
 # router.
 table vlans.neto_table_hdr vlans.neto_table
-
-!vlans!(id=3)!vlan_ip = 172.24.1.0
-!vlans!(id=3)!hsrp_group = 0
 
 !templates {
     template_dir templates
@@ -35,14 +37,14 @@ table vlans.neto_table_hdr vlans.neto_table
 !templates!devices!routers!_cisco {
     # add to Cisco router device template
     model	= 3550-48
-    default_route = [%= ip_union(@target["(...)!admin_ip"], "0.0.0.1") %]
     domain	= [%= "mgmt." + @target["(...)!domain"] %]
     hsrp_group	= 1
 }
 
+include secrets*.neto
+
 devices!(+) < !templates!devices!routers!_cisco {
     name	= cisco1
-    management_ip = 172.24.1.21
     # router_id is used for determining VRRP priority, interface IP address,
     #   spanning-tree priority, and so forth. 
     # Each router should have a unique router_id. 
@@ -63,7 +65,6 @@ devices!(+) < !templates!devices!routers!_cisco {
 
 devices!(+) < !templates!devices!routers!_cisco {
     name	= cisco2
-    management_ip = 172.24.1.22
     # router_id is used for determining VRRP priority, interface IP address,
     #   spanning-tree priority, and so forth. 
     # Each router should have a unique router_id. 
@@ -83,25 +84,20 @@ devices!(+) < !templates!devices!routers!_cisco {
 
 table interfaces.neto_table
 
-devices!(name=cisco1)!interfaces {
-    table vlan-interfaces.neto_table_hdr vlans.neto_table
+devices!(name=cisco1) {
+    interfaces {
+	table vlan-interfaces.neto_table_hdr vlans.neto_table
+    }
+    management_ip = [%= @target["interfaces!(vlan_id=16)!ip"] %]
+    table users*.neto_table
 }
 
-devices!(name=cisco2)!interfaces {
-    table vlan-interfaces.neto_table_hdr vlans.neto_table
-}
-
-# On Vlan3 interfaces, override IP address assignments and disable HSRP
-devices!(name=cisco1)!interfaces!(vlan_id=3) {
-    ip = 172.24.1.21
-    netmask = 255.255.255.0
-    hsrp_group = 0
-}
-
-devices!(name=cisco2)!interfaces!(vlan_id=3) {
-    ip = 172.24.1.22
-    netmask = 255.255.255.0
-    hsrp_group = 0
+devices!(name=cisco2) {
+    interfaces {
+	table vlan-interfaces.neto_table_hdr vlans.neto_table
+    }
+    management_ip = [%= @target["interfaces!(vlan_id=16)!ip"] %]
+    table users*.neto_table
 }
 
 services!mrtg {
@@ -145,3 +141,5 @@ services!nagios {
 		%]
     }
 }
+
+include web_hosting.post*.neto

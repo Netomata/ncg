@@ -27,6 +27,10 @@ class Netomata::FileSet
 
 	def expand_filenames(p)		# :nodoc:
 	    raise ArgumentError, "expected String" unless p.is_a?(String)
+	    if (p == "-") then
+		# special case for STDIN
+		return ["<STDIN>"]
+	    end
 	    Dir.glob(p, File::FNM_PATHNAME).select { |fn|
 		File.file?(fn)
 	    }.sort
@@ -179,7 +183,11 @@ class Netomata::FileSet
 	    if (! @current_file.nil?) then
 		@current_file.close
 	    end
-	    @current_file = File.open(@filenames[@current_index])
+	    if (@filenames[@current_index] == "<STDIN>") then
+		@current_file = STDIN
+	    else
+		@current_file = File.open(@filenames[@current_index])
+	    end
 	    true
 	else
 	    false

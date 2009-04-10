@@ -22,7 +22,11 @@ class NcgArguments < Hash
 	super()
 
 	opts = OptionParser.new do |opts|
-	    opts.banner = "Usage: #$0 [options]"
+	    opts.banner = <<"EOF"
+Usage: #{$0} [options] filename [...]
+	For standard input, use '-' for filename
+Options:
+EOF
 	    opts.on('-d', '--dump',
 	    	'dump the fully-parsed data structure') do
 		self[:dump] = true
@@ -63,11 +67,21 @@ class NcgArguments < Hash
 	end
 	
 	opts.parse!(args)
+	@opts = opts
+    end
+
+    def help
+	@opts.help
     end
 end
 
 # parse the command line arguments
 args = NcgArguments.new(ARGV)
+if (ARGV.size == 0) then
+    # if no arguments left, print help and exit
+    puts args.help
+    exit
+end
 
 # push the NETOMATA_LIB location onto the load path, before requiring any
 # Netomata-provided libraries

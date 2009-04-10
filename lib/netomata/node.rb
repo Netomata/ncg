@@ -227,7 +227,7 @@ class Node < Dictionary
     end
 
     # :call-seq:
-    # 	import_file(filename) -> self
+    # 	import_file(filenames) -> self
     #
     # Import the contents of a .neto file into this node.
     #
@@ -336,7 +336,7 @@ class Node < Dictionary
     end
 
     # :call-seq:
-    # 	import_table(filename) -> self
+    # 	import_table(filenames) -> self
     #
     # Import the contents of a .neto_table file into this node
     #

@@ -284,9 +284,10 @@ class Node < Dictionary
 			if pn.nil? then
 			    pn = self 
 			end
-			kr = Netomata::Template::FromString.new(
-				kr.gsub(/\[%(.*)%\]/, '<%\1%>'),
-				"#{@@iostack.last.filename}:#{@@iostack.last.lineno}"
+			kr = Netomata::Template.new(
+				@@iostack.last.filename,
+				@@iostack.last.lineno,
+				kr.gsub(/\[%(.*)%\]/, '<%\1%>')
 			     ).result_from_vars({
 				"@target" => pn,
 				"@target_key" => pn.key})
@@ -432,10 +433,11 @@ class Node < Dictionary
 			when '@'
 			    k = var_sub(f,fields,d)
 			    r = var_sub(a,fields,d)
-			    r = Netomata::Template::FromString.new(
+			    r = Netomata::Template.new(
+				    @@iostack.last.filename,
+				    @@iostack.last.lineno,
 				    var_sub(a,fields,d).
-				    	gsub(/\[%(.*)%\]/, '<%\1%>'),
-				    "#{@@iostack.last.filename}:#{@@iostack.last.lineno}"
+				    	gsub(/\[%(.*)%\]/, '<%\1%>')
 				 ).result_from_vars({
 				    "@target" => self,
 				    "@target_key" => self.key})

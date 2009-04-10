@@ -126,12 +126,14 @@ begin	# rescue block
 	# set up shortcut "target" variable
 	target = net[target_key]
 
-	r = Netomata::Template::FromFile.new(template_filename).
-		result_from_vars({
+	r = Netomata::Template.apply_by_filename(
+	    	template_filename,
+		{
 		    "@net" => net,
 		    "@target_key" => target_key,
 		    "@target" => target
-		})
+		}
+	)
 
 	of = File.new(target["ncg_output"], "w")
 	of.write(r)

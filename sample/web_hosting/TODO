@@ -1,14 +1,6 @@
-Resolve disagreement between "cisco1" and "switch-1" as specified in design doc
-	Update diagrams for that, and VLAN 2->252, 3->253, 4->254
-
-Update .neto docs to explain numbered keys ("@000000001", ...), and clarify
-that "(+)", "(<)", and "(>)" only apply to numbered keys.
-
-Have ht.neto mkdir_p necessary config subdirectories
-
 Define/use "management_fqdn"?
 
-Clean up ht.neto; organize into parts by service?
+Clean up web_hosting.neto; organize into parts by service?
 
 Rename template files from, i.e., mrtg.ncg to mrtg.cfg.ncg ?
 

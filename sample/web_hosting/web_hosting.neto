@@ -44,7 +44,7 @@ table vlans.neto_table_hdr vlans.neto_table
 include secrets*.neto
 
 devices!(+) < !templates!devices!routers!_cisco {
-    name	= cisco1
+    name	= switch-1
     # router_id is used for determining VRRP priority, interface IP address,
     #   spanning-tree priority, and so forth. 
     # Each router should have a unique router_id. 
@@ -64,7 +64,7 @@ devices!(+) < !templates!devices!routers!_cisco {
 }
 
 devices!(+) < !templates!devices!routers!_cisco {
-    name	= cisco2
+    name	= switch-2
     # router_id is used for determining VRRP priority, interface IP address,
     #   spanning-tree priority, and so forth. 
     # Each router should have a unique router_id. 
@@ -84,7 +84,7 @@ devices!(+) < !templates!devices!routers!_cisco {
 
 table interfaces.neto_table
 
-devices!(name=cisco1) {
+devices!(name=switch-1) {
     interfaces {
 	table vlan-interfaces.neto_table_hdr vlans.neto_table
     }
@@ -92,7 +92,7 @@ devices!(name=cisco1) {
     table users*.neto_table
 }
 
-devices!(name=cisco2) {
+devices!(name=switch-2) {
     interfaces {
 	table vlan-interfaces.neto_table_hdr vlans.neto_table
     }

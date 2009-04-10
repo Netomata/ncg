@@ -1243,15 +1243,17 @@ class Node < Dictionary
     #   selector_to_key(selector, [rest_of_key=nil]) -> key
     #
     # Converts a "()" key selector to the appropriate key
-    # * (+) returns successor to current max key
-    # * (>) returns current max key
-    # * (<) returns current min key
+    # * (+) returns successor to current max anonymous key 
+    # * (>) returns current max anonymous key
+    # * (<) returns current min anonymous key
     # * (.) returns current key
     # * (..) returns parent of current key
     # * (...) returns nearest ancestor of current key which has
     #   _rest_of_key_ defined
     # * (subkey=value,[subkey2=value ...]) returns key of first subnode
     #   whose subkey(s) match list of subkey/value criteria
+    #
+    # Anonymous keys match the pattern /^@[0-9]+$/
     def selector_to_key(s,rest_of_key=nil)
 	m = s.match(/^\((.*)\)$/)
 	if m.nil? then
@@ -1260,11 +1262,11 @@ class Node < Dictionary
 	else
 	    case m[1]
 	    when ">"
-		return self.keys.select {|k| k[0..0] == "@"}.max
+		return self.keys.grep(/^@[0-9]+$/).max
 	    when "<"
-		return self.keys.select {|k| k[0..0] == "@"}.min
+		return self.keys.grep(/^@[0-9]+$/).min
 	    when "+"
-	    	r = self.keys.select {|k| k[0..0] == "@" }.max
+	    	r = self.keys.grep(/^@[0-9]+$/).max
 		if (r.nil?) then
 		    return "@000000001"
 		else

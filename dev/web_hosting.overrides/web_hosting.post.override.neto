@@ -15,16 +15,18 @@
     description = Lab Backbone
 }
 
-devices!(name=cisco1) {
+devices!(name=switch-1) {
     management_ip = 172.24.1.21
+    domain	= [%= "mgmt." + @target["!domain"] %]
 }
 
-devices!(name=cisco2) {
+devices!(name=switch-2) {
     management_ip = 172.24.1.22
+    domain	= [%= "mgmt." + @target["!domain"] %]
 }
 
 # On Vlan3 interfaces, override IP address assignments and disable HSRP
-!devices!(name=cisco1)!interfaces!(+) < !devices!(name=cisco1)!interfaces!(name=_v_admin) {
+!devices!(name=switch-1)!interfaces!(+) < !devices!(name=switch-1)!interfaces!(name=_v_admin) {
     vlan_id = 3
     vlan_ip = 172.24.1.0
     name = Vlan3
@@ -36,7 +38,7 @@ devices!(name=cisco2) {
     description = Lab (Lab Backbone) VLAN [admin]
 }
 
-!devices!(name=cisco2)!interfaces!(+) < !devices!(name=cisco2)!interfaces!(name=_v_admin) {
+!devices!(name=switch-2)!interfaces!(+) < !devices!(name=switch-2)!interfaces!(name=_v_admin) {
     vlan_id = 3
     vlan_ip = 172.24.1.0
     name = Vlan3

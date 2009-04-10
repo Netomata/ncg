@@ -70,14 +70,14 @@ desc "Generate sample/web_hosting configs and diff against baseline"
 task "sample/web_hosting" => ["lib/netomata/version.rb"] do
     sh 'rm -rf sample/web_hosting/configs'
     sh 'bin/ncg -v sample/web_hosting/web_hosting.neto'
-    sh 'egrep -v "^!!" sample/web_hosting/configs/cisco1.config | diff -u sample/web_hosting/configs-baseline/cisco1.config -'
-    sh 'egrep -v "^!!" sample/web_hosting/configs/cisco2.config | diff -u sample/web_hosting/configs-baseline/cisco2.config -'
+    sh 'egrep -v "^!!" sample/web_hosting/configs/switch-1.config | diff -u sample/web_hosting/configs-baseline/switch-1.config -'
+    sh 'egrep -v "^!!" sample/web_hosting/configs/switch-2.config | diff -u sample/web_hosting/configs-baseline/switch-2.config -'
     sh 'egrep -v "^##" sample/web_hosting/configs/mrtg/mrtg.cfg | diff -u sample/web_hosting/configs-baseline/mrtg/mrtg.cfg -'
     sh "egrep -v '^\\$Id: |^ *Date: |^ *User: |^ *Host: |^ *Directory: |Expires' sample/web_hosting/configs/mrtg/index.html | diff -u sample/web_hosting/configs-baseline/mrtg/index.html -"
     sh 'cmp sample/web_hosting/configs-baseline/mrtg/netomata.logo.160x80.jpg sample/web_hosting/configs/mrtg/netomata.logo.160x80.jpg'
     sh 'cmp sample/web_hosting/configs-baseline/nagios/COMMON.cfg sample/web_hosting/configs/nagios/COMMON.cfg'
-    sh 'diff -u sample/web_hosting/configs-baseline/nagios/cisco1.cfg sample/web_hosting/configs/nagios/cisco1.cfg'
-    sh 'diff -u sample/web_hosting/configs-baseline/nagios/cisco2.cfg sample/web_hosting/configs/nagios/cisco2.cfg'
+    sh 'diff -u sample/web_hosting/configs-baseline/nagios/switch-1.cfg sample/web_hosting/configs/nagios/switch-1.cfg'
+    sh 'diff -u sample/web_hosting/configs-baseline/nagios/switch-2.cfg sample/web_hosting/configs/nagios/switch-2.cfg'
     puts "##########################"
     puts "# sample/web_hosting OK! #"
     puts "##########################"
@@ -129,14 +129,14 @@ task "sample_accept" do
     sh "cp -p sample/switches/configs/switch-2.config sample/switches/configs/switch-2.baseline"
     sh "sed -e '/^!!/d' -i '' sample/switches/configs/switch-2.baseline"
     # fix sample/web_hosting baselines
-    sh 'egrep -v "^!!" sample/web_hosting/configs/cisco1.config > sample/web_hosting/configs-baseline/cisco1.config'
-    sh 'egrep -v "^!!" sample/web_hosting/configs/cisco2.config > sample/web_hosting/configs-baseline/cisco2.config'
+    sh 'egrep -v "^!!" sample/web_hosting/configs/switch-1.config > sample/web_hosting/configs-baseline/switch-1.config'
+    sh 'egrep -v "^!!" sample/web_hosting/configs/switch-2.config > sample/web_hosting/configs-baseline/switch-2.config'
     sh 'egrep -v "^##" sample/web_hosting/configs/mrtg/mrtg.cfg > sample/web_hosting/configs-baseline/mrtg/mrtg.cfg'
     sh "egrep -v '^\\$Id: |^ *Date: |^ *User: |^ *Host: |^ *Directory: |Expires' sample/web_hosting/configs/mrtg/index.html > sample/web_hosting/configs-baseline/mrtg/index.html"
     sh 'cp sample/web_hosting/configs/mrtg/netomata.logo.160x80.jpg sample/web_hosting/configs-baseline/mrtg/netomata.logo.160x80.jpg'
     sh 'cp sample/web_hosting/configs/nagios/COMMON.cfg sample/web_hosting/configs-baseline/nagios/COMMON.cfg'
-    sh 'cp sample/web_hosting/configs/nagios/cisco1.cfg sample/web_hosting/configs-baseline/nagios/cisco1.cfg'
-    sh 'cp sample/web_hosting/configs/nagios/cisco2.cfg sample/web_hosting/configs-baseline/nagios/cisco2.cfg'
+    sh 'cp sample/web_hosting/configs/nagios/switch-1.cfg sample/web_hosting/configs-baseline/nagios/switch-1.cfg'
+    sh 'cp sample/web_hosting/configs/nagios/switch-2.cfg sample/web_hosting/configs-baseline/nagios/switch-2.cfg'
 end
 
 dist_ignore = File.new("dev/ignore.dist").readlines

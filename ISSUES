@@ -1,0 +1,28 @@
+Known Issues
+============
+
+Error Handling [case 55]
+------------------------
+Error handling (particularly for errors occurring deep in nested
+templates) isn't as useful as one might wish.  Errors tend to give you
+a Ruby backtrace, and leave it to the user to decipher that and figure
+out what went wrong.
+
+This is particularly a challenge when you're dealing with nested
+templates (where one template invokes another via "apply_idiom" or
+"apply_by_node", for example).  The standard error generally only
+identifies the template that the error actually occurred in (the
+deepest of the nested templates), without identifying the calling
+templates leading up to that one; that can make it difficult to
+figure out how you got to the deeply nested template where the
+error occurred.
+
+WORKAROUND: Use the "-E" command line argument to 'ncg' to specify
+a basename for error dump files.  Then, if an error occurs while
+generating a config, a separate error dump file should be created
+for each template, if there are nested templates.  If you specify
+a "-E errfile" argument, the files will be named errfile.0, errfile.1,
+and so forth. The deepest and most specific error will generally
+be found in errfile.0, while the other error files may provide more
+context to help you understand how you got to the point where that
+deepest error occurred.

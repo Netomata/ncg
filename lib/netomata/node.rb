@@ -237,6 +237,8 @@ class Node < Dictionary
 	io = Netomata::FileSet.new(filenames)
 	@@iostack.push(io)
 
+	puts "Reading file(s) #{io.filenames.join(" ")}" if $verbose
+
 	pstack = []
 	begin	# rescue block
 	    io.each_line_cont { |l|
@@ -381,8 +383,12 @@ class Node < Dictionary
 
 	io = Netomata::FileSet.new(filenames)
 	@@iostack.push(io)
+
+	puts "Reading table(s) #{io.filenames.join(" ")}" if $verbose
+
 	actions = Array.new
 	fields = Dictionary.new
+
 	begin	# rescue block
 	    io.each_line_cont { |l|
 		l.chomp!			# eliminate trailing newline

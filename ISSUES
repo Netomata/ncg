@@ -27,6 +27,43 @@ be found in errfile.0, while the other error files may provide more
 context to help you understand how you got to the point where that
 deepest error occurred.
 
+Self-Referential Loops [case 23]
+--------------------------------
+Self-referential loops are not detected; they'll simply send the
+system off into an infinite loop, trying to resolve them.
+
+The following in a .neto file would be an example of a self-referential
+loop, whereby the system keeps trying to define "domain" in terms of itself:
+
+	domain = [% "mgmt." + @target["(...)!domain"] %]
+
+There is currently no workaround, other than to avoid creating self-
+referential loops... ;-) In a future release, we'll figure out a way
+to detect and deal with them.
+
+Lack of Quoting Mechanisms [case 35, case 73]
+---------------------------------------------
+Currently, there is no quoting mechanism for strings in .neto or
+.neto_table files.  For example, you can't do the following:
+	name = Ext#123
+because the system will treat '#123' as a comment, and you'll wind
+up with simply "name = Ext".
+
+WORKAROUND: you can work around this with ERB template blocks, because
+comments are not stripped with then '#' is within an ERB block.
+For instance, the following will work:
+	name = [%= "Ext#123" %]
+
+However, it's still possible to confuse the parser, even with this
+workaround.  For instance, the following should work:
+	name = [%= "foo" %] # [%= "bar" %]
+and should result in "name = foo" (the "#" and everything following it
+should be stripped as a comment, since the "#" is NOT inside an ERB block).
+Unfortunately, it currently results in an error.
+
+We'll look at improving this and adding a proper quoting mechanism
+in a future release.
+
 # $Id$
 # Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or

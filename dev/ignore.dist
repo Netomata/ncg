@@ -12,10 +12,10 @@ bin/pre-setup.rb
 dev/
 dist/
 rdoc/
-sample/switches/configs/switch-1.config
-sample/switches/configs/switch-2.config
-sample/web_hosting/TODO
-sample/web_hosting/configs/
-sample/web_hosting/secrets.netomata.neto
-sample/web_hosting/users.netomata.neto_table
+examples/switches/configs/switch-1.config
+examples/switches/configs/switch-2.config
+examples/web_hosting/TODO
+examples/web_hosting/configs/
+examples/web_hosting/secrets.netomata.neto
+examples/web_hosting/users.netomata.neto_table
 skel/

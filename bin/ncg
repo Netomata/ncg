@@ -77,11 +77,6 @@ end
 
 # parse the command line arguments
 args = NcgArguments.new(ARGV)
-if (ARGV.size == 0) then
-    # if no arguments left, print help and exit
-    puts args.help
-    exit
-end
 
 # push the NETOMATA_LIB location onto the load path, before requiring any
 # Netomata-provided libraries
@@ -94,6 +89,12 @@ require 'netomata'
 
 if (args[:version]) then
     puts Netomata::Version
+    exit
+end
+
+if (ARGV.size == 0) then
+    # if no arguments left, print help and exit
+    puts args.help
     exit
 end
 

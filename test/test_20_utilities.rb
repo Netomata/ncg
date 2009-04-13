@@ -6,7 +6,7 @@
 
 # for ruby-debug, per
 # http://blog.nanorails.com/articles/2006/07/14/a-better-rails-debugger-ruby-debug
-# SCRIPT_LINES__ = {}
+SCRIPT_LINES__ = {} unless defined?(SCRIPT_LINES__)
 
 def cwd 
     File.expand_path(File.dirname(__FILE__))

@@ -1,0 +1,51 @@
+Examples
+========
+This directory contains complete example uses of the Netomata Config
+Generator (NCG).
+
+A Simple Example
+----------------
+In the "switches" directory, there is a fairly simple example NCG
+configuration that generates config files for a pair of Cisco
+router/switches providing active-active redundancy for a single-rack
+web hosting environment.  See "switches/README.switches" for more
+details.
+
+1)  cd to the "switches" directory
+
+2)  Run the following command to generate the configurations:
+
+	ncg -v switches.neto
+
+3)  Take a look at these files:
+
+	configs/switch-1.config
+	configs/switch-2.config
+
+    Note that they are newly generated, that they are complete ready-to-use
+    Cisco config files, and that they match the "baseline" config files at:
+
+	configs/switch-1.baseline
+	configs/switch-2.baseline
+
+4)  Start experimenting by reading through the "switches.neto" file, and
+    working your way out from there.
+
+A More Complex Example
+----------------------
+The "examples/web_hosting" directory contains a more complex set
+of NCG files and templates to generate a complete set of switch/router,
+Nagios, and MRTG configs for a small single-rack data center for
+an Internet-facing web service.  For more information, see the
+"examples/web_hosting/README.web_hosting" file.
+
+In future releases, we plan to extend this example so that it is
+also generating configs for the firewalls, load balancers, DNS,
+Xen, and the various other devices and services involved in the
+web hosting environment that we're modeling.
+
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.

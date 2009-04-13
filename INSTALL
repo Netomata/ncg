@@ -1,0 +1,65 @@
+Installation Instructions
+=========================
+
+Requirements
+------------
+Prerequisite tools that the software depends on are explained in
+the "REQUIREMENTS" file.  In a nutshell, you need Ruby 1.8.6 (it
+might work under other versions, but we haven't yet tested it under
+other versions), and the "facets" Ruby gem.  We've also found the
+"ruby-debug" gem to be very useful for debugging, but it is optional.
+
+Installation
+------------
+1)  Unpack the distribution .tar file, and cd to the directory it creates.
+
+	$ tar xvf ncg-0.9.1-rNNN.tar
+	$ cd ncg-0.9.1-rNNN
+
+1.1) OPTIONAL: run tests to verify that everything appears to work.
+
+	$ ruby setup.rb test
+
+2)  Configure your installation.
+
+	$ ruby setup.rb config
+
+3)  Check the resulting paths in the ".config" file.  If you want to
+    change any of them, run "ruby setup.rb --help" to see what the
+    options are, and then rerun "ruby setup.rb config" with additional
+    arguments to regenerate the ".config" file.
+
+    For instance, to install the 'ncg' script in /usr/local/bin, run
+
+	$ ruby setup.rb config --prefix=/usr/local
+
+    To install the 'ncg' script in /opt/netomata/bin and the libraries
+    in /opt/netomata/lib, run
+
+	$ ruby setup.rb config --prefix=/opt/netomata --rbdir=/opt/netomata/lib
+
+    (NOTE: If you do this, and /opt/netomata/lib isn't part of your
+    Ruby installation's standard library path, you'll also need to set
+    the "NETOMATA_LIB" environment variable to "/opt/netomata/lib" or
+    pass a "-L /opt/netomata/lib" argument to every invocation of "ncg",
+    so that "ncg" will know where to find the libraries.)
+
+4)  Do a dry run to see what's going to be installed where.  If you want to
+    make any changes, go back to step 3.
+
+   	$ ruby setup.rb install --no-harm
+
+5)  When you are satisfied with the config, prepare your files for installation.
+
+	$ ruby setup.rb setup
+
+6)  Install the files (you may need to do this as root, depending on the
+    permissions of the destination directories).
+
+   	# ruby setup.rb install
+
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.

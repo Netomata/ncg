@@ -1,0 +1,77 @@
+QuickStart
+==========
+Here are the bare minimum things you need to do to get started with
+Netomata Config Generator (NCG).
+
+Prerequisites -- See the "REQUIREMENTS" file for details
+--------------------------------------------------------
+1)  Install Ruby 1.8.6 -- details vary by operating system (see
+    "REQUIREMENTS" file)
+
+2)  Install the "facets" Ruby Gem:
+
+	# gem update
+	# gem install facets
+
+3)  (OPTIONAL) Install the "ruby-debug" and "breakpoint" Ruby Gems (useful
+    for developing and debugging template code):
+
+    	# gem install ruby-debug
+	# gem install breakpoint
+
+Installation -- See the "INSTALL" file for details
+--------------------------------------------------
+Unpack, configure, and install NCG:
+
+	$ tar xvf ncg-0.9.1.rNNN.tar
+	$ cd ncg-0.9.1-rNNN
+	$ ruby setup.rb test
+	$ ruby setup.rb config
+	$ ruby setup.rb setup
+
+	(do the following commands as root)
+	# ruby setup.rb install
+
+Try It  -- See the "examples/README.examples" file for details
+--------------------------------------------------------------
+In the "examples/switches" directory of the distribution, there is a fairly
+simple examples configuration that generates config files for a pair of
+Cisco router/switches providing active-active redundancy for a single-rack
+web hosting environment.
+
+1)  cd to the "examples/switches" directory in the distribution.
+	
+	cd examples/switches
+
+2)  Run the following command (assuming the directory where ncg is installed
+    is in your search path):
+
+	ncg -v switches.neto
+
+3)  Take a look at these files:
+
+	configs/switch-1.config
+	configs/switch-2.config
+
+    Note that they are newly generated, that they are complete ready-to-install
+    Cisco config files, and that they match the "baseline" config files that
+    are included in the distribution:
+
+	configs/switch-1.baseline
+	configs/switch-2.baseline
+
+4)  Start experimenting by reading through the "switches.neto" file, and
+    working your way out from there.
+
+A More Complex Example
+----------------------
+See the "examples/README.examples" file for a discussion of the
+more complex set of NCG files and templates that generate a complete
+set of Cisco switch/router, Nagios, and MRTG configs for a small
+single-rack data center for an Internet-facing web service.
+
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.

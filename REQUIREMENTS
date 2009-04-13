@@ -1,11 +1,15 @@
-Dependencies
-------------
-We haven't yet fully identified all of the dependencies of this
-software; we apologize for that, and promise that we will do so
-before making a general release.  
+Requirements
+============
+This file documents the tools that NCG depends upon, as well as the
+operating system platforms that it has been tested on.
 
-So far, we know about the following dependencies:
+Tools
+-----
+NCG depends upon the following tools, which need to be installed
+before NCG will work:
 
+    Required
+    --------
     Ruby
 	We've been developing the code under Ruby 1.8.6.
 	We haven't tried it under Ruby 1.9 yet; if you do, let us
@@ -19,6 +23,8 @@ So far, we know about the following dependencies:
 	part of your Ruby installation:
 		gem install facets
 
+    Optional
+    --------
     ruby-debug (http://rubyforge.org/projects/ruby-debug/)
     	We've been using version 0.10.2 of this for our debugging.
 	It's entirely possible that we've left some debugging code
@@ -27,15 +33,36 @@ So far, we know about the following dependencies:
 	"gem" tool:
 		gem install ruby-debug
 
-MacOS X 10.5.6 (Leopard)
-========================
+Operating Systems
+=================
+NCG should work just fine on pretty much any UNIX/Linux-based operating
+system which has Ruby 1.8.6 available.  The notes below detail how to
+install the necessary prerequisites on a variety of different platforms.
 
-For whatever it's worth, most of the development has been done
-under Mac OS X 10.5.6 (Leopard).  Beyond a basic MacOS X Leopard
-installation, you need to do 3 things to do the same:
+Ubuntu 8.10 (Intrepid) Linux
+----------------------------
+The following commands create the necessary environment for ncg on a
+Ubuntu 8.10 (Intrepid) system, assuming you use 'aptitude' for .deb package
+management ('apt-get' instead of 'aptitude' should work just fine, too, with
+the same arguments):
+
+	aptitude install ruby rubygems ruby-dev libbreakpoint-ruby
+	gem update
+	gem install facets
+	gem install ruby-debug		# OPTIONAL
+	gem install breakpoint		# OPTIONAL
+
+Similar commands would probably also do the trick for other versions of
+Ubuntu, as well as for Debian Linux.
+
+MacOS X 10.5.6 (Leopard)
+------------------------
+Most of the development has been done under Mac OS X 10.5.6 (Leopard).
+Beyond a basic Mac OS X Leopard installation, you need to do 3 things
+to do the same:
 
     1)  Install the "Xcode Tools" package from the "Optional Installs"
-	folder on the MacOS 10.5 DVD, if you haven't already.
+	folder on the Mac OS 10.5 DVD, if you haven't already.
 
     2)  Set the following environment variables in your .bashrc or
 	equivalent (we're not CERTAIN this is necessary, but it doesn't
@@ -50,25 +77,12 @@ installation, you need to do 3 things to do the same:
 	    gem update --system
 	    gem update
 	    gem install facets
-	    gem install ruby-debug
+	    gem install ruby-debug	# OPTIONAL
 
-
-Ubuntu 8.10 (Intrepid)
-======================
-
-The following commands create the necessary environment for ncg on a
-Ubuntu 8.10 (Intrepid) system, assuming you use 'aptitude' for .deb package
-management ('apt-get' instead of 'aptitude' should work just fine, too, with
-the same arguments):
-
-	aptitude install ruby rubygems ruby-dev libbreakpoint-ruby
-	gem update
-	gem install facets
-	gem install ruby-debug
-	gem install breakpoint
-
-Similar commands would probably also do the trick for other versions of
-Ubuntu, as well as for Debian Linux.
+Windows
+-------
+We haven't yet tested NCG under any version of Windows.  If you try it, please
+let us know how it works!
 
 # $Id$
 # Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 

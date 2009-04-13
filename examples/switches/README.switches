@@ -1,0 +1,206 @@
+The "switches" Example
+======================
+The "examples/switches" directory of the distribution is a fairly
+simple example configuration that generates config files for a pair
+of Cisco router/switches providing active-active redundancy for a
+single-rack web hosting environment.
+
+To better understand what this example is all about, and the scenario
+behind it, read the "Background" section below.
+
+Try It
+------
+1)  cd to the "examples/switches" directory in the distribution.
+
+2)  Run the following command:
+
+	ncg -v switches.neto
+
+3)  Take a look at these files:
+
+	configs/switch-1.config
+	configs/switch-2.config
+
+    Note that they are newly generated, that they are complete ready-to-use
+    Cisco config files, and that they match the "baseline" config files at:
+
+	configs/switch-1.baseline
+	configs/switch-2.baseline
+
+4)  Start experimenting by reading through the "switches.neto" file, and
+    working your way out from there.
+
+Again, to better understand what this example is all about, and the
+scenario behind it, read the "Background" section below.
+
+Next Steps
+----------
+Here are some more experiments to try with this example, to give you a
+sense of the power of NCG and the approach it takes:
+
+1)  Run "ncg -h" to see what command line arguments are available for NCG.
+
+2)  Run "ncg -k switches.neto" to list the keys that are created
+    when the tree describing the network is populated, to get a sense of
+    the structure of the tree.  Examine "switches.neto" to see how this
+    comes about.
+
+3)  Run "ncg -d switches.neto" to dump the fully-populated tree, to see
+    exactly what data ends up where in the tree.  Examine "switches.neto"
+    to see how this happens.
+
+4)  Edit the "switches.neto" file to change something (change the "base_ip"
+    from "10.5.0.0" to "172.16.0.0", for example), then rerun "ncg -v"
+    to regenerate the config files (configs/switch-[12].config).  Compare
+    these new configs to the baseline ones (configs/switch-[12].baseline).
+
+    Imagine how easy this would make it to bring up a new data center with
+    new IP addresses.
+
+5)  Edit the "interfaces.neto_table" to turn a particular interface
+    on or off (change one of the "active" columns), then rerun "ncg -v"
+    to regenerate the config files (configs/switch-[12].config).  Compare
+    these new configs to the baseline ones (configs/switch-[12].baseline).
+
+    Imagine how easy this would make it for your junior staff to activate
+    or deactivate machines within the boundaries of the network design
+    encapsulated by these files, without risking incomplete or incorrect
+    changes.
+
+6)  Edit the "vlans.neto_table" file to add a new "environment" VLAN
+    (VLAN #87, say) to host a customized instance of your web service
+    for a particular key customer, then rerun "ncg -v" to regenerate
+    the config files (configs/switch-[12].config).  Compare these
+    new configs to the baseline ones (configs/switch-[12].baseline).
+
+    Imagine how easy this would make it to set up and tear down such
+    isolated environments for particular purposes, and how that might
+    revolutionize your development, QA, marketing, or production practices.
+
+Background
+----------
+This example generates config files for a pair of Cisco 4948-10G
+switches, named "switch-1" and "switch-2", that are an active-active
+pair providing routing and switching funcationality for a small web
+hosting operation in a single-rack data center installation.
+
+The rack contains a number of Linux hosts that are Xen dom0 servers.
+Each of these dom0 servers in turn hosts several Xen domU guest
+virtual machines.  Each dom0 host (real host) has 3 Ethernet
+interfaces: two for data (eth0 and eth1), and one for management
+(IPMI).  Each physical host's eth0 is connected to switch-1, and
+its eth1 is connected to switch-2.  Each physical host's IPMI
+interface is connected to either switch-1 or switch-2; IPMI interfaces
+on odd-numbered hosts are connected to switch-1, and IPMI ports on
+even-numbered hosts are connected to switch-2.  The "interfaces.neto_table"
+file details what each interface on each switch is connected to,
+and whether the interface is actie or not (i.e., whether or not
+there is actually anything connected to it).
+
+The firewalls and load balancers are both deployed in in-line
+configurations.  Traffic from the Internet passes in turn from the
+ISP through the firewalls, and then through the load balancers,
+before finally reaching the internal networks.  
+
+There are a number of VLANs used in the data center, which are defined
+in the "vlans.neto_table" file.  
+
+    VLANs 2 and 3 are used for the site's Internet connectivity; VLAN
+    2 is for traffic between our ISP and the external interfaces of our
+    firewall pair, while VLAN 3 is for traffic between the internal
+    interfaces of our firewall pair and the external interfaces of our
+    load balancer pair.  As a security measure, in order to prevent any
+    traffic from being able to bypass the firewalls or load balancers, 
+    the switches do NOT have an IP interface configured on VLAN 2 or 3;
+    the switches act stricly as Layer2 Ethernet switches on those VLANs,
+    passing packets between the ISP, firewalls, and load balancers.
+
+    VLAN 4 connects the internal interfaces of our load balancer pair
+    to the rest of our internal network.  This is the first point at
+    which the switches also act as routers.
+
+    VLANs 16 and 32 are internal administrative VLANs used primarily
+    by the Xen dom0 physical servers.  VLAN 16 is used for management
+    traffic (SNMP queries and responses, SSH for management purposes,
+    etc.).  VLAN 32 is reserved for bulk data transfer traffic, such
+    as nightly backups and VM state transfers between Xen dom0 physical
+    hosts.
+
+    VLAN 48 is used for the IPMI interfaces to all the Xen dom0 physical
+    servers.
+
+    VLANs 81 through 86 are used for various web-hosting environments
+    within the datacenter, such as production, demo, and testing.  Each
+    of these environments is supposed to be totally independent of any
+    of the others, so access control lists (ACLs) on the switches are
+    used to block any traffic from one of these VLANs to the others.
+    Any given Xen domU virtual host is generally connected to one of
+    these VLANs, and nothing else (i.e., not the VLAN 16 or VLAN 32
+    management/bulk VLANs).
+
+    VLAN 128 is used for a corporate subnet (corporate mail server, etc.)
+    that is also hosted in the datacenter for cost reasons.
+
+The "templates" subdirectory contains the templates for the main
+Cisco config file (templates/devices/routers/cisco.ncg), as well
+as sub-templates for particular types of physical interfaces
+(templates/devices/routers/cisco/templates/interfaces/) and VLAN
+interfaces (templates/devices/routers/cisco/templates/vlan-interfaces/).
+If you examine the main "cisco.ncg" template, you can see how the
+"type" column in the "interfaces.neto_table" is used to select the
+appropriate sub-template for physical interfaces, and similarly how
+the "type" column in the "vlans.neto_table" is used to select the
+appropriate sub-template for VLAN interfaces.
+
+The "templates/devices/router/cisco//idioms" subdirectory contains
+various "idioms", which are snippets of commonly-used code (for
+instance, to determine whether an interface is active or not, and
+generate the appropriate "shutdown" or "no shutdown" line for the
+config) that are in turn used by other templates and sub-templates.
+
+Caveats
+-------
+This example is one of the earliest complete experiments that we
+developed for the NCG tool.  As we developed later examples and
+experiments (such as the "examples/web_hosting" example), we refined
+our approach, and started identifying "best practices" that this
+older example doesn't follow.  For instance:
+
+1)  In generating the "interface" stanzas of the router config files,
+    this tool first iterates over the "interfaces" subtree of the device
+    in question for physical interfaces (lines 70-75 of the 
+    "templates/devices/routers/cisco.ncg" template), then separately over
+    the "!vlans" subtree of the entire data center for the VLAN interfaces
+    (lines 79-88 of the "templates/devices/routers/cisco.ncg" template).
+
+    Current best practice would suggest, instead, that the physical
+    and VLAN interfaces should _both_ be defined in the "interfaces"
+    subtree of each device, and that the "cisco.ncg" template should
+    just iterate over that "interfaces" subtree, generating appropriate
+    stanzas for both physical and VLAN interfaces in the same step.
+
+2)  The interface name for VLAN interfaces ("Vlan128", for example) is
+    calculated in the VLAN interface templates
+    ("templates/devices/router/cisco/templates/vlan-interfaces/*.ncg").
+
+    Current best practice would suggest, instead, that the interface
+    name be calculated once, when the interface is defined in the
+    "interfaces" subtree of the device.  That way, the templates
+    can be simplified (they can simply use the pre-calculated
+    interface name, rather than calculating it themselves), the
+    logic for calculating interface names isn't duplicated across
+    multiple template files (which would create a potential
+    inconsistency if you ever wanted to change how they were
+    calculated for some reason), and the interface name is available
+    to other users (a template generating MRTG config files for
+    monitoring the router via SNMP, for example).
+
+Please keep in mind that NCG should be considered experimental at this
+point, and we're still working out the best way to use it; as such, things
+like "best practices" are continuing to evolve.
+
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.

@@ -1,7 +1,7 @@
           Netomata Config Generator (NCG) Release Notes
 
                         Version 0.9.1
-                    Released 31 March 2009
+                    Released 14 April 2009
                     ======================
 
 Thank you for downloading the Netomata Config Generator (NCG)!
@@ -17,24 +17,43 @@ device or service), they are more likely to be consistent and complete,
 which makes your network more reliable, easier to troubleshoot, and
 easier to expand in both size and functionality.
 
-For more information about Netomata and the philosophy behind NCG, see
-
-	http://www.netomata.com/blog/brent_chapman/2008/10/31/7
-
 The inputs to NCG are a model describing your network (.neto and
 .neto_table files), and templates (.ncg files) for the config files
-of the various devices and services that you want to generate
-config files for.  
+of the various devices (routers, swiches, load balancers, firewalls, 
+etc.) and services (SNMP, DNS, DHCP, etc.) that you want to generate
+config files for.  The outputs are complete, consistent, ready-to-install
+config files for those devices and services.
 
-Status
-------
-This release should definitely be considered experimental in nature.
-Commands and file formats are all subject to change, as we work out
-what paradigms work best and figure out how to get the most out of these
-tools.  We'll try to limit future changes that break backwards compatibility,
-but we can't promise that at this stage; right now, we believe that it's
-more important to experiment with how best to build and use this tool,
-rather than to carve anything in stone.
+For more information about Netomata and the philosophy behind NCG, see
+
+	http://www.netomata.com/benefits
+	http://www.netomata.com/blog/brent_chapman/2008/10/31/7
+
+License
+-------
+Netomata Config Generator (NCG) is being released under the terms of the
+GNU General Public License, version 3.  See the "LICENSE" file in the
+distribution for full details.
+
+Prerequisites
+-------------
+See the "REQUIREMENTS" file for a discussion of other tools required
+before installation of this tool.  Essentially, you need Ruby 1.8.6
+(other versions might work, but we haven't yet tested under other
+versions) and the "facets" Ruby Gem.  
+
+The tool has been developed primarily on Mac OS X 10.5.6 (Leopard)
+and Ubuntu 8.10 (Intrepid) Linux systems, but should work just fine
+on any Linux/UNIX system where Ruby 1.8.6 is available.  It has not
+yet been tested on any Windows version; if you try it, let us know
+how it works!
+
+The "REQUIREMENTS" file includes step-by-step instructions for
+installing the necessary prerequisite tools for several platforms.
+
+Installation
+------------
+See the "INSTALL" file for step-by-step installation instructions.  
 
 Documentation
 -------------
@@ -44,6 +63,22 @@ Program and file format documentation is online at
 
 A snapshot of this documentation is in the "doc" subdirectory
 of the release.
+
+Status
+------
+This release should definitely be considered experimental in nature.
+Commands and file formats are all subject to change, as we work out
+what paradigms work best and figure out how to get the most out of
+these tools.  We'll try to limit future changes that break backwards
+compatibility, but we can't promise that at this stage; right now,
+we believe that it's more important to experiment with how best to
+build and use this tool, rather than to carve anything in stone.
+
+To make an anology to programming languages, this release is like
+the interpreter for a language that is so new that the standard
+libraries for the language haven't been developed yet.  The basic
+language capability is there, but the functionality and leverage
+normally provided by standard libraries doesn't exist yet.
 
 Community
 ---------
@@ -72,77 +107,14 @@ files) but will perform functions beyond simply generating config files;
 for example, we're contemplating tools that will help you do capacity
 planning and failure analysis.
 
-License
--------
-Netomata Config Generator (NCG) is being released under the terms of the
-GNU General Public License, version 3.  See the LICENSE file in the
-distribution for full details.
-
-Requirements
-------------
-Dependencies are explained in the "Dependencies" file.  In a nutshell,
-you need Ruby 1.8.6 (it might work under other versions, but we
-haven't tested it under other versions), and the "facets" Ruby gem.
-We've also found the "ruby-debug" gem to be very useful for debugging,
-but it is optional.
-
-Installation
-------------
-1)  Unpack the distribution .tar file, and cd to the directory it creates.
-
-	$ tar xvf ncg-0.9.1-rNNN.tar
-	$ cd ncg-0.9.1-rNNN
-
-1.1) OPTIONAL: run tests to verify that everything appears to work.
-
-	$ ruby setup.rb test
-
-2)  Configure your installation.
-
-	$ ruby setup.rb config
-
-3)  Check the resulting paths in the ".config" file.  If you want to
-    change any of them, run "ruby setup.rb --help" to see what the
-    options are, and then rerun "ruby setup.rb config" with additional
-    arguments to regenerate the ".config" file.
-
-    For instance, to install the 'ncg' script in /usr/local/bin, run
-
-	$ ruby setup.rb config --prefix=/usr/local
-
-    To install the 'ncg' script in /opt/netomata/bin and the libraries
-    in /opt/netomata/lib, run
-
-	$ ruby setup.rb config --prefix=/opt/netomata --rbdir=/opt/netomata/lib
-
-    (NOTE: If you do this, and /opt/netomata/lib isn't part of your
-    Ruby installation's standard library path, you'll also need to set
-    the "NETOMATA_LIB" environment variable to "/opt/netomata/lib" or
-    pass a "-L /opt/netomata/lib" argument to every invocation of "ncg",
-    so that "ncg" will know where to find the libraries.)
-
-4)  Do a dry run to see what's going to be installed where.  If you want to
-    make any changes, go back to step 3.
-
-   	$ ruby setup.rb install --no-harm
-
-5)  When you are satisfied with the config, prepare your files for installation.
-
-	$ ruby setup.rb setup
-
-6)  Install the files (you may need to do this as root, depending on the
-    permissions of the destination directories).
-
-   	# ruby setup.rb install
-
 Try It
 ------
-In the sample/switches directory of the distribution, there is a fairly
-simple sample configuration that generates config files for a pair of
+In the "examples/switches" directory of the distribution, there is a fairly
+simple example configuration that generates config files for a pair of
 Cisco router/switches providing active-active redundancy for a single-rack
 web hosting environment.
 
-1)  cd to the "sample/switches" directory in the distribution.
+1)  cd to the "examples/switches" directory in the distribution.
 
 2)  Run the following command:
 	ncg -v switches.neto
@@ -161,12 +133,12 @@ web hosting environment.
 4)  Start experimenting by reading through the "switches.neto" file, and
     working your way out from there.
 
-A More Complex Sample Scenario
-------------------------------
-The sample/web_hosting directory contains a more complex set of NCG
-files and templates to generate a complete set of switch/router,
+A More Complex Example
+----------------------
+The "examples/web_hosting" directory contains a more complex set
+of NCG files and templates to generate a complete set of switch/router,
 Nagios, and MRTG configs for a small single-rack data center for
-an Internet-facing web service.  
+an Internet-facing web service.
 
 The scenario and associated network design are more fully explained
 in pages in the Netomata wiki:
@@ -187,14 +159,14 @@ Briefly, the rack contains:
 	(with several Xen virtual Linux servers running on each of
 	those real servers)
 
-Currently, the "sample/web_hosting" directory contains a complete
+Currently, the "examples/web_hosting" directory contains a complete
 Netomata config that generates configs for:
 
     * the pair of Cisco 3550-48 switch/routers 
     * Nagios status monitoring via SNMP
     * MRTG performance montioring via SNMP
 
-In future releases, we plan to extend this sample so that it is
+In future releases, we plan to extend this example so that it is
 also generating configs for the firewalls, load balancers, DNS,
 Xen, and the various other devices and services involved in the
 web hosting environment that we're modeling.

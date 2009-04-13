@@ -1,0 +1,150 @@
+The "web_hosting" Example
+=========================
+The "examples/web_hosting" directory of the distribution contains
+a more complex set of NCG files and templates to generate a complete
+set of switch/router, Nagios, and MRTG configs for a small single-rack
+data center for an Internet-facing web service.
+
+Background
+----------
+The scenario and associated network design are more fully explained
+in pages in the Netomata wiki:
+
+    http://www.netomata.com/wiki/web_hosting_example
+    http://www.netomata.com/wiki/web_hosting_example_network_design
+
+Briefly, the rack contains:
+
+    2 Cisco 3550-48 switch/routers (48 ports of FastE and 2 of GigE),
+	configured largely as mirror images of each other to provide 
+	active-active redundancy
+    2 firewalls (make/model not yet specified) running in a redundant
+	configuration
+    2 load balancers (make/model not yet specified) running in a
+    	redundant configuration
+    3 (of a planned total of 24) 1U servers running Linux and Xen
+	(with several Xen virtual Linux servers running on each of
+	those real servers)
+
+Currently, the "examples/web_hosting" directory contains a complete
+Netomata config that generates configs for:
+
+    * the pair of Cisco 3550-48 switch/routers 
+    * Nagios status monitoring via SNMP
+    * MRTG performance montioring via SNMP
+
+In future releases, we plan to extend this example so that it is
+also generating configs for the firewalls, load balancers, DNS,
+Xen, and the various other devices and services involved in the
+web hosting environment that we're modeling.
+
+Files
+-----
+    web_hosting.neto
+    	The main file which describes the configuration of the network.
+	Includes several other files by reference.
+
+    web_hosting.pre.neto
+	A file that gets included at the beginning of the "web_hosting.neto"
+	file, which could contain overrides or various predefintions.
+
+	Note that it's actually included in the "web_hosting.neto" file via
+	a "web_hosting.pre*.neto" wildcard, so you could also create files
+	named "web_hosting.pre.0.neto", "web_hosting.pre.1.neto", and so
+	forth, and they would all be included at the same time.
+
+    web_hosting.post.neto
+    	A file that gets included at the end of the "web_hosting.neto" file,
+	which could override various things that had previously been defined.
+
+	Note that it's actually included in the "web_hosting.neto" file via
+	a "web_hosting.post*.neto" wildcard, so you could also create files
+	named "web_hosting.post.0.neto", "web_hosting.post.1.neto", and so
+	forth, and they would all be included at the same time.
+
+    vlans.neto_table
+	The actual data about VLANs in this data center, listing
+	the VLAN ID, name, description, netmask, and so forth for
+	each.  This data is used in two different ways via "table"
+	directives in the "web_hosting.neto" file.  First, in
+	conjunction with the "vlans.neto_table_hdr" file, it is
+	used to define the "!vlans" list of vlans in the network
+	model.  Second, in conjunction with the
+	"vlan-interfaces.neto_table_hdr" file, it is used to define
+	the VLAN interfaces for each router.
+
+    secrets.neto
+	This file is used to add an "enable secret" to the basic
+	template for a Cisco router.
+
+	Note that it's actually included in the "web_hosting.neto" file via
+	a "secrets*.neto" wildcard, so you could also create files
+	named "secrets.0.neto", "secrets.1.neto", and so forth, and they
+	would all be included at the same time.
+
+    users.neto_table
+        This file is used to define the "users" to be created on each
+	Cisco router.
+
+	Note that it's actually included in the "web_hosting.neto" file via
+	a "users*.neto_table" wildcard, so you could also create files
+	named "users.0.neto_table", "users.1.neto_table", and so forth,
+	and they would all be included at the same time, perhaps overriding
+	info contained in the basic "users.neto_table" file.
+
+    templates/
+	This subdirectory contains the templates for the config
+	files for various devices and services.
+
+    configs/
+	This directory (which is created automatically if it doesn't
+	exist) contains the generated config files for all the
+	devices and services.
+
+    configs/switch-[12].config
+	The generated config files for the two Cisco switch/routers.
+
+	To install them on the switch, you'd first copy them to a
+	directory which the switch could access via TFTP, HTTP, or
+	FTP, and then use the "copy" command on the switch to copy
+	them to the switch's "startup-config" (i.e., on switch-1,
+	"copy http://172.24.1.11/configs/switch-1.config startup-config").
+	You would then issue a "reload" command on the switch to
+	restart the switch with that new configuration.  (You could
+	theoretically instead use a "configure replace" command to
+	replace the running config with the new config _without_
+	restarting the switch, but unfortunately that isn't always
+	as reliable and trouble-free as simply restarting the
+	switch with the new config.)
+
+    configs/mrtg/
+	The generated config files for the MRTG monitoring system.
+	On a standard MRTG installation, you would copy the "mrtg.cfg"
+	file to /etc/mrtg.cfg, and the "index.html" and
+	"netomata.logo.160x80.jpg" files to web server directory where
+	MRTG writes its files (typically "/var/www/mrtg").  Since MRTG
+	usually runs every 5 minutes from cron, there is no need to
+	restart it; it will use the new mrtg.cfg file the next time
+	it is run by cron.
+
+    configs/nagios/
+	The generated config files for the Nagios monitoring system.
+	On a standard Nagios installation, you would copy all the
+	files from here into a subdirectory that your Nagios
+	installation had been told to check for config files
+	("/etc/nagios/objects/netomata", for example, if there was
+	a "cfg_dir=/etc/nagios/objects/netomata" line in your main
+	"nagios.cfg" file), and then restart your Nagios daemon
+	(i.e., via "/etc/init.d/nagios restart").
+
+    configs-baseline/
+	This directory contains the "original" config files for all
+	the devices and service, as distributed with the NCG software
+	release.  It's useful as something to compare newly-generated
+	configs to, to see what effect your changes have had.
+
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.

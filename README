@@ -64,6 +64,22 @@ Program and file format documentation is online at
 A snapshot of this documentation is in the "doc" subdirectory
 of the release.
 
+Try It
+------
+In the "examples/switches" directory of the distribution, there is
+a fairly simple example configuration that generates config files
+for a pair of Cisco router/switches providing active-active redundancy
+for a single-rack web hosting environment.
+
+The file "examples/switches/README.switches" contains background
+information about the example, and a step by step walk through using
+the tool in various ways, to illustrate its capabilities and benefits.
+
+Once you've played with the basic "switches" example, there is a more
+complex and complete (and applicable in the real world) example in the
+"examples/web_hosting" subdirectory of the distribution.  See the
+"examples/web_hosting/README.web_hosting" file for more information.
+
 Status
 ------
 This release should definitely be considered experimental in nature.
@@ -106,70 +122,6 @@ all rely on the model you build of your network (the .neto and .neto_table
 files) but will perform functions beyond simply generating config files;
 for example, we're contemplating tools that will help you do capacity
 planning and failure analysis.
-
-Try It
-------
-In the "examples/switches" directory of the distribution, there is a fairly
-simple example configuration that generates config files for a pair of
-Cisco router/switches providing active-active redundancy for a single-rack
-web hosting environment.
-
-1)  cd to the "examples/switches" directory in the distribution.
-
-2)  Run the following command:
-	ncg -v switches.neto
-
-3)  Take a look at these files:
-
-	configs/switch-1.config
-	configs/switch-2.config
-
-    Note that they are newly generated, that they are complete ready-to-use
-    Cisco config files, and that they match the "baseline" config files at:
-
-	configs/switch-1.baseline
-	configs/switch-2.baseline
-
-4)  Start experimenting by reading through the "switches.neto" file, and
-    working your way out from there.
-
-A More Complex Example
-----------------------
-The "examples/web_hosting" directory contains a more complex set
-of NCG files and templates to generate a complete set of switch/router,
-Nagios, and MRTG configs for a small single-rack data center for
-an Internet-facing web service.
-
-The scenario and associated network design are more fully explained
-in pages in the Netomata wiki:
-
-    http://www.netomata.com/wiki/web_hosting_example
-    http://www.netomata.com/wiki/web_hosting_example_network_design
-
-Briefly, the rack contains:
-
-    2 Cisco 3550-48 switch/routers (48 ports of FastE and 2 of GigE),
-	configured largely as mirror images of each other to provide 
-	active-active redundancy
-    2 firewalls (make/model not yet specified) running in a redundant
-	configuration
-    2 load balancers (make/model not yet specified) running in a
-    	redundant configuration
-    3 (of a planned total of 24) 1U servers running Linux and Xen
-	(with several Xen virtual Linux servers running on each of
-	those real servers)
-
-Currently, the "examples/web_hosting" directory contains a complete
-Netomata config that generates configs for:
-
-    * the pair of Cisco 3550-48 switch/routers 
-    * Nagios status monitoring via SNMP
-    * MRTG performance montioring via SNMP
-
-In future releases, we plan to extend this example so that it is
-also generating configs for the firewalls, load balancers, DNS,
-Xen, and the various other devices and services involved in the
-web hosting environment that we're modeling.
 
 Support
 -------

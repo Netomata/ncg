@@ -240,8 +240,8 @@ end
 desc "Create Versions"
 task "Versions" do
     puts "generating Versions..."
-    sh 'svn info > Versions'
-    sh 'svn status -v #{dist_files.join(" ")} >> Versions'
+    sh "svn info > Versions"
+    sh "svn status -v #{dist_files.join(" ")} >> Versions"
 end
 
 desc "Update svn:ignore property"

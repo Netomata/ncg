@@ -194,7 +194,7 @@ EOF
 end
 
 desc "Create all files for distribution"
-task "dist" => ["dist_dir", "check_commit_update", "VERSION", "lib/netomata/version.rb", "Versions", "Manifest", "dist_tar", "dist_tar_gz"]
+task "dist" => ["dist_dir", "check_commit_update", "VERSION", "lib/netomata/version.rb", "doc", "Versions", "Manifest", "dist_tar", "dist_tar_gz"]
 
 desc "Clean out the dist directory"
 task "dist_clean" do
@@ -238,7 +238,7 @@ task "Manifest" => ["doc"]  do
 end
 
 desc "Create Versions"
-task "Versions" do
+task "Versions" => ["doc"] do
     puts "generating Versions..."
     sh "svn info > Versions"
     sh "svn status -v #{dist_files.join(" ")} >> Versions"

@@ -1,5 +1,5 @@
-Installation Instructions
-=========================
+Installation and Removal Instructions
+=====================================
 
 Requirements
 ------------
@@ -33,6 +33,11 @@ Installation
 
 	$ ruby setup.rb config --prefix=/usr/local
 
+    (NOTE: In this case, the Netomata libraries that 'ncg' depends upon
+    will still default to being installed in your system's site-specific
+    Ruby library path, which is often /usr/local/lib/site_ruby or a
+    subdirectory thereof.)
+
     To install the 'ncg' script in /opt/netomata/bin and the libraries
     in /opt/netomata/lib, run
 
@@ -57,6 +62,16 @@ Installation
     permissions of the destination directories).
 
    	# ruby setup.rb install
+
+Removal
+-------
+The "ruby setup.rb install" step of the installation process leaves
+behind a file named "InstalledFiles" in the current directory,
+containing the full path to all of the files created by the "install"
+step.  To remove the software, simply remove all the files named in
+"InstalledFiles":
+
+	# rm -f `cat InstalledFiles`
 
 # $Id$
 # Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 

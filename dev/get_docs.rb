@@ -50,11 +50,16 @@ def get(url)
 
     pathname = url.sub(/^http:\/\/[^\/]*\//,"")
     pathname.sub!("docs", "doc")
+    pathname.concat(".html") unless (pathname =~ /\.html$/)
     dirname, filename = File.split(pathname)
     FileUtils.mkdir_p(dirname)
 
     dp = DocPage.new($agent.get(url))
-    File.new(pathname,"w").print(dp.export.content.sub(/<base href=.*\/>/,""))
+    File.new(pathname,"w").print(
+	dp.export.content.
+	    sub(/<base href=.*\/>/,"").
+	    gsub(/(href="\.\.\/[^"]*)"/, '\1.html"')
+    )
 
     uri = URI.parse(url)
     dp.siblings.each { |l|

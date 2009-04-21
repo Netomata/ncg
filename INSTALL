@@ -5,8 +5,9 @@ Requirements
 ------------
 Prerequisite tools that the software depends on are explained in
 the "REQUIREMENTS" file.  In a nutshell, you need Ruby 1.8.6 (it
-might work under other versions, but we haven't yet tested it under
-other versions), and the "facets" Ruby gem.  We've also found the
+might work under later versions, but definitely won't work under
+Ruby 1.8.5 or earlier; we haven't yet tested it under later versions
+than Ruby 1.8.6), and the "facets" Ruby gem.  We've also found the
 "ruby-debug" gem to be very useful for debugging, but it is optional.
 
 Installation

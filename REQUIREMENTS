@@ -11,7 +11,9 @@ before NCG will work:
     Required
     --------
     Ruby
-	We've been developing the code under Ruby 1.8.6.
+	We've been developing the code under Ruby 1.8.6.  We know
+	for sure that it won't work under Ruby 1.8.5 or earlier; it
+	depends upon some standard methods added in Ruby 1.8.6.
 	We haven't tried it under Ruby 1.9 yet; if you do, let us
 	know how it works! ;-)
 

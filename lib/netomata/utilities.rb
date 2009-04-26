@@ -126,7 +126,7 @@ module Netomata::Utilities::ClassMethods
     # but isn't of class _expected_class_ (Netomata::Node, by default).
     # Otherwise returns true.
     def template_arg(name, expected_class=Netomata::Node)
-	if ! instance_variable_defined?(name) then
+	if ! instance_variables.member?(name) then
 	    raise ArgumentError, "argument '#{name}' expected, but not defined"
 	end
 	if (! expected_class.nil?) then

@@ -247,6 +247,22 @@ class Node < Dictionary
 		    l.match(/\[%.*#.*%\]/)	#   but only if not in [% ... %]
 		l.gsub!(/\s*$/, "")		# eliminate trailing whitespace
 		l.gsub!(/^\s*/, "")		# eliminate leading whitespace
+
+		if (l.match(/\[%.*%\]/)) then
+		    # l contains an ERB template, so process it
+		    pn = self[buildkey(pstack.last)]
+		    if pn.nil? then
+			pn = self 
+		    end
+		    l = Netomata::Template.new(
+			    @@iostack.last.filename,
+			    @@iostack.last.lineno,
+			    l.gsub(/\[%(.*)%\]/, '<%\1%>')
+			 ).result_from_vars({
+			    "@target" => pn,
+			    "@target_key" => pn.key})
+		end
+
 		case l
 		when /^$/ then
 		    # blank line
@@ -280,20 +296,6 @@ class Node < Dictionary
 		    # admin_ip = [%= @target["(...)!base_ip"] + "|0.0.16.0" %]
 		    kl = $1
 		    kr = $2
-		    if (kr.match(/\[%.*%\]/)) then
-			# kr contains an ERB template
-			pn = self[buildkey(pstack.last)]
-			if pn.nil? then
-			    pn = self 
-			end
-			kr = Netomata::Template.new(
-				@@iostack.last.filename,
-				@@iostack.last.lineno,
-				kr.gsub(/\[%(.*)%\]/, '<%\1%>')
-			     ).result_from_vars({
-				"@target" => pn,
-				"@target_key" => pn.key})
-		    end
 		    self[buildkey(pstack.last, kl)] = kr
 		when /^\}$/
 		    # }

@@ -1,0 +1,29 @@
+Point-to-Point Links Example
+============================
+
+Let's say you're running a WAN made up of a series of point-to-point
+links (T1 lines, VPN links, or whatever). You want a good way to
+represent those links in your Netomata network model, so that it's
+easy to add/drop/change links, while ensuring that all the right
+data gets into the model.
+
+For example, let's say you're running a point-to-point network for
+a small company with main offices in San Francisco (SFO) and Los
+Angeles (LAX), and branch offices in San Jose (SJC), Oakland (OAK),
+San Diego (SAN), and Santa Barbara (SBA). Each main office (SFO and
+LAX) has a Cisco 3640 router, and each branch office (SJC, OAK,
+SAN, and SBA) has a Cisco 3620. Each branch office has a point-to-point
+link to both main offices (SFO and LAX). There's also a point-to-point
+link between the two main offices (SFO and LAX). (Never mind the
+ridiculous economics of running all these point-to-point links;
+imagine that they're all point-to-point VPN connections, if it makes
+you happier. ;-) )
+
+For a full explanation, see:
+	http://www.netomata.com/wiki/point_to_point_links_example
+
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.

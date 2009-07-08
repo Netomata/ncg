@@ -1,0 +1,226 @@
+# <root>:0
+devices {
+    # ./devices.neto_table:14
+    @000000001 {
+        # ./devices.neto_table:14
+        name = sfo
+        location = San Francisco
+        model = Cisco 3640
+        management_ip = 192.168.1.1
+        interfaces {
+            # ./links.neto_table:43
+            @000000001 {
+                # ./links.neto_table:43
+                name = Serial0/1
+                description = Link to sjc:Serial0/1
+                ip_net = 172.31.1.0
+                ip = 172.31.1.1
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000002 {
+                # ./links.neto_table:44
+                name = Serial0/2
+                description = Link to oak:Serial0/1
+                ip_net = 172.31.1.4
+                ip = 172.31.1.5
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000003 {
+                # ./links.neto_table:45
+                name = Serial0/3
+                description = Link to san:Serial0/1
+                ip_net = 172.31.1.8
+                ip = 172.31.1.9
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000004 {
+                # ./links.neto_table:46
+                name = Serial0/4
+                description = Link to sba:Serial0/1
+                ip_net = 172.31.1.12
+                ip = 172.31.1.13
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000005 {
+                # ./links.neto_table:47
+                name = Serial1/1
+                description = Link to lax:Serial1/1
+                ip_net = 172.31.0.0
+                ip = 172.31.0.1
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+        }
+    }
+    @000000002 {
+        # ./devices.neto_table:15
+        name = lax
+        location = Los Angeles
+        model = Cisco 3640
+        management_ip = 192.168.2.1
+        interfaces {
+            # ./links.neto_table:47
+            @000000001 {
+                # ./links.neto_table:47
+                name = Serial1/1
+                description = Link to sfo:Serial1/1
+                ip_net = 172.31.0.0
+                ip = 172.31.0.2
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000002 {
+                # ./links.neto_table:48
+                name = Serial0/1
+                description = Link to sjc:Serial0/2
+                ip_net = 172.31.2.0
+                ip = 172.31.2.1
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000003 {
+                # ./links.neto_table:49
+                name = Serial0/2
+                description = Link to oak:Serial0/2
+                ip_net = 172.31.2.4
+                ip = 172.31.2.5
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000004 {
+                # ./links.neto_table:50
+                name = Serial0/3
+                description = Link to san:Serial0/2
+                ip_net = 172.31.2.8
+                ip = 172.31.2.9
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000005 {
+                # ./links.neto_table:51
+                name = Serial0/4
+                description = Link to sba:Serial0/2
+                ip_net = 172.31.2.12
+                ip = 172.31.2.13
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+        }
+    }
+    @000000003 {
+        # ./devices.neto_table:16
+        name = sjc
+        location = San Jose
+        model = Cisco 3620
+        management_ip = 192.168.3.1
+        interfaces {
+            # ./links.neto_table:43
+            @000000001 {
+                # ./links.neto_table:43
+                name = Serial0/1
+                description = Link to sfo:Serial0/1
+                ip_net = 172.31.1.0
+                ip = 172.31.1.2
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000002 {
+                # ./links.neto_table:48
+                name = Serial0/2
+                description = Link to lax:Serial0/1
+                ip_net = 172.31.2.0
+                ip = 172.31.2.2
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+        }
+    }
+    @000000004 {
+        # ./devices.neto_table:17
+        name = oak
+        location = Oakland
+        model = Cisco 3620
+        management_ip = 192.168.4.1
+        interfaces {
+            # ./links.neto_table:44
+            @000000001 {
+                # ./links.neto_table:44
+                name = Serial0/1
+                description = Link to sfo:Serial0/2
+                ip_net = 172.31.1.4
+                ip = 172.31.1.6
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000002 {
+                # ./links.neto_table:49
+                name = Serial0/2
+                description = Link to lax:Serial0/2
+                ip_net = 172.31.2.4
+                ip = 172.31.2.6
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+        }
+    }
+    @000000005 {
+        # ./devices.neto_table:18
+        name = san
+        location = San Diego
+        model = Cisco 3620
+        management_ip = 192.168.5.1
+        interfaces {
+            # ./links.neto_table:45
+            @000000001 {
+                # ./links.neto_table:45
+                name = Serial0/1
+                description = Link to sfo:Serial0/3
+                ip_net = 172.31.1.8
+                ip = 172.31.1.10
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000002 {
+                # ./links.neto_table:50
+                name = Serial0/2
+                description = Link to lax:Serial0/3
+                ip_net = 172.31.2.8
+                ip = 172.31.2.10
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+        }
+    }
+    @000000006 {
+        # ./devices.neto_table:19
+        name = sba
+        location = Santa Barbara
+        model = Cisco 3620
+        management_ip = 192.168.6.1
+        interfaces {
+            # ./links.neto_table:46
+            @000000001 {
+                # ./links.neto_table:46
+                name = Serial0/1
+                description = Link to sfo:Serial0/4
+                ip_net = 172.31.1.12
+                ip = 172.31.1.14
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+            @000000002 {
+                # ./links.neto_table:51
+                name = Serial0/2
+                description = Link to lax:Serial0/4
+                ip_net = 172.31.2.12
+                ip = 172.31.2.14
+                netmask = 255.255.255.252
+                type = point_to_point
+            }
+        }
+    }
+}

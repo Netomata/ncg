@@ -1,0 +1,19 @@
+# List of devices in our network, along with their location,
+# model number, and IP address to be used for managing them
+#
+# For each device, we simply create a node in "!devices" with the info for
+# that device.
+# 
+@ !devices!(+)!name = %{name}
+@ !devices!(name=%{name})!location = %{location}
+@ !devices!(name=%{name})!model = %{model}
+@ !devices!(name=%{name})!management_ip = %{management_ip}
+#
+% name	location	model		management_ip
+#
+sfo	San Francisco	Cisco 3640	192.168.1.1
+lax	Los Angeles	Cisco 3640	192.168.2.1
+sjc	San Jose	Cisco 3620	192.168.3.1
+oak	Oakland		Cisco 3620	192.168.4.1
+san	San Diego	Cisco 3620	192.168.5.1
+sba	Santa Barbara	Cisco 3620	192.168.6.1

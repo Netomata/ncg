@@ -1,0 +1,51 @@
+# Each data line below describes a single point-to-point link from
+# 	ifcA on rtrA to ifcZ on rtrZ. 
+#
+# A /30 subnet is assigned to each link.  The interface on rtrA gets the .1
+#	address on the subnet, and the interface on rtrB gets the .2 address.
+#
+# For each router/interface pair, we set the following keys:
+#	name = name of this interface (i.e., Serial0/1)
+#	description = text describing what's at the other end of this link
+#	ip_net = IP network assigned to this net (should be a /30 boundary)
+#	ip = this interface's IP address on ip_net
+#		(.1 for rtrA:ifcA, .2 for rtrZ:ifcZ)
+#	netmask = 255.255.255.252 (i.e., /30)
+#	type = point_to_point (i.e., what kind of interface this is)
+#
+########
+# Set keys for rtrA:ifcA
+########
+@ !devices!(name=%{rtrA})!interfaces!(+)!name = %{ifcA}
+@ !devices!(name=%{rtrA})!interfaces!(name=%{ifcA})!description = \
+	Link to %{rtrZ}:%{ifcZ}
+@ !devices!(name=%{rtrA})!interfaces!(name=%{ifcA})!ip_net = %{ip_net}
+@ !devices!(name=%{rtrA})!interfaces!(name=%{ifcA})!ip = \
+	[%= ip_union("%{ip_net}", "0.0.0.1") %]
+@ !devices!(name=%{rtrA})!interfaces!(name=%{ifcA})!netmask = 255.255.255.252
+@ !devices!(name=%{rtrA})!interfaces!(name=%{ifcA})!type = point_to_point
+########
+# Set keys for rtrZ:ifcZ
+########
+@ !devices!(name=%{rtrZ})!interfaces!(+)!name = %{ifcZ}
+@ !devices!(name=%{rtrZ})!interfaces!(name=%{ifcZ})!description = \
+	Link to %{rtrA}:%{ifcA}
+@ !devices!(name=%{rtrZ})!interfaces!(name=%{ifcZ})!ip_net = %{ip_net}
+@ !devices!(name=%{rtrZ})!interfaces!(name=%{ifcZ})!ip = \
+	[%= ip_union("%{ip_net}", "0.0.0.2") %]
+@ !devices!(name=%{rtrZ})!interfaces!(name=%{ifcZ})!netmask = 255.255.255.252
+@ !devices!(name=%{rtrZ})!interfaces!(name=%{ifcZ})!type = point_to_point
+########
+# Data
+########
+% rtrA	ifcA		rtrZ	ifcZ		ip_net
+# ----	----		----	----		------
+sfo	Serial0/1	sjc	Serial0/1	172.31.1.0
+sfo	Serial0/2	oak	Serial0/1	172.31.1.4
+sfo	Serial0/3	san	Serial0/1	172.31.1.8
+sfo	Serial0/4	sba	Serial0/1	172.31.1.12
+sfo	Serial1/1	lax	Serial1/1	172.31.0.0
+lax	Serial0/1	sjc	Serial0/2	172.31.2.0
+lax	Serial0/2	oak	Serial0/2	172.31.2.4
+lax	Serial0/3	san	Serial0/2	172.31.2.8
+lax	Serial0/4	sba	Serial0/2	172.31.2.12

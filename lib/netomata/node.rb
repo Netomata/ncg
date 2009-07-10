@@ -417,6 +417,13 @@ class Node < Dictionary
 		    else
 			raise "Malformed '@' line"
 		    end
+		when /^</ then
+		    # per-row import_file line
+		    if m = l.match(/^<\s+(\S+)\s+(.*)$/) then
+			actions << ['<', m[1], m[2]]
+		    else
+			raise "Malformed '<' line"
+		    end
 		when /^%/ then
 		    # field-names line
 		    # strip leading marker and whitespace
@@ -451,6 +458,22 @@ class Node < Dictionary
 				    "@target" => self,
 				    "@target_key" => self.key})
 			    self[k] = r
+			when '<'
+			    k = var_sub(f,fields,d)
+			    r = var_sub(a,fields,d)
+			    r = Netomata::Template.new(
+				    @@iostack.last.filename,
+				    @@iostack.last.lineno,
+				    var_sub(a,fields,d).
+				    	gsub(/\[%(.*)%\]/, '<%\1%>')
+				 ).result_from_vars({
+				    "@target" => self,
+				    "@target_key" => self.key})
+			    self[k].import_file(
+					r.split(" ").collect { |e|
+					    relative_filename(io.filename,e)
+					}
+				   )
 			when '+'
 			    fk = var_sub(f,fields,d)
 			    fkn,fkk = dictionary_tuple(fk,true)

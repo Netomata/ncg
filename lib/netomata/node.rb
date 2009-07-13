@@ -457,7 +457,10 @@ class Node < Dictionary
 				 ).result_from_vars({
 				    "@target" => self,
 				    "@target_key" => self.key})
-			    self[k] = r
+			    if (! ["", "-"].include?(r)) then
+				# set if not equal to "" or "-"
+				self[k] = r
+			    end
 			when '<'
 			    k = var_sub(f,fields,d)
 			    r = var_sub(a,fields,d)

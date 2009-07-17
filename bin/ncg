@@ -81,7 +81,7 @@ args = NcgArguments.new(ARGV)
 # push the NETOMATA_LIB location onto the load path, before requiring any
 # Netomata-provided libraries
 $LOAD_PATH.push($NETOMATA_LIB)
-puts "NETOMATA_LIB=#{$NETOMATA_LIB}" if $verbose
+$stderr.puts "NETOMATA_LIB=#{$NETOMATA_LIB}" if $verbose
 
 # we delay requiring the 'netomata' libraries until here, so that the location
 # of the libraries can be specified by a '-L' command line argument
@@ -117,7 +117,7 @@ begin	# rescue block
     # get the list of targets to generate config files for
     net.keys_having_key("ncg_output").each do |target_key|
 	if $verbose then
-	    puts "Generating #{net[target_key]["ncg_output"]} for #{target_key}"
+	    $stderr.puts "Generating #{net[target_key]["ncg_output"]} for #{target_key}"
 	end
 	unless (template_filename = net[target_key]["ncg_template"])
 	    raise "Target '#{target_key}' has 'ncg_output' key," +

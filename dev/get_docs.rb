@@ -5,6 +5,29 @@ require 'mechanize'
 require 'uri'
 require 'ruby-debug'
 
+require 'optparse'
+$release = ""
+OptionParser.new do |opts|
+    opts.banner = "Usage: get_docs.rb [-r RELEASE]"
+
+    opts.on("-r",
+	    "--release RELEASE",
+	    "Obtain docs for specified release") do |r|
+	$release = r
+    end
+
+    opts.on_tail("-h", "--help", "Show this message") do
+	puts opts
+	exit
+    end
+end.parse!
+
+if ($release.empty?) then
+    $first_url = "http://www.netomata.com/docs/programs/ncg"
+else
+    $first_url = "http://www.netomata.com/docs-#{$release}/programs/ncg"
+end
+
 $agent = WWW::Mechanize.new
 
 class DocPage
@@ -48,8 +71,7 @@ def get(url)
     end
     $got.push(url)	# push early, in case page refers to itself
 
-    pathname = url.sub(/^http:\/\/[^\/]*\//,"")
-    pathname.sub!("docs", "doc")
+    pathname = url.sub(/^http:\/\/[^\/]*\/[^\/]*\//,"doc/")
     pathname.concat(".html") unless (pathname =~ /\.html$/)
     dirname, filename = File.split(pathname)
     FileUtils.mkdir_p(dirname)
@@ -67,7 +89,7 @@ def get(url)
     }
 end
 
-$queue.push('http://www.netomata.com/docs/programs/ncg')
+$queue.push($first_url)
 until ($queue.size == 0) do
     get($queue.pop)
 end

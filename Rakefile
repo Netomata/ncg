@@ -85,7 +85,11 @@ end
 
 desc "Generate docs from Netomata web site"
 task "doc" => ["lib/netomata/version.rb"] do
-    sh 'dev/get_docs.rb'
+    doc_release = File.new("dev/RELEASE").readline.chomp!
+    # Docs track minor releases (x.y), not bugfix releases (x.y.z),
+    # so convert doc_release from (for example) 0.10.1 to 0.10.x
+    doc_release.gsub!(/\.[0-9]+$/, ".x")
+    sh "dev/get_docs.rb -v #{doc_release}"
 end
 
 desc "Generate RDOC documentation"

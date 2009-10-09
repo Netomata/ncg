@@ -1,5 +1,13 @@
 Tasks not yet added to FogBugz
 ==============================
+Add support for "ncg_idiom_keys" list to create a "search path" for "idioms".
+
+Lock data tree before starting generation phase, to prevent anything in 
+generation from modifying data in tree.
+
+Add "version_check" directive in .neto files, to ensure late-enough version
+with needed features is being used to process file.
+
 In bin/ncg rescue block, need to figure out some way to re-introduce target
 context to backtrace.  Was previously printing stuff like
 	while generating #{net[target_key]["ncg_output"]}

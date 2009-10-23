@@ -83,6 +83,21 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
+    # node.affirm?(key) -> true or false
+    #
+    # Returns true if node has a given _key_ defined,
+    # and value of _key_ is affirmative (i.e., is a string
+    # that starts with upper- or lower-case "y").
+    # Returns false otherwise.
+    def affirm?(key)
+        if (self.has_key?(key) && (self[key] =~ /^y/i)) then
+            return true
+        else
+            return false
+        end
+    end
+
+    # :call-seq:
     #	dump(io=STDOUT,level=0,show_source=true) -> self
     #
     # Recursively dumps the contents of the node in .neto format to the
@@ -118,6 +133,17 @@ class Netomata::Node < Dictionary
 	n = super()
 	n.initialize_copy(self)
 	n
+    end
+
+    # :call-seq:
+    # node.each_by_subkey(k) { |key, subnode| block } -> Array
+    #
+    # Sorts node's sub-nodes using sort_by_subkey(_k_), then
+    # applies _block_ to each resulting [_key_, _subnode_] pair.
+    #
+    # Returns array of [_key_, _subnode_] pairs (same as sort_by_subkey()).
+    def each_by_subkey(k, &block)
+	self.sort_by_subkey(k).each &block
     end
 
     # :call-seq:
@@ -761,6 +787,59 @@ class Netomata::Node < Dictionary
 	    end
 	}
 	ra
+    end
+
+    # :call-seq:
+    # node.sort_by_subkey(k) -> Array
+    # node.sort_by_subkey(k) { |a,b| block } -> Array
+    #
+    # Returns sub-nodes of node as an array of [_key_, _value_] tuples,
+    # sorted by value of _k_ in each sub-node.  
+    # * If optional _block_ is given, it is used to compare the values being
+    #   sorted, to determine sort order  
+    #   * Just like the <=> operator, the block should take 2 arguments,
+    #     and should return -1, 0, or 1 depending on whether the
+    #     first argument is less than, equal to, or greater than the
+    #     second argument. 
+    #   * The comparison block should deal gracefully with _nil_ arguments,
+    #     since a _nil_ argument will be passed in for a sub-node doesn't
+    #     have a value for _k_.
+    # * If no _block_ is given, then the "compare_parts" method is used to
+    #   compare the values being sorted, to determine sort order.
+    #   * compare_parts treats a nil argument as greater than any other
+    #     argument, so if a given sub-node doesn't have a key _k_, that
+    #     sub-node will be sorted to the end of the list.
+    #
+    # For example, given the following nodes and sub-nodes:
+    # * n["a"] = { "name" => "FastEthernet1" }
+    # * n["b"] = { "name" => "FastEthernet10" }
+    # * n["c"] = { "name" => "FastEthernet2" }
+    # * n["d"] = { "alias" => "FastEthernet3" }
+    # * n["e"] = { "name" => "FastEthernet4" }
+    # Then n.sort_by_subkey("name") will return the following array of tuples:
+    # * [
+    #   * ["a", {"name"=>"FastEthernet1"}],
+    #   * ["c", {"name"=>"FastEthernet2"}],
+    #   * ["e", {"name"=>"FastEthernet4"}],
+    #   * ["b", {"name"=>"FastEthernet10"}]
+    #   * ["d", {"alias"=>"FastEthernet3"}]
+    # * ]
+    def sort_by_subkey(k, &block)
+	self.sort { |a,b|
+	    # a and b will both be [key, node] tuples (2-element Arrays).
+	    # Since we want to sort by a sub-key, we need to reach into
+	    # the node, which is the second element of each tuple; thus
+	    # the references to a[1] and b[1] are to the nodes themselves,
+	    # and a[1][k] and b[1][k] accesses the value of the named
+	    # key within each node.
+
+	    if block_given? then
+		yield(a[1][k], b[1][k])
+	    else 
+		# use compare_parts() by default, if no comparator given
+		compare_parts(a[1][k], b[1][k])
+	    end
+	}
     end
 
     # :call-seq:

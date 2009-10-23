@@ -1,8 +1,10 @@
 Tasks not yet added to FogBugz
 ==============================
 Document "netmask_*" utility functions.
-
 Document "compare_parts" utility function.
+Document "affirm?" utility function.
+Document "each_by_subkey" utility function.
+Document "sort_by_subkey" utility function.
 
 Add support for "ncg_idiom_keys" list to create a "search path" for "idioms".
 

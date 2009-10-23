@@ -382,6 +382,75 @@ class NodeTest_2_General < Test::Unit::TestCase
     end
 end
 
+class NodeTest_2a_General_2 < Test::Unit::TestCase
+
+    def setup
+	@n = Netomata::Node.new
+
+	@n["q"] = Netomata::Node.new
+	@n["q"]["qnil"] = nil
+	@n["q"]["qy"] = "y"
+	@n["q"]["qY"] = "Y"
+	@n["q"]["qfoo"] = "foo"
+	@n["q"]["qn"] = "n"
+	@n["q"]["qN"] = "N"
+	@n["q"]["qany"] = "any"
+
+	@n["x"] = Netomata::Node.new
+	@n["x"]["v"] = "vx"
+
+	@n["y"] = Netomata::Node.new
+	@n["y"]["v"] = "vy"
+
+	@n["a"] = Netomata::Node.new
+	@n["a"]["v"] = "va"
+
+	@n["b"] = Netomata::Node.new
+	@n["b"]["v"] = "vb"
+
+    end
+
+    def test_affirm
+	assert_equal true, @n["q"].affirm?("qy")
+	assert_equal true, @n["q"].affirm?("qY")
+
+	assert_equal false, @n["q"].affirm?("p")	# no such key "p"
+	assert_equal false, @n["q"].affirm?("qn")
+	assert_equal false, @n["q"].affirm?("qN")
+	assert_equal false, @n["q"].affirm?("qfoo")
+	assert_equal false, @n["q"].affirm?("qany")
+	assert_equal false, @n["q"].affirm?("qnil")
+    end
+
+    def test_sort_by_subkey
+	assert_equal "[[\"a\", {\"v\"=>\"va\"}], [\"b\", {\"v\"=>\"vb\"}], [\"x\", {\"v\"=>\"vx\"}], [\"y\", {\"v\"=>\"vy\"}], [\"q\", {\"qnil\"=>nil, \"qy\"=>\"y\", \"qY\"=>\"Y\", \"qfoo\"=>\"foo\", \"qn\"=>\"n\", \"qN\"=>\"N\", \"qany\"=>\"any\"}]]", @n.sort_by_subkey("v").inspect
+
+	assert_equal "[[\"a\", {\"v\"=>\"va\"}], [\"b\", {\"v\"=>\"vb\"}], [\"x\", {\"v\"=>\"vx\"}], [\"y\", {\"v\"=>\"vy\"}], [\"q\", {\"qnil\"=>nil, \"qy\"=>\"y\", \"qY\"=>\"Y\", \"qfoo\"=>\"foo\", \"qn\"=>\"n\", \"qN\"=>\"N\", \"qany\"=>\"any\"}]]", @n.sort_by_subkey("v") { |a,b|
+	    # note that we need to deal with a or b being nil
+	    case [a.nil?, b.nil?]
+	    when [true,true]
+		0
+	    when [true,false]
+		1
+	    when [false,true]
+		-1
+	    else
+		a <=> b
+	    end
+	}.inspect
+    end
+
+    def test_each_by_subkey
+	r = []
+	@n.each_by_subkey("v") { |key,val| r << key }
+	assert_equal "[\"a\", \"b\", \"x\", \"y\", \"q\"]", r.inspect
+
+	r = []
+	@n.each_by_subkey("v") { |key,val| r << val }
+	assert_equal "[{\"v\"=>\"va\"}, {\"v\"=>\"vb\"}, {\"v\"=>\"vx\"}, {\"v\"=>\"vy\"}, {\"qnil\"=>nil, \"qy\"=>\"y\", \"qY\"=>\"Y\", \"qfoo\"=>\"foo\", \"qn\"=>\"n\", \"qN\"=>\"N\", \"qany\"=>\"any\"}]", r.inspect
+    end
+end
+
 class NodeTest_3_Import_Table < Test::Unit::TestCase
     def setup
 	@testfiles = File.join(cwd,"files","test_node")

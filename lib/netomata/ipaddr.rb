@@ -1,3 +1,9 @@
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+
 # Extends the Ruby base IPAddr class, primarily to add functions for
 # returning netmasks in various formats
 

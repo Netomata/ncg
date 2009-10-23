@@ -1,3 +1,9 @@
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+
 # for ruby-debug, per
 # http://blog.nanorails.com/articles/2006/07/14/a-better-rails-debugger-ruby-debug
 SCRIPT_LINES__ = {} unless defined?(SCRIPT_LINES__)
@@ -7,23 +13,15 @@ def cwd
 end
 
 if not $LOAD_PATH.include?(cwd) then $LOAD_PATH.unshift(cwd) end
-
-lib = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 if not $LOAD_PATH.include?(lib) then $LOAD_PATH.unshift(lib) end
 
-if ENV.has_key?("NETOMATA_LIB") then
-    netomata_lib = ENV["NETOMATA_LIB"]
-else
-    netomata_lib = "/usr/local/lib/netomata/lib"
-end
-if not $LOAD_PATH.include?(netomata_lib) then $LOAD_PATH.unshift(netomata_lib) end
 
 require 'netomata'
-require 'netmask'
 
 require 'test/unit'
 
-class TC_netmask < Test::Unit::TestCase
+class Netomata_IPAddr_Test < Test::Unit::TestCase
 
     def test_exceptions
 	# all of these should throw exceptions (out of range, etc.)

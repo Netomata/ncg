@@ -27,5 +27,6 @@ end
 require 'netomata/version'
 require 'netomata/utilities'
 require 'netomata/fileset'
+require 'netomata/ipaddr'
 require 'netomata/node'
 require 'netomata/template'

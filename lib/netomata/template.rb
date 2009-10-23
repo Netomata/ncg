@@ -248,6 +248,16 @@ EOS
 
 	    t
 	end
+
+	# Include the file named by _filename_, if it exists and is readable
+	def include_if_exists(filename, vars=nil)
+	    if File.readable?(filename) then
+		Netomata::Template.apply_by_filename(filename, vars) + "\n"
+	    else
+		""
+	    end
+	end
+
     end	# module Helpers
 
     include Helpers

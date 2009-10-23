@@ -23,8 +23,7 @@ end
 # as "class Netomata::Node", because if we do then we're unable to define
 # class method Netomata::Node.reset()
 
-class Netomata
-class Node < Dictionary
+class Netomata::Node < Dictionary
 
     @@iostack = []
 
@@ -33,9 +32,12 @@ class Node < Dictionary
     include Netomata::Utilities::ClassMethods
     include Netomata::Utilities
 
-    def Node.reset() 	# :nodoc:
+    # Class Methods
+    def self.reset() 	# :nodoc:
 	@@iostack = []
     end
+
+    # Instance Methods
 
     # :call-seq:
     #  	new()		-> new_node
@@ -1340,5 +1342,4 @@ class Node < Dictionary
 	return true
     end
 
-end	# class Node
-end	# class Netomata
+end	# class Netomata:;Node

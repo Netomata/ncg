@@ -43,6 +43,40 @@ class UtilitiesTest_1 < Test::Unit::TestCase
 	assert_equal "a!b!c!d", @n.buildkey("a!b","c","d")
     end
 
+    def test_compare_parts
+	# test nil as arg
+	assert_equal 0, @n.compare_parts(nil, nil)
+	assert_equal -1, @n.compare_parts("a", nil)
+	assert_equal 1, @n.compare_parts(nil, "a")
+
+	# aa
+	assert_equal 0, @n.compare_parts("aa", "aa")
+	assert_equal -1, @n.compare_parts("aa", "aaa")
+	assert_equal 1, @n.compare_parts("aaa", "aa")
+
+	# ab
+	assert_equal 0, @n.compare_parts("a", "a")
+	assert_equal -1, @n.compare_parts("a", "b")
+	assert_equal 1, @n.compare_parts("b", "a")
+
+    	# a_dot_b
+	assert_equal 0, @n.compare_parts("a.b", "a.b")
+	assert_equal -1, @n.compare_parts("a.", "a.b")
+	assert_equal 1, @n.compare_parts("a.b", "a.")
+	assert_equal 1, @n.compare_parts("a.b", "a")
+	assert_equal -1, @n.compare_parts("a.b", "b")
+    
+   	# numeric parts
+	assert_equal 0, @n.compare_parts("a1", "a1")
+	assert_equal 0, @n.compare_parts("a2", "a02")
+	assert_equal -1, @n.compare_parts("a2", "a10")
+
+	# interface names
+	assert_equal -1, @n.compare_parts("FastEthernet2", "FastEthernet10")
+	assert_equal -1, @n.compare_parts("FastEthernet2", "FastEthernet10/1")
+	assert_equal -1, @n.compare_parts("FastEthernet2", "FastEthernet2/1")
+    end
+
     def test_filename_to_key
 	assert_equal "a", @n.filename_to_key("a")
 	assert_equal "a!b", @n.filename_to_key("a/b")
@@ -83,6 +117,9 @@ end
 
 class UtilitiesTest_2 < Test::Unit::TestCase
     # Second set of tests for Netomata::Utilities
+    #
+    # In general, these tests are here because they depend on methods
+    # tested in UtilitiesTest1, and so should be tested after.
 
     include Netomata::Utilities
     include Netomata::Utilities::ClassMethods

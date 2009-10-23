@@ -1,5 +1,9 @@
 Tasks not yet added to FogBugz
 ==============================
+Document "netmask_*" utility functions.
+
+Document "compare_parts" utility function.
+
 Add support for "ncg_idiom_keys" list to create a "search path" for "idioms".
 
 Lock data tree before starting generation phase, to prevent anything in 

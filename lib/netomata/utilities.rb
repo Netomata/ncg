@@ -31,7 +31,103 @@ module Netomata::Utilities::ClassMethods
     def super_send(sym,*args)
 	super_method(sym).call(*args)
     end
-    
+
+    # :call-seq:
+    # compare_parts(a,b) -> -1, 0, or 1
+    #
+    # Compares two interface- or version-style names, and determine what
+    # order they should sort in.  This is similar to the Ruby core
+    # String#<=> operator, but it works in a way that is more useful
+    # for comparing things like interface names, version numbers, and such.
+    #
+    # Returns:
+    #
+    # * -1 if _a_ should sort before _b_
+    # * 0 if _a_ and _b_ are equivalent
+    # * 1 if _b_ should sort before _a_
+    #
+    # To compare the arguments _a_ and _b_, they are first broken into parts.
+    # Each part, in turn, is the longest-possible string of either:
+    # * letters [a-zA-Z]
+    # * digits [0-9]
+    # * anything else (i.e., a string of 1 or more non-alphanumeric characters)
+    #
+    # Then, the corresponding parts of each argument are compared in turn,
+    # until an answer is determined, subject to the following rules: 
+    # * If both parts are integers, they are compared numerically (so
+    #   that "2" is less than "10", even though alphabetically "10" sorts
+    #   before "2").
+    # * Otherwise, both parts are compared as text strings (case sensitive).
+    # If the corresponding parts of both arguments are equal by these rules,
+    # then the next pair of corresponding parts is considered, and so forth,
+    # until an answer is determined.
+    # 
+    # For example, consider a list of interfaces; sorted normally (not using
+    # compare_parts), their order would be:
+    #
+    # * FastEthernet1
+    # * FastEthernet10
+    # * FastEthernet10.10
+    # * FastEthernet10.2
+    # * FastEthernet2
+    #
+    # compare_parts would break each of these down into the following parts
+    # (shown by spaces) for comparison:
+    #
+    # * FastEthernet1		-> FastEthernet 1
+    # * FastEthernet10		-> FastEthernet 10
+    # * FastEthernet10.10	-> FastEthernet 10 . 10
+    # * FastEthernet10.2	-> FastEthernet 10 . 2
+    # * FastEthernet2		-> FastEthernet 2
+    #
+    # So, sorted using compare_parts for comparison, they would be:
+    #
+    # * FastEthernet1
+    # * FastEthernet2
+    # * FastEthernet10
+    # * FastEthernet10.2
+    # * FastEthernet10.10
+
+    def compare_parts(a,b)
+	case [a.nil?, b.nil?]
+	when [true,true]
+	    return 0
+	when [true,false]
+	    return 1
+	when [false,true]
+	    return -1
+	end
+	
+	# separate args into arrays where each element is either
+	# 	- an alphabetic string
+	# 	- a numeric string
+	# 	- a separator string (string of 1 or more non-alphanumerics)
+	ap = a.scan(/[a-zA-Z]+|[0-9]+|[^0-9a-zA-Z]+/)
+	bp = b.scan(/[a-zA-Z]+|[0-9]+|[^0-9a-zA-Z]+/)
+	
+	until false do
+	    return 0 if (ap.empty? && bp.empty?)
+	    return -1 if ap.empty?
+	    return 1 if bp.empty?
+
+	    ae = ap.shift
+	    be = bp.shift
+
+	    # if both are numbers, compare numerically (so "2" is before "10")
+	    if (ae.match(/^[0-9]*$/) && be.match(/^[0-9]*$/)) then
+		r = (ae.to_i <=> be.to_i)
+		return r if (r != 0)
+	    else
+		# else compare as strings
+		r = (ae <=> be)
+		return r if (r != 0)
+	    end
+	end
+
+	# should never get here
+	raise "compare_parts logic error"
+    end
+
     # :call-seq:
     # 	buildkey(*parts) -> String
     #

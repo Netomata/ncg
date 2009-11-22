@@ -89,7 +89,7 @@ task "doc" => ["lib/netomata/version.rb"] do
     # Docs track minor releases (x.y), not bugfix releases (x.y.z),
     # so convert doc_release from (for example) 0.10.1 to 0.10.x
     doc_release.gsub!(/\.[0-9]+$/, ".x")
-    sh "dev/get_docs.rb -v #{doc_release}"
+    sh "dev/get_docs.rb -r #{doc_release}"
 end
 
 desc "Generate RDOC documentation"

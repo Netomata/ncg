@@ -28,7 +28,7 @@ else
     $first_url = "http://www.netomata.com/docs-#{$release}/programs/ncg"
 end
 
-$agent = Mechanize::Mechanize.new
+$agent = Mechanize.new
 
 class DocPage
    def siblings

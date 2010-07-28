@@ -324,7 +324,10 @@ class Netomata::Node < Dictionary
 		    # admin_ip = [%= @target["(...)!base_ip"] + "|0.0.16.0" %]
 		    kl = $1
 		    kr = $2
-		    self[buildkey(pstack.last, kl)] = kr
+		    if (! ["", "-"].include?(kr)) then
+			# set if not equal to "" or "-"
+			self[buildkey(pstack.last, kl)] = kr
+		    end
 		when /^\}$/
 		    # }
 		    if pstack.length == 0 then

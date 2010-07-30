@@ -324,7 +324,15 @@ class Netomata::Node < Dictionary
 		    # admin_ip = [%= @target["(...)!base_ip"] + "|0.0.16.0" %]
 		    kl = $1
 		    kr = $2
-		    if (! ["", "-"].include?(kr)) then
+		    if (["", "-"].include?(kr)) then
+			# delete node
+			if (self.has_key?(buildkey(pstack.last,kl))) then
+			    dn, dk = dictionary_tuple(buildkey(pstack.last,kl))
+			    if (! dn.nil?) then
+				dn.delete(dk)
+			    end
+			end
+		    else
 			# set if not equal to "" or "-"
 			self[buildkey(pstack.last, kl)] = kr
 		    end
@@ -488,7 +496,13 @@ class Netomata::Node < Dictionary
 				 ).result_from_vars({
 				    "@target" => self,
 				    "@target_key" => self.key})
-			    if (! ["", "-"].include?(r)) then
+			    if (["", "-"].include?(r)) then
+				# delete node
+				dn, dk = dictionary_tuple(k)
+				if (! dn.nil?) then
+				    dn.delete(dk)
+				end
+			    else
 				# set if not equal to "" or "-"
 				self[k] = r
 			    end

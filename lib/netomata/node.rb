@@ -265,7 +265,8 @@ class Netomata::Node < Dictionary
 	io = Netomata::FileSet.new(filenames)
 	@@iostack.push(io)
 
-	$stderr.print "Reading file(s) #{io.filenames.join(" ")}\n" if $verbose
+	$stderr.print "| " * (@@iostack.size - 1),
+	    "Reading file(s) #{io.filenames.join(" ")}\n" if $verbose
 
 	pstack = []
 	begin	# rescue block
@@ -425,14 +426,15 @@ class Netomata::Node < Dictionary
 	io = Netomata::FileSet.new(filenames)
 	@@iostack.push(io)
 
-	$stderr.print "Reading table(s) #{io.filenames.join(" ")}" if $verbose
+	$stderr.print "| " * (@@iostack.size - 1),
+	    "Reading table(s) #{io.filenames.join(" ")}\n" if $verbose
 
 	actions = Array.new
 	fields = Dictionary.new
 
 	begin	# rescue block
 	    io.each_line_cont { |l|
-		$stderr.print "." if $verbose
+		# $stderr.print "\n", "| " * (@@iostack.size - 1) if $verbose
 		l.chomp!			# eliminate trailing newline
 		l.gsub!(/\s*#.*/, "") unless	# eliminate trailing comments,
 			l.match(/\[%.*#.*%\]/)	#   but only if not in [% ... %]
@@ -561,7 +563,6 @@ class Netomata::Node < Dictionary
 	if (! valid?) then
 	    raise "Corrupted data structure after import_table"
 	end
-	$stderr.print "\n" if $verbose
 	self
     end
 

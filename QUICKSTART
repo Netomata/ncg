@@ -23,8 +23,8 @@ Installation -- See the "INSTALL" file for details
 --------------------------------------------------
 Unpack, configure, and install NCG:
 
-	$ tar xvf ncg-0.9.1.rNNN.tar
-	$ cd ncg-0.9.1-rNNN
+	$ tar xvf ncg-0.10.1.rNNN.tar
+	$ cd ncg-0.10.1-rNNN
 	$ ruby setup.rb test
 	$ ruby setup.rb config
 	$ ruby setup.rb setup

@@ -14,8 +14,8 @@ Installation
 ------------
 1)  Unpack the distribution .tar file, and cd to the directory it creates.
 
-	$ tar xvf ncg-0.9.1-rNNN.tar
-	$ cd ncg-0.9.1-rNNN
+	$ tar xvf ncg-0.10.1-rNNN.tar
+	$ cd ncg-0.10.1-rNNN
 
 1.1) OPTIONAL: run tests to verify that everything appears to work.
 

@@ -1,0 +1,67 @@
+        Release Notes for Netomata Config Generator (NCG)
+                          Version 0.10.1
+                           21 Sep 2010
+
+Changes Since Version 0.9.1
+===========================
+Changed .neto file processing so that [% ... %] ERB template processing can
+be used on any line, not just in "key = value" assignments.
+
+Added new '<' .neto_table header line; see doc/formats/neto_table.html .
+This is analogous to an "include" directive in a .neto file, and provides
+a convenient way to apply many lines in .neto format to each line of
+data in the .neto_table file (sort of like a subroutine).  For example,
+the following in a list of .neto_table header lines:
+	< key filename [ ... ]
+tells ncg to process the .neto format file(s) named by "filename ..." in the
+context of "key".  This is equivalent to the .neto format construct of
+	key {
+	    include filename [ ... ]
+	}
+
+Made so that a value of "-" in a .neto file assignment (for instance,
+"foo = -"), or as a data value in a .neto_table file, now causes
+the named key (i.e., "foo" in the previous ecample) to be ignored
+(or deleted, if the key already has a value).  This provides a way
+to either say "no value" for a given key, or to delete an already-set
+key.
+
+Added a Netomata::IPAddr class the extends the standard Ruby IPAddr class
+by additing a variety of methods for extracting netmasks in various formats
+(CIDR, IPv4 dotted quad, etc.).  See rdoc/classes/Netomata/IPAddr.html .
+
+Added a "compare_parts" utility method, which makes it easy to sort lists
+of interfaces and sub-interfaces into a "sensible" order (for instance,
+so that "FastEthernet2" comes before "FastEthernet10"; in a purely alphabetic
+sort, it would come after).  See the "compare_parts" section in 
+rdoc/classes/Netomata/Utilities/ClassMethods.html .
+
+Added Netomata::Node utility methods "affirm?", "each_by_subkey", and
+"sort_by_subkey".  See rdoc/classes/Netomata/Node.html for more info.
+
+Improved progress indicators when running ncg in "-v" (verbose) mode.  In
+particular, progress in reading nested files is now reported more clearly.
+
+Made debugging output, if enabled, go to STDERR rather than STDOUT.
+
+Made various minor changes to make NCG run under Ruby 1.8.4; however, these
+changes have not been extensively tested.  If you must use Ruby 1.8.4,
+give this version of NCG a try and let us know how it works.  Officially,
+NCG still requires Ruby 1.8.6 or later, but we'd like to know if it works
+under Ruby 1.8.4, since that release is standard on many not-so-old
+Fedora and Red Hat distributions.
+
+Added new "point-to-point" example (see examples/point-to-point/README).
+
+Updated documentation filenames (in doc/* subdirectories) to end in
+.html, to clearly indicate the format of the documenation.
+
+Included Ruby RDOC documentation for Netomata libraries, in the rdoc/*
+directory.  Open file "rdoc/index.html" as a starting point.
+
+# $Id$
+# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Please review accompanying 'LICENSE' file or
+# http://www.netomata.com/docs/licenses/ncg for important notices,
+# disclaimers, and license terms.
+

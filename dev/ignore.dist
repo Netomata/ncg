@@ -11,7 +11,6 @@ TODO
 bin/pre-setup.rb
 dev/
 dist/
-rdoc/
 examples/switches/configs/switch-1.config
 examples/switches/configs/switch-2.config
 examples/web_hosting/TODO

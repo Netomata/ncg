@@ -231,7 +231,7 @@ task "dist_tar_gz" => ["dist_dir", "dist_tar"] do
 end
 
 desc "Create Manifest"
-task "Manifest" => ["doc"]  do
+task "Manifest" => ["doc", "rdoc"]  do
     puts "generating Manifest..."
     m = File.new("Manifest", "w")
     m.truncate(0)

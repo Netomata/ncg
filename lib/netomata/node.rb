@@ -6,7 +6,7 @@
 # add methods to the Dictionary class, so that pp() works
 
 # Open the Dictionary class, and add a couple of methods so that pp() works
-class Dictionary
+class Dictionary # :nodoc:
 
     # add pretty_print method to the Dictionary class, so that pp() works
     def pretty_print(q)
@@ -19,9 +19,16 @@ class Dictionary
     end
 end
 
+# :stopdoc:
+
 # Yes, we're missing an indent level here...  We can't simply open this
 # as "class Netomata::Node", because if we do then we're unable to define
 # class method Netomata::Node.reset()
+
+# :startdoc:
+
+# The Netomata::Node class extends the Ruby Facets Dictionary class (see
+# http://facets.rubyforge.org/apidoc/api/more/classes/Dictionary.html )
 
 class Netomata::Node < Dictionary
 
@@ -83,7 +90,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # node.affirm?(key) -> true or false
+    #   node.affirm?(key) -> true or false
     #
     # Returns true if node has a given _key_ defined,
     # and value of _key_ is affirmative (i.e., is a string
@@ -98,7 +105,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #	dump(io=STDOUT,level=0,show_source=true) -> self
+    #	node.dump(io=STDOUT,level=0,show_source=true) -> self
     #
     # Recursively dumps the contents of the node in .neto format to the
     # _io_ handle specified (stdout by default).  
@@ -126,7 +133,8 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	dup() -> new_node
+    # 	node.dup() -> new_node
+    #
     # Create a duplicate of the current Node, including recursively duplicating
     # all its children
     def dup
@@ -136,7 +144,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # node.each_by_subkey(k) { |key, subnode| block } -> Array
+    #   node.each_by_subkey(k) { |key, subnode| block } -> Array
     #
     # Sorts node's sub-nodes using sort_by_subkey(_k_), then
     # applies _block_ to each resulting [_key_, _subnode_] pair.
@@ -147,7 +155,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	each_r(prefix="") { |prefix,k,v| block } -> self
+    # 	node.each_r(prefix="") { |prefix,k,v| block } -> self
     #
     # Invoke _block_ on each element of _self_ (recursively, if the element is
     # itself a Node).
@@ -172,16 +180,16 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	equivalent(node) -> true or false
+    # 	node.equivalent(n) -> true or false
     #
-    # Returns true if _node_ is equivalent to _self_, false otherwise.
+    # Returns true if _n_ is equivalent to _node_, false otherwise.
     # "Equivalent" is defined as:
     # 1. Both nodes have the same set of subsidiary keys (though not
     #    necessarily in the same order)
     # 2. The value of each corresponding key is equivalent; if the value
     #    is itself a Node, it is checked recursively
-    # This differs from "==", which is inherited from Dictionary (our
-    # parent class), and which also checks that keys are in the same order.
+    # This differs from "==" (which is inherited from Dictionary, our
+    # parent class), which also checks that keys are in the same order.
     def equivalent(n2)
 	n1 = self
 	# check that list of keys is the same (though not necessarily in
@@ -205,8 +213,8 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	fetch(key [, default] )		-> obj
-    #   fetch(key) {|key| block } 	-> obj
+    # 	node.fetch(key [, default] )	-> obj
+    #   node.fetch(key) {|key| block } 	-> obj
     #
     # Returns the value associated with a given _key_.
     #
@@ -223,9 +231,9 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	graft(key,node) -> self[key]
+    # 	node.graft(key,new_node) -> self[key]
     #
-    # Graft _node_ in as self[_key_]
+    # Graft _new_node_ in as self[_key_]
     def graft(key,node)
 	self[key].update(node)
 	self[key].parent=(self)
@@ -233,7 +241,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   has_key?(key) -> true or false
+    #   node.has_key?(key) -> true or false
     #
     # Returns true if the given _key_ is defined, false otherwise.
     #
@@ -255,7 +263,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	import_file(filenames) -> self
+    # 	node.import_file(filenames) -> self
     #
     # Import the contents of a .neto file into this node.
     #
@@ -381,7 +389,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	import_table(filenames) -> self
+    # 	node.import_table(filenames) -> self
     #
     # Import the contents of a .neto_table file into this node
     #
@@ -567,7 +575,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #	import_template(filename) -> self
+    #	node.import_template(filename) -> self
     #
     # Import a .ncg file template into this node.
     #
@@ -599,7 +607,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	import_template_dir(dirname) -> self
+    # 	node.import_template_dir(dirname) -> self
     #
     # Import a tree of templates into the current node.
     #
@@ -645,7 +653,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   key -> String
+    #   node.key -> String
     #
     # Return Node's own key
     #--
@@ -677,7 +685,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   keys_having_key(_key_) -> [key, ...] or []
+    #   node.keys_having_key(key) -> [k1, ...] or []
     #
     # Recursively checks Node and Node's children for Nodes having _key_
     # defined, and returns an array of the keys of matching Nodes
@@ -695,7 +703,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   keys_r -> [key, ...] or []
+    #   node.keys_r -> [key, ...] or []
     #
     # Returns an array of the keys of all the children of _node_, recursively
     def keys_r(prefix="")
@@ -710,7 +718,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   parent -> Node or nil
+    #   node.parent -> Node or nil
     #
     # Returns parent of current Node.  Returns nil if Node has no parent
     # (i.e., if it's the root node)
@@ -726,7 +734,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   parent=(my_parent) -> my_parent
+    #   node.parent=(my_parent) -> my_parent
     #
     # Sets the parent of current Node.
     # Makes self a legitimate child of _my_parent_, recursively
@@ -778,7 +786,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #	select_r { |prefix,k,v| block_returning_true_or_false } -> [] or [[k,v], ...]
+    #	node.select_r { |prefix,k,v| block_returning_true_or_false } -> [] or [[k,v], ...]
     #
     # Recursively goes through all this Node's children, and
     # returns a new array consisting of [key,value] pairs for which the
@@ -808,8 +816,8 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # node.sort_by_subkey(k) -> Array
-    # node.sort_by_subkey(k) { |a,b| block } -> Array
+    #   node.sort_by_subkey(k) -> Array
+    #   node.sort_by_subkey(k) { |a,b| block } -> Array
     #
     # Returns sub-nodes of node as an array of [_key_, _value_] tuples,
     # sorted by value of _k_ in each sub-node.  
@@ -861,7 +869,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	store(key,value) -> value
+    # 	node.store(key,value) -> value
     #
     # Stores _value_ at _key_ relative to the current Node
     #
@@ -879,7 +887,7 @@ class Netomata::Node < Dictionary
     # _h_ should be a Hash, Dictionary, or Node
     #
     # :call-seq:
-    #	    update(h) -> self
+    #	node.update(h) -> self
     #
     def update(h)
 	h.each { |k,v|
@@ -898,8 +906,8 @@ class Netomata::Node < Dictionary
     protected
 
     # :call-seq:
-    # 	dictionary_fetch(simple_key [, default] ) 		-> obj
-    #   dictionary_fetch(simple_key) {|simple_key| block } 	-> obj
+    # 	node.dictionary_fetch(simple_key [, default] ) 		-> obj
+    #   node.dictionary_fetch(simple_key) {|simple_key| block } -> obj
     #
     # Returns the value associated with a given _simple_key_.
     #
@@ -927,7 +935,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	dictionary_has_key?(key) -> true or false
+    # 	node.dictionary_has_key?(key) -> true or false
     #
     # Call Dictionary#has_key?(_key_)
     #
@@ -940,7 +948,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	dictionary_store(key,value) -> value
+    # 	node.dictionary_store(key,value) -> value
     #
     # Call Dictionary#store(_key_, _value_)
     #
@@ -953,7 +961,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   dictionary_tuple(key, [create=false]) -> [parent_node, simple_key]
+    #   node.dictionary_tuple(key, [create=false]) -> [parent_node, simple_key]
     #
     # Takes a complex _key_ as argument, decodes it (including any "()"
     # selectors), and returns a tuple (a 2-element Array) of
@@ -1042,7 +1050,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	initialize_copy(original) -> self
+    # 	node.initialize_copy(original) -> self
     #
     # Initializes self as a copy of _original_ node, by duplicating each
     # subelement of _original_ in turn. If a subelement is itself a Node, uses
@@ -1075,7 +1083,7 @@ class Netomata::Node < Dictionary
     protected :initialize_copy
 
     # :call-seq:
-    #   key_reset() -> nil
+    #   node.key_reset() -> nil
     #
     # Resets the key of the current node. 
     #--
@@ -1089,7 +1097,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	make_valid() -> true
+    # 	node.make_valid() -> true
     #
     # Makes this Node valid by recursively ensuring that all child nodes:
     # 1. have the correct parent (this node)
@@ -1120,10 +1128,10 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   node(key) -> node
+    #   n.node(key) -> Node
     #
-    # Returns the node for key, creating it if necessary
-    # If key exists, but isn't a node, raises an error
+    # Returns the Node for key, creating the Node if necessary.
+    # If n[key] already exists, but isn't a Node, raises an error.
     def node(key)
 	kn,kk = dictionary_tuple(key,true)
 	raise "Unknown key #{key}" if kn.nil?
@@ -1144,7 +1152,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   node_match_array?([[k,v] [, ...]]) -> true or false
+    #   node.node_match_array?([[k,v] [, ...]]) -> true or false
     #
     # Checks to see whether current node matches an array of [key,value] pairs
     #
@@ -1162,7 +1170,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   selector_inheritor_to_key(rest_of_key) -> key or nil
+    #   node.selector_inheritor_to_key(rest_of_key) -> key or nil
     #
     # Converts a "(...)" key selector to the key of the closest
     # ancestor that has subkeys that match _rest_of_key_
@@ -1180,7 +1188,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   valid? -> true or false
+    #   node.valid? -> true or false
     #
     # Checks current Node's validity by recursively check that all child nodes:
     # 1. have the correct parent (this node)
@@ -1212,7 +1220,7 @@ class Netomata::Node < Dictionary
     private
 
     # :call-seq:
-    # 	fixup_exception(exception,filename,lineno) -> exception
+    # 	node.fixup_exception(exception,filename,lineno) -> exception
     #
     # Fixes the backtrace in the passed _exception_ to include nested source
     # files.
@@ -1245,7 +1253,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	metadata_fetch(req) -> string
+    # 	node.metadata_fetch(req) -> string
     #
     # Returns requested metadata.  Valid requests are:
     # [FILENAME] returns name of config file currently being read
@@ -1265,8 +1273,8 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	node_fetch(key [, default] )	-> obj
-    #   node_fetch(key) {|key| block } 	-> obj
+    # 	node.node_fetch(key [, default] )	-> obj
+    #   node.node_fetch(key) {|key| block } 	-> obj
     #
     # Returns the value associated with a given _key_.
     #
@@ -1324,7 +1332,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	node_store(key,value) -> value
+    # 	node.node_store(key,value) -> value
     #
     # Stores _value_ at _key_ relative to the current Node
     #
@@ -1346,7 +1354,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   selector_criteria_to_keys(criteria) -> [key, ...] or [] 
+    #   node.selector_criteria_to_keys(criteria) -> [key, ...] or [] 
     #
     # Converts a "(subkey=value,[subkey2=value2 ...])" key selector criteria
     # to an array of the keys of the subnodes whose subkey(s) match the list
@@ -1377,7 +1385,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    #   selector_to_key(selector, [rest_of_key=nil]) -> key
+    #   node.selector_to_key(selector, [rest_of_key=nil]) -> key
     #
     # Converts a "()" key selector to the appropriate key
     # * (+) returns successor to current max anonymous key 
@@ -1429,7 +1437,7 @@ class Netomata::Node < Dictionary
     end
 
     # :call-seq:
-    # 	simple_key?(key) -> true or false
+    # 	node.simple_key?(key) -> true or false
     #
     # Returns true if _key_ is a simple key (i.e., suitable for passing to
     # Dictionary methods), or false otherwise.

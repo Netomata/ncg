@@ -11,6 +11,14 @@ class Netomata::Template
 
     attr_reader :erb, :erb_result, :filename, :lineno, :text
 
+    # :call-seq:
+    #   new ( filename [ , lineno = nil [ , contents = nil ] ] )
+    #
+    # Create a new template from the contents of the file named by _filename_.
+    # Optional argument _lineno_ specifies the line number within the file,
+    # and defaults to 1.
+    # Optional argument _contents_ specifies the contents to be used, instead
+    # of reading from the named file.
     def initialize(filename, lineno=nil, contents=nil)
 	# If we aren't passed a lineno and contents, read the named file
 	if (contents.nil?) then

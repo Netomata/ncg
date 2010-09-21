@@ -245,7 +245,7 @@ desc "Create Versions"
 task "Versions" => ["doc"] do
     puts "generating Versions..."
     sh "svn info > Versions"
-    sh "svn status -v #{dist_files.join(" ")} >> Versions"
+    sh "svn status -v #{dist_files.exclude(/^rdoc\//).join(" ")} >> Versions"
 end
 
 desc "Update svn:ignore property"

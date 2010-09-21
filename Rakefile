@@ -198,7 +198,7 @@ EOF
 end
 
 desc "Create all files for distribution"
-task "dist" => ["dist_dir", "check_commit_update", "VERSION", "lib/netomata/version.rb", "doc", "Versions", "Manifest", "dist_tar", "dist_tar_gz"]
+task "dist" => ["dist_dir", "check_commit_update", "VERSION", "lib/netomata/version.rb", "doc", "rdoc", "Versions", "Manifest", "dist_tar", "dist_tar_gz"]
 
 desc "Clean out the dist directory"
 task "dist_clean" do

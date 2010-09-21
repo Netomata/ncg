@@ -1,5 +1,5 @@
 # $Id$
-# Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+# Copyright (C) 2008-2010 Netomata, Inc.  All Rights Reserved. 
 # Please review accompanying 'LICENSE' file or
 # http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
@@ -236,7 +236,7 @@ Directory: #{Dir.getwd}
 Command: #{cmd}
 --------
 Templates (but not output generated from templates) are
-Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
+Copyright (C) 2008-2010 Netomata, Inc.  All Rights Reserved. 
 Please review accompanying 'LICENSE' file or
 http://www.netomata.com/docs/licenses/ncg for important notices,
 disclaimers, and license terms.

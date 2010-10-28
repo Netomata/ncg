@@ -1,6 +1,15 @@
         Release Notes for Netomata Config Generator (NCG)
-                          Version 0.10.1
-                           21 Sep 2010
+                          Version 0.10.2
+                           28 Oct 2010
+
+Changes Since Version 0.10.1
+============================
+Updated NCG to use the Ruby Hashery library instead of the Facets
+library, because the "Dictionary" class (which NCG depends upon) was
+removed from Facets as of the Facets 2.9.0 release on 1 Sep 2010.
+(The Hashery library has been the preferred source of the Dictionary
+class for some time, but the Dictionary class had also been included
+in versions of Facets prior to 2.9.0 for historical reasons.)
 
 Changes Since Version 0.9.1
 ===========================

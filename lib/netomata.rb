@@ -7,7 +7,16 @@
 require 'rubygems'
 require 'erb'
 require 'etc'
-require 'facets/dictionary'
+begin
+    # If we have the 'hashery' gem install, prefer the version of
+    # the Dictionary class in that
+    require 'hashery/dictionary'
+rescue LoadError
+    # Otherwise, see if we have an old enough version of the 'facets' gem
+    # that it still includes the Dictionary class (Dictionary was removed
+    # from version 2.9.0 of the 'facets' gem).
+    require 'facets/dictionary'
+end
 require 'ipaddr'
 require 'pp'
 require 'socket'

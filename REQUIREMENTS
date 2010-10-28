@@ -17,13 +17,12 @@ before NCG will work:
 	We haven't tried it under Ruby 1.9 yet; if you do, let us
 	know how it works! ;-)
 
-    Ruby Facets (http://facets.rubyforge.org/)
+    Ruby Hashery library (http://rubyworks.github.com/hashery/)
     	In particular, we make heavy use of the "Dictionary" class
-	from the Facets collection of methods and libraries.  We've
-	been using Facets version 2.4.1.  You can easily install
-	Facets with the Ruby "gem" tool, if you have that set up as
-	part of your Ruby installation:
-		gem install facets
+	from the Hashery collection of methods and libraries. 
+	You can easily install Hashery with the Ruby "gem" tool,
+	if you have that set up as part of your Ruby installation:
+		gem install hashery
 
     Optional
     --------
@@ -49,8 +48,7 @@ management ('apt-get' instead of 'aptitude' should work just fine, too, with
 the same arguments):
 
 	aptitude install ruby rubygems ruby-dev libbreakpoint-ruby
-	gem update
-	gem install facets
+	gem install hashery
 	gem install ruby-debug		# OPTIONAL
 	gem install breakpoint		# OPTIONAL
 
@@ -73,12 +71,10 @@ to do the same:
 	export GEM_PATH=/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/gems/1.8:/Library/Ruby/Gems/1.8
 	export GEM_HOME=/Library/Ruby/Gems/1.8
 
-    3)  Run the following commands as root to install the "facets"
+    3)  Run the following commands as root to install the "hashery"
     	and "ruby-debug" packages (discussed above):
 
-	    gem update --system
-	    gem update
-	    gem install facets
+	    gem install hashery
 	    gem install ruby-debug	# OPTIONAL
 
 Windows

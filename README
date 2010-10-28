@@ -1,7 +1,7 @@
           Netomata Config Generator (NCG) Release Notes
 
-                       Version 0.10.1
-                    Released 21 Sep 2010
+                       Version 0.10.2
+                    Released 28 Oct 2010
                     ====================
 
 Thank you for downloading the Netomata Config Generator (NCG)!
@@ -40,7 +40,7 @@ Prerequisites
 See the "REQUIREMENTS" file for a discussion of other tools required
 before installation of this tool.  Essentially, you need Ruby 1.8.6
 (later versions might work, but we haven't yet tested under later
-versions; earlier versions definitely won't work) and the "facets"
+versions; earlier versions definitely won't work) and the "hashery"
 Ruby Gem.  
 
 The tool has been developed primarily on Mac OS X 10.5.6 (Leopard)

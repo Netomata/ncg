@@ -8,10 +8,9 @@ Prerequisites -- See the "REQUIREMENTS" file for details
 1)  Install Ruby 1.8.6 -- details vary by operating system (see
     "REQUIREMENTS" file)
 
-2)  Install the "facets" Ruby Gem:
+2)  Install the "hashery" Ruby Gem:
 
-	# gem update
-	# gem install facets
+	# gem install hashery
 
 3)  (OPTIONAL) Install the "ruby-debug" and "breakpoint" Ruby Gems (useful
     for developing and debugging template code):
@@ -23,8 +22,8 @@ Installation -- See the "INSTALL" file for details
 --------------------------------------------------
 Unpack, configure, and install NCG:
 
-	$ tar xvf ncg-0.10.1.rNNN.tar
-	$ cd ncg-0.10.1-rNNN
+	$ tar xvf ncg-0.10.2.rNNN.tar
+	$ cd ncg-0.10.2-rNNN
 	$ ruby setup.rb test
 	$ ruby setup.rb config
 	$ ruby setup.rb setup

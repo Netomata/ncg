@@ -11,6 +11,7 @@ begin
     # If we have the 'hashery' gem install, prefer the version of
     # the Dictionary class in that
     require 'hashery/dictionary'
+    Dictionary = Hashery::Dictionary
 rescue LoadError
     # Otherwise, see if we have an old enough version of the 'facets' gem
     # that it still includes the Dictionary class (Dictionary was removed

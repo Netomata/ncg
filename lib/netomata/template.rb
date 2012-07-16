@@ -168,6 +168,11 @@ class Netomata::Template::Context
 
     module Helpers
 
+	# Proxy for Netomata::Template.apply_by_filename()
+	def apply_by_filename(*args)
+	    Netomata::Template.apply_by_filename(*args)
+	end
+
 	# Proxy for Netomata::Template.apply_by_node()
 	def apply_by_node(*args)
 	    Netomata::Template.apply_by_node(*args)

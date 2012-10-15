@@ -1,6 +1,11 @@
         Release Notes for Netomata Config Generator (NCG)
-                          Version 0.10.2
-                           28 Oct 2010
+                          Version 0.10.3
+                           14 Oct 2012
+
+Changes Since Version 0.10.2
+============================
+Further updates to NCG to deal with updates to required libraries,
+which removed or renamed methods that NCG had depended on.
 
 Changes Since Version 0.10.1
 ============================

@@ -3,7 +3,6 @@
 require 'rubygems'
 require 'mechanize'
 require 'uri'
-require 'ruby-debug'
 
 require 'optparse'
 $release = ""

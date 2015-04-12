@@ -14,6 +14,7 @@ def determine_git_branch
     # ## whatever => whatever
     branch = IO.popen("git status -s -b -uno").grep(/^## /)[0].chomp!
     branch.sub!("## ", "")
+    branch.sub!(/\.\.\..*/, "")
     if (branch.eql?("master")) then
 	return ""
     else

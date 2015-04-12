@@ -12,12 +12,12 @@ require 'rake/testtask'
 $svn_base_url="https://dev.netomata.com/svn/ncg"
 $svn_trunk_url="#{$svn_base_url}/trunk"
 
-def determine_svn_branch
-    # URL: https://dev.netomata.com/svn/ncg/trunk	 => ""
-    # URL: https://dev.netomata.com/svn/ncg/branch/brent => branch/brent
-    branch = IO.popen("svn info").grep(/^URL:/)[0].chomp!
-    branch.sub!("URL: #{$svn_base_url}/", "")
-    if (branch.eql?("trunk")) then
+def determine_git_branch
+    # ## master => ""
+    # ## whatever => whatever
+    branch = IO.popen("git status -s -b -uno").grep(/^## /)[0].chomp!
+    branch.sub!("## ", "")
+    if (branch.eql?("master")) then
 	return ""
     else
 	return branch
@@ -198,7 +198,7 @@ EOF
 end
 
 desc "Create all files for distribution"
-task "dist" => ["dist_dir", "check_commit_update", "VERSION", "lib/netomata/version.rb", "doc", "rdoc", "Versions", "Manifest", "dist_tar", "dist_tar_gz"]
+task "dist" => ["dist_dir", "check_commit_update", "VERSION", "lib/netomata/version.rb", "doc", "rdoc", "Manifest", "dist_tar", "dist_tar_gz"]
 
 desc "Clean out the dist directory"
 task "dist_clean" do
@@ -239,13 +239,6 @@ task "Manifest" => ["doc", "rdoc"]  do
 	m.puts(l)
     }
     m.close
-end
-
-desc "Create Versions"
-task "Versions" => ["doc"] do
-    puts "generating Versions..."
-    sh "svn info > Versions"
-    sh "svn status -v #{dist_files.reject{|f| f =~ /^rdoc\// }.join(" ")} >> Versions"
 end
 
 desc "Update svn:ignore property"

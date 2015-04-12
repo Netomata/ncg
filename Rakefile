@@ -9,9 +9,6 @@ ENV["NETOMATA_LIB"] = File.expand_path(File.join(File.dirname(__FILE__),"lib"))
 
 require 'rake/testtask'
 
-$svn_base_url="https://dev.netomata.com/svn/ncg"
-$svn_trunk_url="#{$svn_base_url}/trunk"
-
 def determine_git_branch
     # ## master => ""
     # ## whatever => whatever
@@ -24,19 +21,19 @@ def determine_git_branch
     end
 end
 
-def determine_svn_revision(rev=nil)
-    if rev.nil? then
-	cmd = "svn info"
+def determine_git_hash(branch=nil)
+    if branch.nil? then
+	cmd = "git log -n 1 --pretty=format:%h"
     else
-	cmd = "svn info -r #{rev}"
+	cmd = "git log -n 1 --pretty=format:%h #{branch}"
     end
 
-    IO.popen(cmd).grep(/^Revision: /)[0].chomp!.split[1]
+    hash = IO.popen(cmd).readline
+    return hash
 end
 
-$svn_revision=determine_svn_revision()
-$svn_branch=determine_svn_branch()
-$svn_working_branch="branches/brent"
+$git_hash=determine_git_hash()
+$git_branch=determine_git_branch()
 
 desc "Run all tests and generate/compare examples configs against baselines"
 task "default" => ["test", "examples"]
@@ -98,33 +95,6 @@ task "rdoc" do
     sh 'rdoc -o rdoc -a lib/netomata.rb lib/netomata/'
 end
 
-desc "Check whether 'svn commit' or 'svn update' is needed"
-task "check_commit_update" do
-    puts "checking whether 'svn commit' or 'svn update' is needed..."
-    unless IO.popen("svn status").readlines.length == 0
-	fail ("#"*60 + "\n" +
-	      "'svn status' is not clean; are there unchecked-in files?\n" +
-	      "Need to do:\n\tsvn commit\n" +
-	      "#"*60)
-    end
-    svn_info_rev = determine_svn_revision()
-    svn_info_head_rev = determine_svn_revision("HEAD")
-    unless (svn_info_rev == svn_info_head_rev)
-	fail ("#"*60 + "\n" + 
-	      "Version mismatch:\n" +
-	      "\tsvn info\t\t=> #{svn_info_rev}\n" +
-	      "\tsvn info -r HEAD\t=> #{svn_info_head_rev}\n" +
-	      "Need to do:\n\tsvn update\n" +
-	      "#"*60)
-    end
-end
-
-desc "Snapshot current SVN trunk to demo tag"
-task "tag_demo" => ["test", "examples", "check_commit_update"] do
-    sh "svn delete $svn_base_url/tags/demo -m 'Removing old demo tag'"
-    sh "svn copy $svn_base_url/trunk $svn_base_url/tags/demo -m 'Setting new demo tag'"
-end
-
 desc "Accept the current generated examples configs as the new baseline"
 task "examples_accept" do
     # fix examples/switches baselines
@@ -170,16 +140,15 @@ dist_files.exclude { |f|
 }
 
 desc "Create a 'VERSION' file for distribution"
-#task "VERSION" => ["check_commit_update"] do
 task "VERSION" do
     puts "generating VERSION..."
     release = File.new("dev/RELEASE").readline.chomp!
     v = File.new("VERSION", "w")
     v.truncate(0)
-    if ($svn_branch.eql?("")) then
-	v.puts("#{release}-r#{$svn_revision}")
+    if ($git_branch.eql?("")) then
+	v.puts("#{release}-#{$git_hash}")
     else
-	v.puts("#{release}-r#{$svn_revision}-#{$svn_branch.sub(/^.*\//,"")}")
+	v.puts("#{release}-#{$git_hash}-#{$git_branch.sub(/^.*\//,"")}")
     end
     v.close
 end
@@ -198,7 +167,7 @@ EOF
 end
 
 desc "Create all files for distribution"
-task "dist" => ["dist_dir", "check_commit_update", "VERSION", "lib/netomata/version.rb", "doc", "rdoc", "Manifest", "dist_tar", "dist_tar_gz"]
+task "dist" => ["dist_dir", "VERSION", "lib/netomata/version.rb", "doc", "rdoc", "Manifest", "dist_tar", "dist_tar_gz"]
 
 desc "Clean out the dist directory"
 task "dist_clean" do
@@ -239,105 +208,4 @@ task "Manifest" => ["doc", "rdoc"]  do
 	m.puts(l)
     }
     m.close
-end
-
-desc "Update svn:ignore property"
-task "svn_ignore" do
-    FileList["**/.svn.ignore"].each {|f|
-	Dir.chdir(File.dirname(f)) { |d|
-	    puts "(in #{d})"
-	    sh 'svn ps svn:ignore -F .svn.ignore .'
-	}
-    }
-end
-
-desc "Update svn:keywords property"
-task "svn_keywords" do
-    sh 'svn ps svn:keywords Id -R .'
-    sh 'svn pd svn:keywords dev/setup-3.4.1-LGPL\ License\ Interpretation.pdf examples/web_hosting/configs-baseline/mrtg/netomata.logo.160x80.jpg examples/web_hosting/templates/services/mrtg/netomata.logo.160x80.jpg skel/*'
-end
-
-desc "Verify we're working in a branch"
-task "verify_in_branch" do
-    if $svn_branch.eql?("") then
-	fail("#"*60 + "\n" +
-	      "Must be working in a branch!\n" +
-	      "#"*60)
-    end
-end
-
-desc "Verify we're working in trunk"
-task "verify_in_trunk" do
-    if ! $svn_branch.eql?("") then
-	fail("#"*60 + "\n" +
-	      "Must be working in trunk!\n" +
-	      "Currently working in: #{$svn_branch}\n" +
-	      "#"*60)
-    end
-end
-
-desc "Merge changes from trunk into current branch"
-task "merge_from_trunk" => ["verify_in_branch"] do
-    sh "svn merge #{$svn_trunk_url}"
-    sh "svn update"
-    sh "svn status"
-end
-
-desc "Merge changes from current branch into trunk"
-task "merge_to_trunk" => ["check_commit_update", "verify_in_branch"] do
-    sh "svn pd -R svn:mergeinfo ."
-    sh "svn commit -m 'Deleted svn:mergeinfo'"
-    sh "svn update"
-    sh "svn switch #{$svn_trunk_url}"
-    sh "svn update"
-    sh "svn merge --reintegrate #{$svn_base_url}/#{$svn_branch}"
-    sh "svn update"
-    sh "svn log --stop-on-copy #{$svn_base_url}/#{$svn_branch} | egrep -v '^--*$|^r[0-9][0-9]* \\|' > /tmp/svn_merge_log"
-    puts "#"*60
-    puts "####"
-    puts "#### REMINDER: now working in trunk!"
-    puts "####"
-    puts "#"*60
-    puts ""
-    puts "Examine changes and revise log entry in /tmp/svn_merge_log"
-    puts "\tvi /tmp/svn_merge_log"
-    puts "When ready to accept, do"
-    puts "\tsvn commit -F /tmp/svn_merge_log"
-    puts "\tsvn update"
-    puts "\trake delete_branch"
-    puts ""
-    puts "#"*60
-end
-
-desc "Delete working branch"
-task "delete_branch" do
-    if (`svn list #{$svn_base_url}/#{File.dirname($svn_working_branch)} | grep #{File.basename($svn_working_branch)}` == "") then
-	print "#{$svn_base_url}/#{$svn_working_branch} doesn't exist\n"
-    else
-	sh "svn delete #{$svn_base_url}/#{$svn_working_branch} -m 'Delete working branch'"
-    end
-end
-
-desc "Make working branch from trunk"
-task "make_branch" do
-    sh "svn copy #{$svn_trunk_url} #{$svn_base_url}/#{$svn_working_branch} -m 'Create working branch from trunk'"
-end
-
-desc "Switch from trunk to branch"
-task "switch_to_branch" do
-    sh "svn switch #{$svn_base_url}/#{$svn_working_branch}"
-end
-
-desc "Delete old working branch, create new branch from trunk, and switch to branch"
-task "new_branch" => ["verify_in_trunk", "check_commit_update", "delete_branch", "make_branch", "switch_to_branch"] do
-    puts "#"*60
-    puts "####"
-    puts "#### Now working in #{$svn_working_branch}!"
-    puts "####"
-    puts "#"*60
-end
-
-desc "Diff working branch against trunk"
-task "diff_branch" do
-    sh "svn diff #{$svn_trunk_url} #{$svn_base_url}/#{$svn_working_branch}"
 end

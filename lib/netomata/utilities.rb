@@ -222,12 +222,13 @@ module Netomata::Utilities::ClassMethods
     # but isn't of class _expected_class_ (Netomata::Node, by default).
     # Otherwise returns true.
     def template_arg(name, expected_class=Netomata::Node)
-	if ! instance_variables.member?(name) then
+	s = name.to_sym
+	if ! instance_variables.member?(s) then
 	    raise ArgumentError, "argument '#{name}' expected, but not defined"
 	end
 	if (! expected_class.nil?) then
-	    if (! instance_variable_get(name).is_a?(expected_class)) then
-		raise ArgumentError, "argument '#{name}' expected to be of class '#{expected_class}', but is of class '#{instance_variable_get(name).class}'"
+	    if (! instance_variable_get(s).is_a?(expected_class)) then
+		raise ArgumentError, "argument '#{name}' expected to be of class '#{expected_class}', but is of class '#{instance_variable_get(s).class}'"
 	    end
 	end
 	true

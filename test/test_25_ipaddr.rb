@@ -28,7 +28,9 @@ class Netomata_IPAddr_Test < Test::Unit::TestCase
 	assert_raise(ArgumentError) { Netomata::IPAddr.netmask_as_bits(-1) }
 	assert_raise(ArgumentError) { Netomata::IPAddr.netmask_as_bits(129) }
 	assert_raise(ArgumentError) { Netomata::IPAddr.netmask_as_bits(nil) }
-	assert_raise(ArgumentError) { Netomata::IPAddr.netmask_as_bits("foo") }
+	assert_raise(IPAddr::InvalidAddressError) {
+	    Netomata::IPAddr.netmask_as_bits("foo")
+	}
     end
 
     def test_netmask

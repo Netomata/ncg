@@ -19,7 +19,9 @@ module Netomata::Utilities::ClassMethods
     # access a superclass method even when a method by the same name has
     # been defined in the current class.
     def super_method(sym)
-	self.class.superclass.instance_method(sym).bind(self)
+	@super_method_cache ||= {}
+	@super_method_cache[sym] ||=
+	    self.class.superclass.instance_method(sym).bind(self)
     end
 
     # :call-seq:

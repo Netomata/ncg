@@ -1443,7 +1443,9 @@ class Netomata::Node < Dictionary
     # Dictionary methods), or false otherwise.
     def simple_key?(k)
 	return false if ! k.is_a?(String)
-	return false if k.match(/[(){}!]/)
+	return false if k.include?("!")
+	return false if k.include?("(")
+	return false if k.include?("{")
 	return true
     end
 

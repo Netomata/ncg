@@ -49,6 +49,11 @@ EOF
 		self[:libdir] = val
 		$NETOMATA_LIB = val
 	    end
+	    opts.on('-p', '--paranoid', 'enable paranoid mode') do
+		self[:paranoid] = true
+		$paranoid = true
+	    end
+	    opts.on('-V', '--version', 'print version number') do
 	    opts.on('-v', '--verbose', 'enable verbose mode') do
 		self[:verbose] = true
 		$verbose = true

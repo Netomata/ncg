@@ -154,6 +154,10 @@ class NodeTest_1_Fundamentals < Test::Unit::TestCase
     end
 
     def test_simple_key
+	# simple_key?() will always return true, unless paranoid is true
+	paranoid_before = $paranoid
+	$paranoid = true
+
 	assert_equal true, @n.simple_key?("a")
 	assert_equal false, @n.simple_key?("!")
 	assert_equal false, @n.simple_key?("!a")
@@ -163,6 +167,8 @@ class NodeTest_1_Fundamentals < Test::Unit::TestCase
 	assert_equal false, @n.simple_key?("{y}")
 	assert_equal false, @n.simple_key?(nil)
 	assert_equal false, @n.simple_key?(123)
+
+	$paranoid = paranoid_before
     end
 end
 

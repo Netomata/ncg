@@ -1442,10 +1442,12 @@ class Netomata::Node < Dictionary
     # Returns true if _key_ is a simple key (i.e., suitable for passing to
     # Dictionary methods), or false otherwise.
     def simple_key?(k)
-	return false if ! k.is_a?(String)
-	return false if k.include?("!")
-	return false if k.include?("(")
-	return false if k.include?("{")
+	if $paranoid then
+	    return false if ! k.is_a?(String)
+	    return false if k.include?("!")
+	    return false if k.include?("(")
+	    return false if k.include?("{")
+	end
 	return true
     end
 

@@ -25,6 +25,7 @@ class UtilitiesTest_1 < Test::Unit::TestCase
     # First set of tests for Netomata::Utilities
     def setup
 	$debug = false
+	$paranoid = true
 	@n = Netomata::Node.new
     end
 
@@ -126,6 +127,7 @@ class UtilitiesTest_2 < Test::Unit::TestCase
 
     def setup
         $debug = false
+	$paranoid = true
         @node = Netomata::Node.new
         @node["!n1!k_n1a1"] = "v_n1a1"
         @node["!n1!k_n1a2"] = "v_n1a2"

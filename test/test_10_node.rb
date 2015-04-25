@@ -46,6 +46,7 @@ class NodeTest_1_Fundamentals < Test::Unit::TestCase
     # up properly
     def setup
 	$debug = false
+	$paranoid = true
 	@n = Netomata::Node.new
 	@n1 = @n.dictionary_store("n1", Netomata::Node.new(@n))
 	@n2 = @n.dictionary_store("n2", Netomata::Node.new(@n))
@@ -175,6 +176,7 @@ end
 class NodeTest_2_General < Test::Unit::TestCase
     def setup
 	$debug = false
+	$paranoid = true
 	@node = Netomata::Node.new
 	@node["!n1!k_n1a1"] = "v_n1a1"
 	@node["!n1!k_n1a2"] = "v_n1a2"
@@ -391,6 +393,7 @@ end
 class NodeTest_2a_General_2 < Test::Unit::TestCase
 
     def setup
+	$paranoid = true
 	@n = Netomata::Node.new
 
 	@n["q"] = Netomata::Node.new
@@ -459,6 +462,7 @@ end
 
 class NodeTest_3_Import_Table < Test::Unit::TestCase
     def setup
+	$paranoid = true
 	@testfiles = File.join(cwd,"files","test_node")
 
 	@n = Netomata::Node.new(nil)
@@ -514,6 +518,7 @@ end
 
 class NodeTest_4_Import_File < Test::Unit::TestCase
     def setup
+	$paranoid = true
 	@testfiles = File.join(cwd,"files","test_node")
 
 	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
@@ -638,6 +643,7 @@ end
 
 class NodeTest_4a_Import_Multiple_Files < Test::Unit::TestCase
     def setup
+	$paranoid = true
 	@testfiles = File.join(cwd,"files","test_node")
 	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
     end
@@ -682,6 +688,7 @@ end
 
 class NodeTest_4b_Import_Multipart_Table < Test::Unit::TestCase
     def setup
+	$paranoid = true
 	@testfiles = File.join(cwd,"files","test_node")
 	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
     end
@@ -719,6 +726,7 @@ end
 
 class NodeTest_5_Import_Template < Test::Unit::TestCase
     def setup
+	$paranoid = true
 	@testfiles = File.join(cwd,"files","test_node")
 	@tmpdirname = "/tmp/ncg_test.#{self.class}.#{$$}"
 

@@ -25,6 +25,7 @@ class Regressions_Test < Test::Unit::TestCase
     # Tests for regressions of various bugs
     def setup
 	$debug = false
+	$paranoid = true
 	@testfiles = File.join(cwd,"files","cases")
 	@n = Netomata::Node.new
     end

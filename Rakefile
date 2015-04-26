@@ -226,7 +226,6 @@ spec = Gem::Specification.new do |s|
     s.version	= 
       File.read(File.join(File.dirname(__FILE__), 'dev/RELEASE')).chomp!
     s.author	= "Brent Chapman"
-    s.autorequire = "hashery"
     s.email	= "brent@netomata.com"
     s.homepage	= "http://www.netomata.com/tools/ncg"
     s.platform	= Gem::Platform::RUBY
@@ -235,6 +234,7 @@ spec = Gem::Specification.new do |s|
     s.executables = [ "ncg" ]
     s.test_files = Dir["test/test*.rb"]
     s.has_rdoc	= true
+    s.add_runtime_dependency 'hashery', '~> 2'
 end
 
 Gem::PackageTask.new(spec) { }

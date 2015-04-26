@@ -8,6 +8,8 @@ cwd = Dir.getwd
 ENV["NETOMATA_LIB"] = File.expand_path(File.join(File.dirname(__FILE__),"lib"))
 
 require 'rake/testtask'
+require 'rubygems'
+require 'rubygems/package_task'
 
 def determine_git_branch
     # ## master => ""
@@ -131,6 +133,9 @@ dist_files.exclude { |f|
     if File.directory?(f) then
 	# exclude all directories (though not necessarily their contents)
 	true
+    elsif f.match(/\.gem$/)
+	# exclude *.gem files
+	true
     elsif dist_ignore_files.include?(f)
 	# exclude all files specificly named in "ignore.dist"
 	true
@@ -210,3 +215,26 @@ task "Manifest" => ["doc", "rdoc"]  do
     }
     m.close
 end
+
+spec = Gem::Specification.new do |s| 
+    s.name	= "ncg"
+    s.summary	= "Netomata Config Generator"
+    s.license	= "GPL-3.0"
+    s.description = File.read(File.join(File.dirname(__FILE__), 'README'))
+    s.requirements = 
+      [ 'An installed dictionary (most Unix systems have one)' ]
+    s.version	= 
+      File.read(File.join(File.dirname(__FILE__), 'dev/RELEASE')).chomp!
+    s.author	= "Brent Chapman"
+    s.autorequire = "hashery"
+    s.email	= "brent@netomata.com"
+    s.homepage	= "http://www.netomata.com/tools/ncg"
+    s.platform	= Gem::Platform::RUBY
+    s.required_ruby_version = '>=1.9'
+    s.files	= dist_files
+    s.executables = [ "ncg" ]
+    s.test_files = Dir["test/test*.rb"]
+    s.has_rdoc	= true
+end
+
+Gem::PackageTask.new(spec) { }

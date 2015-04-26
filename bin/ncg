@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/opt/local/bin/ruby
 
 # $Id$
 # Copyright (C) 2008, 2009 Netomata, Inc.  All Rights Reserved. 
@@ -6,16 +6,8 @@
 # http://www.netomata.com/docs/licenses/ncg for important notices,
 # disclaimers, and license terms.
 
+require 'netomata'
 require 'optparse'
-
-# we delay requiring the 'netomata' libraries until after the command line
-# arguments are parsed, so that the library location can be specified by a
-# '-L' command line argument
-
-$NETOMATA_LIB = "/usr/local/lib/netomata/lib"
-if (ENV.key?("NETOMATA_LIB")) then
-    $NETOMATA_LIB = ENV["NETOMATA_LIB"]
-end
 
 class NcgArguments < Hash
     def initialize(args)
@@ -44,16 +36,10 @@ EOF
 		'dump the list of keys') do
 		self[:keys] = true
 	    end
-	    opts.on('-L', '--libdir', '=DIRNAME',
-		    'specify Netomata library location (overrides NETOMATA_LIB envariable)') do |val|
-		self[:libdir] = val
-		$NETOMATA_LIB = val
-	    end
 	    opts.on('-p', '--paranoid', 'enable paranoid mode') do
 		self[:paranoid] = true
 		$paranoid = true
 	    end
-	    opts.on('-V', '--version', 'print version number') do
 	    opts.on('-v', '--verbose', 'enable verbose mode') do
 		self[:verbose] = true
 		$verbose = true
@@ -82,15 +68,6 @@ end
 
 # parse the command line arguments
 args = NcgArguments.new(ARGV)
-
-# push the NETOMATA_LIB location onto the load path, before requiring any
-# Netomata-provided libraries
-$LOAD_PATH.push($NETOMATA_LIB)
-$stderr.puts "NETOMATA_LIB=#{$NETOMATA_LIB}" if $verbose
-
-# we delay requiring the 'netomata' libraries until here, so that the location
-# of the libraries can be specified by a '-L' command line argument
-require 'netomata'
 
 if (args[:version]) then
     puts Netomata::Version

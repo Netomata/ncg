@@ -17,4 +17,5 @@ examples/web_hosting/TODO
 examples/web_hosting/configs/
 examples/web_hosting/secrets.netomata.neto
 examples/web_hosting/users.netomata.neto_table
+pkg/
 skel/

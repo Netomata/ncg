@@ -3,5 +3,6 @@ Manifest
 VERSION
 Versions
 dist
+pkg
 rdoc
 .svn.branch_rev
